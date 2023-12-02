@@ -66,6 +66,7 @@ model User {
   projectUsers  ProjectUser[]
   comments      Comment[]
   tracks        Track[]
+  reaction      Reaction[]
 }
 
 model VerificationToken {
@@ -89,7 +90,7 @@ model ProjectUser {
 model Project {
   id          String   @id @default(cuid())
   name        String
-  urlName   String
+  urlName     String
   description String?
   coverImage  String?
   type        String
@@ -107,12 +108,12 @@ model Project {
 }
 
 model Track {
-  id        String   @id @default(cuid())
-  name      String
-  urlName   String
+  id          String   @id @default(cuid())
+  name        String
+  urlName     String
   description String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   createdBy   User    @relation(fields: [createdById], references: [id])
   createdById String
@@ -122,17 +123,42 @@ model Track {
   @@index([name])
 }
 
+model Reaction {
+  id        String   @id @default(cuid())
+  type      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // User relation
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  // Comment relation
+  comment   Comment @relation(fields: [commentId], references: [id])
+  commentId String
+
+  @@index([createdById])
+}
+
 model Comment {
   id        String   @id @default(cuid())
   text      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  createdBy      User             @relation(fields: [createdById], references: [id])
-  createdById    String
-  project        Project          @relation(fields: [projectId], references: [id])
-  projectId      String
+  // User relation
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
+  // Project relation
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
+
+  // Self-relation to implement replies
+  parentId String?    @map("parent_id")
+  parent   Comment?   @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[]  @relation("CommentToComment")
+  reactions Reaction[]
 
   @@index([createdById])
 }
-

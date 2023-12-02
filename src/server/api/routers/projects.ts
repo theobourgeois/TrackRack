@@ -6,6 +6,8 @@ import {
     publicProcedure,
 } from "@/server/api/trpc";
 import { incrementName } from "@/app/_utils/db-utils";
+import { ProjectRole } from "@/app/_utils/typing-utils/projects";
+import { ProjectUser, User } from "@prisma/client";
 
 export const projectsRouter = createTRPCRouter({
     get: publicProcedure
@@ -22,24 +24,17 @@ export const projectsRouter = createTRPCRouter({
                         },
                     },
                     users: true,
-                    comments: {
-                        include: {
-                            createdBy: true,
-                        },
-                        orderBy: {
-                            createdAt: "desc",
-                        },
-                    },
                 },
                 where: {
                     urlName: input.projectUrl,
                 },
             });
         }),
+
     update: protectedProcedure
         .input(
             z.object({
-                id: z.string(),
+                projectId: z.string(),
                 name: z.string().min(1),
                 description: z.string().optional(),
                 type: z.string(),
@@ -47,11 +42,20 @@ export const projectsRouter = createTRPCRouter({
             }),
         )
         .mutation(async ({ ctx, input }) => {
+            const projectUrl = incrementName(
+                input.name,
+                await ctx.db.project.count({
+                    where: {
+                        name: input.name,
+                    },
+                }),
+            );
             return ctx.db.project.update({
                 where: {
-                    id: input.id,
+                    id: input.projectId,
                 },
                 data: {
+                    urlName: projectUrl,
                     name: input.name,
                     description: input.description,
                     type: input.type,
@@ -69,13 +73,16 @@ export const projectsRouter = createTRPCRouter({
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            const projectUrl = incrementName(input.name, await ctx.db.project.count({
-                where: {
-                    name: input.name,
-                },
-            }));
+            const projectUrl = incrementName(
+                input.name,
+                await ctx.db.project.count({
+                    where: {
+                        name: input.name,
+                    },
+                }),
+            );
 
-            return ctx.db.project.create({
+            const project = await ctx.db.project.create({
                 data: {
                     name: input.name,
                     urlName: projectUrl,
@@ -85,5 +92,42 @@ export const projectsRouter = createTRPCRouter({
                     createdById: ctx.session.user.id,
                 },
             });
+
+            return ctx.db.projectUser.create({
+                data: {
+                    userId: ctx.session.user.id,
+                    role: ProjectRole.ADMIN,
+                    projectId: project.id,
+                },
+            });
+        }),
+    projectUsersGroupedByRole: publicProcedure
+        .input(z.object({ projectUrl: z.string() }))
+        .query(async ({ ctx, input }) => {
+            const project = await ctx.db.project.findFirst({
+                where: {
+                    urlName: input.projectUrl,
+                },
+            });
+            const projectUsers = await ctx.db.projectUser.findMany({
+                where: {
+                    projectId: project?.id,
+                },
+                include: {
+                    user: true,
+                },
+            });
+
+            // Group users by role
+            const groupedByRole = projectUsers.reduce<{
+                [key in ProjectRole]?: (ProjectUser & { user: User })[];
+            }>((group, user) => {
+                const role = user.role as ProjectRole;
+                group[role] = group[role] || [];
+                group[role]?.push(user);
+                return group;
+            }, {});
+
+            return groupedByRole;
         }),
 });

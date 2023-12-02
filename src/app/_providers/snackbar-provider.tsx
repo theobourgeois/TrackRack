@@ -5,6 +5,7 @@ import { FaRegCheckCircle } from "react-icons/fa";
 import { MdError } from "react-icons/md";
 import React, { useState, createContext, useContext } from "react";
 import { v4 as uuidv4 } from "uuid"; // For generating unique IDs
+import { Alert } from "../_components/mtw-wrappers";
 
 // @ts-ignore
 export const SnackBarContext = createContext<{
@@ -24,21 +25,21 @@ enum SnackBarSeverity {
 const SnackBarData = {
   [SnackBarSeverity.SUCCESS]: {
     icon: <FaRegCheckCircle color="white" />,
-    color: "bg-green-500",
+    color: "green",
   },
   [SnackBarSeverity.ERROR]: {
     icon: <MdError color="white" />,
-    color: "bg-red-500",
+    color: "red",
   },
   [SnackBarSeverity.WARNING]: {
     icon: "warning",
-    color: "bg-yellow-500",
+    color: "yellow",
   },
   [SnackBarSeverity.INFO]: {
     icon: "info",
-    color: "bg-blue-300",
+    color: "blue",
   },
-};
+} as const;
 
 export const useSnackBar = () => {
   const snackbar = useContext(SnackBarContext);
@@ -111,25 +112,26 @@ export const SnackBarProvider = ({
       {snackbars.map((snackbar, index) => {
         const { color, icon } = SnackBarData[snackbar.severity];
         return (
-          <div
-            key={snackbar.id}
-            className={twMerge(
-              "fixed right-2 top-2 z-[1000] flex items-center gap-2 rounded-md px-2 py-4 transition-all duration-500",
-              snackbar.isOpen ? "translate-y-0" : "-translate-y-16",
-              color,
-            )}
+          <Alert
             style={{
               top: snackbar.isOpen ? `${1 + index * 4}rem` : "",
             }}
+            className={twMerge(
+              "fixed right-2 top-2 z-[10000] flex w-max items-center transition-all duration-500",
+              snackbar.isOpen ? "translate-y-0" : "-translate-y-16",
+            )}
+            color={color}
+            icon={icon}
+            variant="gradient"
+            action={
+              <RxCross1
+                className="cursor-pointer"
+                onClick={() => closeSnackbar(snackbar.id)}
+              />
+            }
           >
-            {icon}
-            <p className="text-sm text-white">{snackbar.message}</p>
-            <RxCross1
-              className="cursor-pointer"
-              onClick={() => closeSnackbar(snackbar.id)}
-              color="white"
-            />
-          </div>
+            {snackbar.message}
+          </Alert>
         );
       })}
       {children}

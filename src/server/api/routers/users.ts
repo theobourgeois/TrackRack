@@ -27,4 +27,25 @@ export const usersRouter = createTRPCRouter({
                 },
             });
         }),
+    userProjects: publicProcedure.
+        input(z.object({ userId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            return ctx.db.projectUser.findMany({
+                include: {
+                    project: true,
+                },
+                where: {
+                    userId: input.userId,
+                },
+            });
+        }),
+    userByEmail: publicProcedure.
+        input(z.object({ email: z.string() }))
+        .query(async ({ ctx, input }) => {
+            return ctx.db.user.findFirst({
+                where: {
+                    email: input.email,
+                },
+            });
+        }),
 });

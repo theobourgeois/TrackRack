@@ -3,6 +3,9 @@ import {
   Button as MButton,
   Select as MSelect,
   Dialog as MDialog,
+  DialogHeader as MDialogHeader,
+  DialogBody as MDialogBody,
+  DialogFooter as MDialogFooter,
   Input as MInput,
   Collapse as MCollapse,
   Spinner as MSpinner,
@@ -18,14 +21,33 @@ import {
   Alert as MAlert,
   Progress as MProgress,
   Popover as MPopover,
+  PopoverContent as MPopoverContent,
+  PopoverHandler as MPopoverHandler,
   Checkbox as MCheckbox,
   Navbar as MNavbar,
   Option as MOption,
   Card as MCard,
   CardBody as MCardBody,
   CardFooter as MCardFooter,
+  IconButton as MIconButton,
+  PopoverContentProps,
+  PopoverProps,
+  PopoverHandlerProps,
 } from "@material-tailwind/react";
-import type { ComponentProps } from "react";
+import {
+  useContext,
+  type ComponentProps,
+  useState,
+  createContext,
+} from "react";
+import ClickAwayListener from "react-click-away-listener";
+import { twMerge } from "tailwind-merge";
+
+export function IconButton(
+  props: ComponentProps<typeof MIconButton>,
+): JSX.Element {
+  return <MIconButton {...props} />;
+}
 
 export function Card(props: ComponentProps<typeof MCard>): JSX.Element {
   return <MCard {...props} />;
@@ -46,7 +68,7 @@ export function Button(props: ComponentProps<typeof MButton>): JSX.Element {
 }
 
 export function Select(props: ComponentProps<typeof MSelect>): JSX.Element {
-  return <MSelect {...props} />;
+  return <MSelect color="indigo" {...props} />;
 }
 
 export function Option(props: ComponentProps<typeof MOption>): JSX.Element {
@@ -57,10 +79,28 @@ export function Dialog(props: ComponentProps<typeof MDialog>): JSX.Element {
   return <MDialog {...props} />;
 }
 
+export function DialogHeader(
+  props: ComponentProps<typeof MDialogHeader>,
+): JSX.Element {
+  return <MDialogHeader {...props} />;
+}
+
+export function DialogBody(
+  props: ComponentProps<typeof MDialogBody>,
+): JSX.Element {
+  return <MDialogBody {...props} />;
+}
+
+export function DialogFooter(
+  props: ComponentProps<typeof MDialogFooter>,
+): JSX.Element {
+  return <MDialogFooter {...props} />;
+}
+
 export function Input(
   props: Omit<ComponentProps<typeof MInput>, "crossOrigin">,
 ): JSX.Element {
-  return <MInput crossOrigin={undefined} {...props} />;
+  return <MInput color="indigo" crossOrigin={undefined} {...props} />;
 }
 
 export function Collapse(props: ComponentProps<typeof MCollapse>): JSX.Element {
@@ -90,7 +130,7 @@ export function Badge(props: ComponentProps<typeof MBadge>): JSX.Element {
 }
 
 export function Textarea(props: ComponentProps<typeof MTextarea>): JSX.Element {
-  return <MTextarea {...props} />;
+  return <MTextarea color="indigo" {...props} />;
 }
 
 export function Typography(
@@ -119,8 +159,87 @@ export function Progress(props: ComponentProps<typeof MProgress>): JSX.Element {
   return <MProgress {...props} />;
 }
 
-export function Popover(props: ComponentProps<typeof MPopover>): JSX.Element {
-  return <MPopover {...props} />;
+const PopoverContext = createContext({
+  open: false,
+  setOpen: (open: boolean) => {},
+  closeOnClick: true,
+  triggers: undefined,
+});
+
+export function Popover({
+  closeOnClick = true,
+  hover = false,
+  ...rest
+}: PopoverProps & { closeOnClick?: boolean; hover?: boolean }) {
+  const [open, setOpen] = useState(false);
+
+  const triggers = {
+    onMouseEnter: () => setOpen(true),
+    onMouseLeave: () => setOpen(false),
+  };
+
+  return (
+    <PopoverContext.Provider
+      value={{
+        open,
+        setOpen,
+        closeOnClick,
+        triggers: hover ? triggers : undefined,
+      }}
+    >
+      <MPopover
+        animate={{
+          mount: { opacity: 1, scale: 1 },
+          unmount: { opacity: 1, scale: 1 },
+        }}
+        {...rest}
+        handler={setOpen}
+        open={open}
+      />
+    </PopoverContext.Provider>
+  );
+}
+
+export function PopoverHandler({
+  children,
+  onClick,
+  ...rest
+}: PopoverHandlerProps) {
+  const { open, setOpen, triggers } = useContext(PopoverContext);
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    onClick?.(e);
+    setOpen(!open);
+  };
+  return (
+    <MPopoverHandler onClick={handleClick} {...triggers} {...rest}>
+      <div>{children}</div>
+    </MPopoverHandler>
+  );
+}
+
+export function PopoverContent({
+  className,
+  onClick,
+  ...props
+}: Omit<PopoverContentProps, "ref">) {
+  const { setOpen, closeOnClick, triggers } = useContext(PopoverContext);
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    onClick?.(e);
+    if (closeOnClick) {
+      setOpen(false);
+    }
+  };
+
+  return (
+    <ClickAwayListener onClickAway={() => setOpen(false)}>
+      <MPopoverContent
+        {...props}
+        {...triggers}
+        onClick={handleClick}
+        className={twMerge("p-2", className)}
+      />
+    </ClickAwayListener>
+  );
 }
 
 export function Checkbox(props: ComponentProps<typeof MCheckbox>): JSX.Element {

@@ -1,19 +1,15 @@
-import { ServerForm } from "@/app/_components/form";
-import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  Input,
-  Option,
-  Select,
-  Spinner,
-  Textarea,
-  Typography,
-} from "@/app/_components/mtw-wrappers";
-import { getServerAuthSession } from "@/server/auth";
+import { RightSidebar } from "@/app/projects/_components/right-sidebar";
+import { ProjectType } from "@/app/_utils/typing-utils/projects";
 import { api } from "@/trpc/server";
-import { Suspense } from "react";
+import { TracksTableWrapper } from "../_components/tracks-table-wrapper";
+import { ProjectComments } from "../_components/project-comments";
+import { ProjectHeader } from "../_components/project-header";
+import { Comment, Project, User } from "@prisma/client";
+
+export type ProjectFields = Pick<
+  Project,
+  "name" | "description" | "type" | "coverImage"
+>;
 
 export default async function Home({
   params,
@@ -23,127 +19,34 @@ export default async function Home({
   const project = await api.projects.get.query({
     projectUrl: params.project,
   });
-
-  const handleCreateTrack = async (formData: FormData) => {
-    "use server";
-    const name = formData.get("name") as string;
-    const description = formData.get("description") as string;
-    await api.tracks.create.mutate({
-      name,
-      description,
-      projectUrl: params.project,
-    });
-  };
-
-  const handleCreateProject = async () => {
-    "use server";
-    const name = "e";
-    const type = "Album";
-    const description = "Swaggy album";
-    await api.projects.create.mutate({
-      name,
-      type,
-      description,
-    });
-  };
-
-  const handleCreateComment = async (formData: FormData) => {
-    "use server";
-    const comment = formData.get("comment") as string;
-    await api.comments.create.mutate({
-      text: comment,
-      projectUrl: params.project,
-    });
-  };
+  const projectComments = await api.comments.getEntityComments.query({
+    id: project?.id ?? "",
+    as: "project",
+  });
 
   return (
-    <main className="flex h-max w-screen flex-col items-center justify-center gap-4 p-8">
-      <Typography variant="h2">{project?.name}</Typography>
-      <Typography variant="h3">{project?.type}</Typography>
-      <Typography variant="h4">{project?.description}</Typography>
-      <ServerForm className="flex flex-col gap-2" action={handleCreateTrack}>
-        <Input label="name" name="name" />
-        <Textarea label="description" name="description" />
-        <Button type="submit" color="indigo" variant="gradient">
-          Create Track
-        </Button>
-      </ServerForm>
-      <ServerForm action={handleCreateProject}>
-        <Button type="submit">DO IT</Button>
-      </ServerForm>
+    <main className="flex h-screen">
+      <div className="flex-grow overflow-y-auto px-12 pb-32 pt-12">
+        <ProjectHeader
+          id={project?.id ?? ""}
+          name={project?.name ?? ""}
+          description={project?.description ?? ""}
+          type={(project?.type ?? ProjectType.ALBUM) as ProjectType}
+          coverImage={project?.coverImage ?? ""}
+          trackCount={project?.tracks.length ?? 0}
+        />
+        {project?.tracks && (
+          <TracksTableWrapper projectId={project.id} tracks={project.tracks} />
+        )}
 
-      <ServerForm
-        action={handleCreateComment}
-        successMessage="comment successfully created"
-        errorMessage="failed to create comment"
-      >
-        <Textarea label="comment" name="comment" />
-        <Button type="submit" color="indigo" variant="gradient">
-          Add Comment
-        </Button>
-      </ServerForm>
-      <Typography variant="h2">Tracks</Typography>
-      {project?.tracks.map((track) => (
-        <Card>
-          <CardBody>
-            <Typography>{track.name}</Typography>
-            <Typography>{track.createdBy.name}</Typography>
-            <Typography>{track.createdAt.toString()}</Typography>
-          </CardBody>
-          <CardFooter className="flex gap-2 pt-0">
-            <ServerForm
-              successMessage="Track successfully deleted"
-              errorMessage="Unable to delete track"
-              action={async () => {
-                "use server";
-                await api.comments.delete.mutate({
-                  id: track.id,
-                });
-              }}
-            >
-              <Button type="submit" color="indigo">
-                Delete Track
-              </Button>
-            </ServerForm>
-          </CardFooter>
-        </Card>
-      ))}
-      <Typography variant="h2">Comments</Typography>
-      {project?.comments.map((comment) => (
-        <Card>
-          <CardBody>
-            <Typography>{comment.text}</Typography>
-            <Typography>{comment.createdBy.name}</Typography>
-            <Typography>{comment.createdAt.toString()}</Typography>
-          </CardBody>
-          <CardFooter className="flex gap-2 pt-0">
-            <ServerForm
-              action={async () => {
-                "use server";
-                api.comments.delete.mutate({
-                  id: comment.id,
-                });
-              }}
-            >
-              <Button type="submit" color="indigo">
-                Edit Comment
-              </Button>
-            </ServerForm>
-            <ServerForm
-              action={async () => {
-                "use server";
-                api.comments.delete.mutate({
-                  id: comment.id,
-                });
-              }}
-            >
-              <Button type="submit" color="indigo">
-                Delete Comment
-              </Button>
-            </ServerForm>
-          </CardFooter>
-        </Card>
-      ))}
+        {projectComments && (
+          <ProjectComments
+            comments={projectComments}
+            projectId={project?.id ?? ""}
+          />
+        )}
+      </div>
+      <RightSidebar projectUrl={params.project} />
     </main>
   );
 }
