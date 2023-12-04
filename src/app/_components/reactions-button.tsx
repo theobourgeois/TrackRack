@@ -12,13 +12,18 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
+import { ReactionWithUser } from "../_utils/typing-utils/comments";
 
 const reactions = ["👍", "👎", "🔥", "😄", "😕", "🎉", "😡", "🚀", "👀"];
 
 interface ReactionButtonProps {
   commentId: string;
+  userReactions: ReactionWithUser[];
 }
-export function ReactionButton({ commentId }: ReactionButtonProps) {
+export function ReactionButton({
+  commentId,
+  userReactions,
+}: ReactionButtonProps) {
   const router = useRouter();
   const { mutate, isLoading } = api.comments.addReaction.useMutation({
     onSuccess: () => {
@@ -51,7 +56,10 @@ export function ReactionButton({ commentId }: ReactionButtonProps) {
               key={reaction}
               onClick={handleChange(reaction)}
               className={twMerge(
-                "cursor-pointer text-2xl opacity-50 hover:opacity-100",
+                userReactions.find((r) => r.type === reaction)
+                  ? "opacity-50"
+                  : "opacity-100",
+                "cursor-pointer text-2xl hover:scale-105 hover:opacity-100",
               )}
             >
               {reaction}

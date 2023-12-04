@@ -14,6 +14,34 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
+function AutoResizeTextarea(props: Omit<TextareaProps, "ref">) {
+  const textareaId = getNewID();
+
+  // Auto resize textarea. ref on text area not working, that's why we use id
+  useEffect(() => {
+    const textarea = document.getElementById(
+      "comment-textarea-" + textareaId,
+    ) as HTMLTextAreaElement;
+    if (!textarea) return;
+    if (!props.value) return;
+    const val = props.value as string;
+    if (Boolean(parent)) {
+      textarea.focus();
+      textarea.setSelectionRange(val.length, val.length);
+    }
+    textarea.style.height = "auto"; // Reset height to allow shrink
+    textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
+  }, [props.value]);
+
+  return (
+    <Textarea
+      {...props}
+      id={"comment-textarea-" + textareaId}
+      className={twMerge("!min-h-[auto]", props.className)}
+    />
+  );
+}
+
 type AddCommentProps = {
   id: string;
   as: CommentType;
@@ -67,7 +95,7 @@ export function AddComment({
   const handleSubmit = () => {
     mutate({
       as,
-      id,
+      entityId: id,
       text: comment,
       parentId: parent?.id,
     });
@@ -94,6 +122,7 @@ export function AddComment({
             onClick={handleSubmit}
             size="sm"
             color="indigo"
+            variant="gradient"
           >
             {isLoading ? <Spinner color="indigo" /> : "Comment"}
           </Button>
@@ -103,45 +132,18 @@ export function AddComment({
   );
 }
 
-function AutoResizeTextarea(props: TextareaProps) {
-  const textareaId = getNewID();
-
-  // Auto resize textarea. ref on text area not working, that's why we use id
-  useEffect(() => {
-    const textarea = document.getElementById(
-      "comment-textarea-" + textareaId,
-    ) as HTMLTextAreaElement;
-    if (!textarea) return;
-    if (!props.value) return;
-    const val = props.value as string;
-    if (Boolean(parent)) {
-      textarea.focus();
-      textarea.setSelectionRange(val.length, val.length);
-    }
-    textarea.style.height = "auto"; // Reset height to allow shrink
-    textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
-  }, [props.value]);
-
-  return (
-    <Textarea
-      ref={undefined}
-      {...props}
-      id={"comment-textarea-" + textareaId}
-      className={twMerge("!min-h-[auto]", props.className)}
-    />
-  );
-}
-
 interface EditComment {
-  projectId: string;
+  id: string;
   onCancel: () => void;
   comment: string;
 }
-export function EditComment({ projectId, onCancel, comment }: EditComment) {
+export function EditComment({ id, onCancel, comment }: EditComment) {
   const { showErrorNotification } = useSnackBar();
+  const router = useRouter();
   const [text, setText] = useState(comment);
   const { mutate, isLoading } = api.comments.update.useMutation({
     onSuccess: () => {
+      router.refresh();
       onCancel();
     },
     onError: () => {
@@ -155,7 +157,7 @@ export function EditComment({ projectId, onCancel, comment }: EditComment) {
 
   const handleSubmit = () => {
     mutate({
-      id: projectId,
+      id,
       text,
     });
   };
@@ -176,9 +178,10 @@ export function EditComment({ projectId, onCancel, comment }: EditComment) {
           Cancel
         </Button>
         <Button
-          disabled={comment === "" || isLoading}
+          disabled={text === "" || isLoading}
           onClick={handleSubmit}
           size="sm"
+          variant="gradient"
           color="indigo"
         >
           {isLoading ? <Spinner color="indigo" /> : "Save"}

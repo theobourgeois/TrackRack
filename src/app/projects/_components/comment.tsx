@@ -26,6 +26,7 @@ import { AddComment, EditComment } from "./add-comment";
 import { ReactionButton } from "@/app/_components/reactions-button";
 import { CommentReactions } from "./comment-reactions";
 import { Session } from "next-auth";
+import { Comment } from "@prisma/client";
 
 export enum CommentDialogs {
   DELETE = "DELETE",
@@ -91,7 +92,7 @@ export function CommentComponent({
                 {isEditing ? (
                   <EditComment
                     onCancel={() => setIsEditing(false)}
-                    projectId={id}
+                    id={comment.id}
                     comment={comment.text}
                   />
                 ) : (
@@ -140,7 +141,10 @@ export function CommentComponent({
                     )}
                     <div className="flex w-full items-center gap-2">
                       {comment.reactions.length <= 0 && (
-                        <ReactionButton commentId={comment.id} />
+                        <ReactionButton
+                          userReactions={comment.reactions}
+                          commentId={comment.id}
+                        />
                       )}
 
                       <Typography

@@ -113,7 +113,7 @@ export function TracksTableWrapper({
             )}
 
             {userPermissions?.includes(PermissionName.EditProjectInfo) && (
-              <DropDown placement="bottom-start">
+              <DropDown closeOnClick placement="bottom-start">
                 <DropDownHandler>
                   <IconButton variant="text">
                     <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-4xl" />

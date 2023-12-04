@@ -14,8 +14,10 @@ export type ProjectFields = Pick<
 
 export default async function Home({
   params,
+  searchParams,
 }: {
   params: { project: string };
+  searchParams: { viewAmount?: string; sortBy?: "asc" | "desc" };
 }) {
   const session = await getServerAuthSession();
   const project = await api.projects.get.query({
@@ -24,6 +26,8 @@ export default async function Home({
   const projectComments = await api.comments.getEntityComments.query({
     id: project?.id ?? "",
     as: "project",
+    viewAmount: parseInt(searchParams?.viewAmount ?? "10"),
+    sortBy: searchParams?.sortBy,
   });
   const userPermissions = await api.users.getProjectUserPermissions.query({
     userId: session?.user.id ?? "",
@@ -53,7 +57,8 @@ export default async function Home({
         {projectComments && (
           <ProjectComments
             userPermissions={userPermissions}
-            comments={projectComments}
+            comments={projectComments.comments}
+            commentCount={projectComments.count}
             projectId={project?.id ?? ""}
           />
         )}

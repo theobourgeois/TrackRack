@@ -1,5 +1,6 @@
 "use client";
 import {
+  Alert,
   Button,
   Dialog,
   DialogFooter,
@@ -10,6 +11,8 @@ import { DialogComponentProps } from "./project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
+import { useContext } from "react";
+import { DeletedCommentContext } from "../_providers/deleted-comment-provider";
 
 type DialogProps = {
   id: string;
@@ -22,9 +25,11 @@ export function DeleteCommentDialog({
 }: DialogComponentProps<DialogProps>) {
   const router = useRouter();
   const { showErrorNotification } = useSnackBar();
+  const { setComment } = useContext(DeletedCommentContext);
   const { mutate, isLoading } = api.comments.delete.useMutation({
-    onSuccess: () => {
+    onSuccess: (comment) => {
       router.refresh();
+      setComment(comment);
       onClose();
     },
     onError: (err) => {

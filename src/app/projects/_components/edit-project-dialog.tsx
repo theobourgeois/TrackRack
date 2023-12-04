@@ -79,35 +79,37 @@ export function EditProjectDialog({
   return (
     <Dialog open={open} handler={onClose}>
       <DialogHeader>Edit Project Details</DialogHeader>
-      <DialogBody className="flex flex-col gap-4">
+      <DialogBody className="flex flex-col gap-4 md:flex-row">
         <div className="mx-auto">
           <ImageInput name="coverImage" defaultImage={coverImage}></ImageInput>
         </div>
-        <HelperText text={zodError?.name?.[0] ?? ""} variant="error">
-          <Input
-            autoFocus
-            value={name}
-            onChange={handleChange("name")}
-            name="name"
-            label="Name"
+        <div className="flex flex-grow flex-col gap-3">
+          <HelperText text={zodError?.name?.[0] ?? ""} variant="error">
+            <Input
+              autoFocus
+              value={name}
+              onChange={handleChange("name")}
+              name="name"
+              label="Name"
+            />
+          </HelperText>
+          <Select
+            onChange={handleChange("type")}
+            value={type}
+            name="type"
+            label="Type"
+          >
+            {Object.values(ProjectType).map((type) => (
+              <Option value={type}>{type}</Option>
+            ))}
+          </Select>
+          <Textarea
+            value={description}
+            onChange={handleChange("description")}
+            name="description"
+            label="Description"
           />
-        </HelperText>
-        <Select
-          onChange={handleChange("type")}
-          value={type}
-          name="type"
-          label="Type"
-        >
-          {Object.values(ProjectType).map((type) => (
-            <Option value={type}>{type}</Option>
-          ))}
-        </Select>
-        <Textarea
-          value={description}
-          onChange={handleChange("description")}
-          name="description"
-          label="Description"
-        />
+        </div>
       </DialogBody>
       <DialogFooter className="gap-2">
         <Button onClick={onClose} color="gray" variant="outlined">

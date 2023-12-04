@@ -14,7 +14,7 @@ import {
 } from "@/app/_components/drop-down";
 import { twMerge } from "tailwind-merge";
 
-const TABLE_HEAD = (showActions = false) => [
+const tableHeads = (showActions = false) => [
   { label: "#", className: "w-10" },
   { label: "Name" },
   { label: "Updated" },
@@ -34,11 +34,11 @@ export function TracksTable({
   userPermissions,
 }: TracksTableProps) {
   return (
-    <table className="w-full min-w-max table-auto overflow-x-auto text-left">
+    <table className="mt-4 w-full min-w-max table-auto overflow-x-auto text-left">
       <thead>
         <tr>
           {Object.values(
-            TABLE_HEAD(userPermissions?.includes(PermissionName.AddTracks)),
+            tableHeads(userPermissions?.includes(PermissionName.AddTracks)),
           ).map((head, index) => (
             <th
               key={index}
@@ -116,7 +116,7 @@ export function TracksTable({
                         Edit
                       </DropDownOption>
                       <DropDownOption
-                        onClick={onSelect(TracksTableDialogs.EDIT, track)}
+                        onClick={onSelect(TracksTableDialogs.DELETE, track)}
                         icon={MdDelete}
                       >
                         Delete

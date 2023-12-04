@@ -72,7 +72,7 @@ export function CommentReactions({
           </PopoverContent>
         </Popover>
       ))}
-      <ReactionButton commentId={commentId} />
+      <ReactionButton userReactions={reactions} commentId={commentId} />
     </div>
   );
 }

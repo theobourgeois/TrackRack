@@ -5,20 +5,18 @@ import {
     protectedProcedure,
     publicProcedure,
 } from "@/server/api/trpc";
+import { Comment, Reaction } from "@prisma/client";
 
-const ZEntityComment = z.union([
-    z.literal("project"),
-    z.literal("track"),
-])
+const ZEntityComment = z.union([z.literal("project"), z.literal("track")]);
 
 export const commentsRouter = createTRPCRouter({
     create: protectedProcedure
         .input(
             z.object({
-                id: z.string(),
+                entityId: z.string(),
                 parentId: z.string().optional(),
                 text: z.string(),
-                as: ZEntityComment
+                as: ZEntityComment,
             }),
         )
         .mutation(async ({ ctx, input }) => {
@@ -27,7 +25,7 @@ export const commentsRouter = createTRPCRouter({
                     parentId: input.parentId,
                     text: input.text,
                     createdById: ctx.session.user.id,
-                    projectId: input.id,
+                    projectId: input.entityId,
                 },
             });
         }),
@@ -55,16 +53,34 @@ export const commentsRouter = createTRPCRouter({
                 where: {
                     id: input.id,
                 },
+                include: {
+                    reactions: true,
+                    replies: {
+                        include: {
+                            reactions: true,
+                        },
+                    },
+                },
             });
         }),
-    getEntityComments: publicProcedure.
-        input(z.object({ id: z.string(), as: ZEntityComment }))
+    getEntityComments: publicProcedure
+        .input(
+            z.object({
+                id: z.string(),
+                as: ZEntityComment,
+                viewAmount: z.number().optional().default(10),
+                sortBy: z
+                    .union([z.literal("desc"), z.literal("asc")])
+                    .optional()
+                    .default("desc"),
+            }),
+        )
         .query(async ({ ctx, input }) => {
-            return ctx.db.comment.findMany({
+            const comments = await ctx.db.comment.findMany({
                 where: {
                     projectId: input.id,
-                    parentId: null,
                 },
+                take: input.viewAmount,
                 include: {
                     createdBy: true,
                     replies: {
@@ -87,9 +103,17 @@ export const commentsRouter = createTRPCRouter({
                     },
                 },
                 orderBy: {
-                    createdAt: "desc",
-                }
+                    createdAt: input.sortBy ?? "desc",
+                },
             });
+            return {
+                comments,
+                count: await ctx.db.comment.count({
+                    where: {
+                        projectId: input.id,
+                    },
+                }),
+            };
         }),
     addReaction: protectedProcedure
         .input(z.object({ commentId: z.string(), reaction: z.string() }))
