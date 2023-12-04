@@ -1,5 +1,4 @@
 import { api } from "@/trpc/server";
-import { ProjectRole } from "../../_utils/typing-utils/projects";
 import {
   Avatar,
   Button,
@@ -9,7 +8,7 @@ import {
   Typography,
 } from "../../_components/mtw-wrappers";
 import pluralize from "pluralize";
-import { User } from "@prisma/client";
+import { ProjectRoleName, User } from "@prisma/client";
 import Link from "next/link";
 import { ProfileCard } from "@/app/_components/profile-card";
 
@@ -36,7 +35,7 @@ function SidebarProfile({ name, avatar }: SidebarProfileProps) {
 
 interface ProfilesByPermissionsProps {
   users: User[];
-  role: ProjectRole;
+  role: ProjectRoleName;
 }
 
 function ProfilesByPermissions({ role, users }: ProfilesByPermissionsProps) {
@@ -67,8 +66,8 @@ export async function RightSidebar({ projectUrl }: { projectUrl: string }) {
         {Object.entries(users).map(([key, value]) => (
           <ProfilesByPermissions
             key={key}
-            role={key as ProjectRole}
-            users={value.map((user) => user.user)}
+            role={key as ProjectRoleName}
+            users={value.map((user) => user)}
           ></ProfilesByPermissions>
         ))}
       </div>

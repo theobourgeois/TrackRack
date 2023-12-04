@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
   // Further reading:
   // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -77,15 +77,64 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+enum PermissionName {
+  AddRemoveNonAdmin
+  AddRemoveAdmins
+  EditProjectInfo
+  DeleteAllTracksAndFiles
+  AddTracks
+  AddFiles
+  DeleteFilesMade
+  InviteGuests
+  AddComments
+  ViewProjectTracksAndFiles
+  DeleteProjects
+  DeleteComments
+}
+
+model Permission {
+  id            Int   @id @default(autoincrement())
+  name          PermissionName 
+  roles         ProjectRolePermissions[]
+}
+
+model ProjectRolePermissions {
+  id          String     @id @default(cuid())
+  roleId      Int
+  permissionId Int
+
+  role        ProjectRole       @relation(fields: [roleId], references: [id])
+  permission  Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+}
+
+enum ProjectRoleName {
+  Owner
+  Admin
+  Collaborator
+  Listener
+}
+
+model ProjectRole {
+  id       Int   @id @default(autoincrement())
+  name ProjectRoleName
+  users    ProjectUser[]
+  permissions ProjectRolePermissions[]
+}
+
+// Updating ProjectUser to include relation to Role
 model ProjectUser {
-  id        String @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   projectId String
-  role      String
+  roleId    Int
 
   user    User    @relation(fields: [userId], references: [id])
   project Project @relation(fields: [projectId], references: [id])
+  role    ProjectRole    @relation(fields: [roleId], references: [id])
 }
+
 
 model Project {
   id          String   @id @default(cuid())
@@ -97,6 +146,7 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  isPrivate Boolean @default(false)
   tracks   Track[]
   users    ProjectUser[]
   comments Comment[]
@@ -117,7 +167,7 @@ model Track {
 
   createdBy   User    @relation(fields: [createdById], references: [id])
   createdById String
-  project     Project @relation(fields: [projectId], references: [id])
+  project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId   String
 
   @@index([name])
@@ -134,7 +184,7 @@ model Reaction {
   createdById String
 
   // Comment relation
-  comment   Comment @relation(fields: [commentId], references: [id])
+  comment   Comment @relation(fields: [commentId], references: [id], onDelete: Cascade)
   commentId String
 
   @@index([createdById])
@@ -151,7 +201,7 @@ model Comment {
   createdById String
 
   // Project relation
-  project   Project @relation(fields: [projectId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId String
 
   // Self-relation to implement replies

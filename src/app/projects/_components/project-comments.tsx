@@ -10,15 +10,22 @@ import { AddComment } from "./add-comment";
 import { CommentWithUserAndReplies } from "@/app/_utils/typing-utils/comments";
 import { CommentComponent } from "./comment";
 import { getServerAuthSession } from "@/server/auth";
+import { PermissionName } from "@prisma/client";
 
 export async function ProjectComments({
   comments,
   projectId,
+  userPermissions,
 }: {
   comments: CommentWithUserAndReplies[];
   projectId: string;
+  userPermissions?: PermissionName[];
 }) {
   const session = await getServerAuthSession();
+  const noUserPermissions = !userPermissions?.length;
+
+  // don't show comments to users without permissions
+  if (noUserPermissions) return null;
 
   return (
     <div className="mt-4 flex flex-col gap-2">
@@ -43,17 +50,22 @@ export async function ProjectComments({
         </DropDown>
       </div>
       <div className="mb-4">
-        <AddComment
-          avatar={session?.user.image ?? ""}
-          as="project"
-          id={projectId}
-        />
+        {userPermissions?.includes(PermissionName.AddComments) && (
+          <AddComment
+            avatar={session?.user.image ?? ""}
+            as="project"
+            id={projectId}
+          />
+        )}
       </div>
       <div className="flex w-full flex-col gap-4">
         {comments.map(
           (comment) =>
             session && (
               <CommentComponent
+                canDeleteComments={userPermissions?.includes(
+                  PermissionName.DeleteComments,
+                )}
                 session={session}
                 key={comment.id}
                 comment={comment}

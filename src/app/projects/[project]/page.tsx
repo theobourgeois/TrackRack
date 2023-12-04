@@ -4,7 +4,8 @@ import { api } from "@/trpc/server";
 import { TracksTableWrapper } from "../_components/tracks-table-wrapper";
 import { ProjectComments } from "../_components/project-comments";
 import { ProjectHeader } from "../_components/project-header";
-import { Comment, Project, User } from "@prisma/client";
+import { Project } from "@prisma/client";
+import { getServerAuthSession } from "@/server/auth";
 
 export type ProjectFields = Pick<
   Project,
@@ -16,12 +17,17 @@ export default async function Home({
 }: {
   params: { project: string };
 }) {
+  const session = await getServerAuthSession();
   const project = await api.projects.get.query({
     projectUrl: params.project,
   });
   const projectComments = await api.comments.getEntityComments.query({
     id: project?.id ?? "",
     as: "project",
+  });
+  const userPermissions = await api.users.getProjectUserPermissions.query({
+    userId: session?.user.id ?? "",
+    projectId: project?.id ?? "",
   });
 
   return (
@@ -31,16 +37,22 @@ export default async function Home({
           id={project?.id ?? ""}
           name={project?.name ?? ""}
           description={project?.description ?? ""}
-          type={(project?.type ?? ProjectType.ALBUM) as ProjectType}
+          userPermissions={userPermissions}
+          type={project?.type as ProjectType}
           coverImage={project?.coverImage ?? ""}
           trackCount={project?.tracks.length ?? 0}
         />
         {project?.tracks && (
-          <TracksTableWrapper projectId={project.id} tracks={project.tracks} />
+          <TracksTableWrapper
+            projectId={project.id}
+            tracks={project.tracks}
+            userPermissions={userPermissions}
+          />
         )}
 
         {projectComments && (
           <ProjectComments
+            userPermissions={userPermissions}
             comments={projectComments}
             projectId={project?.id ?? ""}
           />

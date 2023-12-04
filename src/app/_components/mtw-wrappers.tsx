@@ -159,7 +159,15 @@ export function Progress(props: ComponentProps<typeof MProgress>): JSX.Element {
   return <MProgress {...props} />;
 }
 
-const PopoverContext = createContext({
+const PopoverContext = createContext<{
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  closeOnClick: boolean;
+  triggers?: {
+    onMouseEnter: () => void;
+    onMouseLeave: () => void;
+  };
+}>({
   open: false,
   setOpen: (open: boolean) => {},
   closeOnClick: true,
@@ -169,13 +177,32 @@ const PopoverContext = createContext({
 export function Popover({
   closeOnClick = true,
   hover = false,
+  delay,
   ...rest
-}: PopoverProps & { closeOnClick?: boolean; hover?: boolean }) {
+}: PopoverProps & { closeOnClick?: boolean; hover?: boolean; delay?: number }) {
   const [open, setOpen] = useState(false);
+  const [mouseLeft, setMouseLeft] = useState(false);
 
   const triggers = {
-    onMouseEnter: () => setOpen(true),
-    onMouseLeave: () => setOpen(false),
+    onMouseEnter: () => {
+      setMouseLeft(false);
+      if (delay) {
+        setTimeout(() => {
+          setOpen(!mouseLeft);
+          setMouseLeft((mouseLeft) => {
+            setOpen(!mouseLeft);
+            return mouseLeft;
+          });
+        }, delay);
+      } else {
+        setOpen(true);
+      }
+    },
+
+    onMouseLeave: () => {
+      setMouseLeft(true);
+      setOpen(false);
+    },
   };
 
   return (
@@ -190,7 +217,6 @@ export function Popover({
       <MPopover
         animate={{
           mount: { opacity: 1, scale: 1 },
-          unmount: { opacity: 1, scale: 1 },
         }}
         {...rest}
         handler={setOpen}

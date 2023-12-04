@@ -9,14 +9,17 @@ interface DropDownOptionProps {
   className?: string;
   href?: string;
   icon?: IconType;
+  hidden?: boolean;
 }
 export function DropDownOption({
   children,
   onClick,
   href,
   className,
+  hidden = false,
   icon: Icon,
 }: DropDownOptionProps) {
+  if (hidden) return null;
   return (
     <div
       onClick={onClick}

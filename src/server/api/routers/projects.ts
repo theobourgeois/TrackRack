@@ -7,7 +7,8 @@ import {
 } from "@/server/api/trpc";
 import { incrementName } from "@/app/_utils/db-utils";
 import { ProjectRole } from "@/app/_utils/typing-utils/projects";
-import { ProjectUser, User } from "@prisma/client";
+import { ProjectRoleName, ProjectUser, User } from "@prisma/client";
+
 
 export const projectsRouter = createTRPCRouter({
     get: publicProcedure
@@ -92,11 +93,19 @@ export const projectsRouter = createTRPCRouter({
                     createdById: ctx.session.user.id,
                 },
             });
+            if (!project) throw new Error("Project not created");
+
+            const ownerRoleId = await ctx.db.projectRole.findFirst({
+                where: {
+                    name: ProjectRoleName.Owner,
+                },
+            });
+            if (!ownerRoleId) throw new Error("Owner role not found");
 
             return ctx.db.projectUser.create({
                 data: {
                     userId: ctx.session.user.id,
-                    role: ProjectRole.ADMIN,
+                    roleId: ownerRoleId?.id,
                     projectId: project.id,
                 },
             });
@@ -104,27 +113,36 @@ export const projectsRouter = createTRPCRouter({
     projectUsersGroupedByRole: publicProcedure
         .input(z.object({ projectUrl: z.string() }))
         .query(async ({ ctx, input }) => {
-            const project = await ctx.db.project.findFirst({
+            const projectWithUsers = await ctx.db.project.findFirst({
                 where: {
                     urlName: input.projectUrl,
                 },
-            });
-            const projectUsers = await ctx.db.projectUser.findMany({
-                where: {
-                    projectId: project?.id,
-                },
                 include: {
-                    user: true,
+                    users: {
+                        include: {
+                            user: true,
+                            role: true,
+                        },
+                    },
                 },
             });
 
+            // Check if projectWithUsers is not null
+            if (!projectWithUsers) {
+                // Handle the case where the project is not found
+                throw new Error('Project not found');
+            }
+
+            // Extract the projectUsers array
+            const projectUsers = projectWithUsers.users;
+
             // Group users by role
             const groupedByRole = projectUsers.reduce<{
-                [key in ProjectRole]?: (ProjectUser & { user: User })[];
+                [key in ProjectRole]?: (typeof projectUsers[number]['user'])[];
             }>((group, user) => {
-                const role = user.role as ProjectRole;
+                const role = user.role.name as ProjectRole;
                 group[role] = group[role] || [];
-                group[role]?.push(user);
+                group[role]?.push(user.user);
                 return group;
             }, {});
 

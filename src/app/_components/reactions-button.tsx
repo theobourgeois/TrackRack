@@ -48,6 +48,7 @@ export function ReactionButton({ commentId }: ReactionButtonProps) {
           {isLoading && <Spinner color="indigo" />}
           {reactions.map((reaction) => (
             <span
+              key={reaction}
               onClick={handleChange(reaction)}
               className={twMerge(
                 "cursor-pointer text-2xl opacity-50 hover:opacity-100",

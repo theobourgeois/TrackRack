@@ -22,7 +22,7 @@ import { MdDelete, MdOutlineAddReaction } from "react-icons/md";
 import { useState } from "react";
 import { DeleteCommentDialog } from "./delete-comment-dialog";
 import { VscTriangleDown } from "react-icons/vsc";
-import { AddComment } from "./add-comment";
+import { AddComment, EditComment } from "./add-comment";
 import { ReactionButton } from "@/app/_components/reactions-button";
 import { CommentReactions } from "./comment-reactions";
 import { Session } from "next-auth";
@@ -37,6 +37,7 @@ type CommentComponentProps = {
   as: CommentType;
   session?: Session;
   parentId?: string;
+  canDeleteComments?: boolean;
 };
 
 export function CommentComponent({
@@ -45,9 +46,11 @@ export function CommentComponent({
   as,
   session,
   parentId,
+  canDeleteComments = false,
 }: CommentComponentProps) {
   const [dialog, setDialog] = useState<CommentDialogs | null>(null);
   const [isShowingReplies, setIsShowingReplies] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [isReplying, setIsReplying] = useState(false);
   const renderDialogs = () => {
     const dialogProps = {
@@ -85,50 +88,71 @@ export function CommentComponent({
                     {getDateString(comment.createdAt)}
                   </Typography>
                 </div>
-                <div className=" flex w-full items-center justify-between">
-                  <Typography variant="paragraph">{comment.text}</Typography>
-                  {session?.user.id === comment.createdBy.id && (
-                    <DropDown placement="bottom-start">
-                      <DropDownHandler>
-                        <div className="opacity-0 group-hover:opacity-100">
-                          <IconButton variant="text">
-                            <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-2xl " />
-                          </IconButton>
-                        </div>
-                      </DropDownHandler>
-                      <DropDownContent>
-                        <DropDownOption
-                          onClick={handleChangeDialog(CommentDialogs.DELETE)}
-                          icon={MdDelete}
-                        >
-                          Delete
-                        </DropDownOption>
-                        <DropDownOption icon={FaEdit}>Edit</DropDownOption>
-                      </DropDownContent>
-                    </DropDown>
-                  )}
-                </div>
-                {comment.reactions.length > 0 && (
-                  <div className="my-1">
-                    <CommentReactions
-                      commentId={comment.id}
-                      session={session}
-                      reactions={comment.reactions}
-                    />
-                  </div>
+                {isEditing ? (
+                  <EditComment
+                    onCancel={() => setIsEditing(false)}
+                    projectId={id}
+                    comment={comment.text}
+                  />
+                ) : (
+                  <>
+                    <div className=" flex w-full justify-between">
+                      <Typography variant="paragraph">
+                        {comment.text}
+                      </Typography>
+                      {(session?.user.id === comment.createdBy.id ||
+                        canDeleteComments) && (
+                        <DropDown placement="bottom-start">
+                          <DropDownHandler>
+                            <div className="opacity-0 group-hover:opacity-100">
+                              <IconButton variant="text">
+                                <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-2xl " />
+                              </IconButton>
+                            </div>
+                          </DropDownHandler>
+                          <DropDownContent>
+                            <DropDownOption
+                              onClick={handleChangeDialog(
+                                CommentDialogs.DELETE,
+                              )}
+                              icon={MdDelete}
+                            >
+                              Delete
+                            </DropDownOption>
+                            <DropDownOption
+                              onClick={() => setIsEditing(true)}
+                              icon={FaEdit}
+                            >
+                              Edit
+                            </DropDownOption>
+                          </DropDownContent>
+                        </DropDown>
+                      )}
+                    </div>
+                    {comment.reactions.length > 0 && (
+                      <div className="my-1">
+                        <CommentReactions
+                          commentId={comment.id}
+                          session={session}
+                          reactions={comment.reactions}
+                        />
+                      </div>
+                    )}
+                    <div className="flex w-full items-center gap-2">
+                      {comment.reactions.length <= 0 && (
+                        <ReactionButton commentId={comment.id} />
+                      )}
+
+                      <Typography
+                        onClick={() => setIsReplying(true)}
+                        className="cursor-pointer"
+                        variant="h6"
+                      >
+                        Reply
+                      </Typography>
+                    </div>
+                  </>
                 )}
-
-                <div className="flex w-full items-center gap-2">
-                  <ReactionButton commentId={comment.id} />
-
-                  <Typography
-                    onClick={() => setIsReplying(true)}
-                    className="cursor-pointer"
-                    variant="h6"
-                  >
-                    Reply
-                  </Typography>
-                </div>
               </div>
               {isReplying && (
                 <div className="mt-2">

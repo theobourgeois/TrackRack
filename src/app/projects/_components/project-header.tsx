@@ -1,21 +1,11 @@
 "use client";
-import {
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverHandler,
-  Tooltip,
-  Typography,
-} from "@/app/_components/mtw-wrappers";
-import { HiOutlineDotsVertical } from "react-icons/hi";
-import { IoPersonAdd } from "react-icons/io5";
+import { Typography } from "@/app/_components/mtw-wrappers";
 import { ProjectType } from "@/app/_utils/typing-utils/projects";
-import { CreateTrackDialog } from "./create-tracks-dialog";
 import { useState } from "react";
 import { MdModeEditOutline } from "react-icons/md";
 import { EditProjectDialog } from "./edit-project-dialog";
-import { Project } from "@prisma/client";
-import { ReadMoreText } from "@/app/_components/readmore-text";
+import { PermissionName } from "@prisma/client";
+import { twMerge } from "tailwind-merge";
 
 export enum ProjectHeaderDialogs {
   ADD_TRACK = "Add Track",
@@ -34,6 +24,7 @@ interface ProjectHeaderProps {
   coverImage: string;
   trackCount: number;
   id: string;
+  userPermissions?: PermissionName[];
 }
 
 export function ProjectHeader({
@@ -42,10 +33,13 @@ export function ProjectHeader({
   coverImage,
   description,
   trackCount,
+  userPermissions,
   id,
 }: ProjectHeaderProps) {
   const [dialog, setDialog] = useState<ProjectHeaderDialogs | null>(null);
-
+  const canEditProject = userPermissions?.includes(
+    PermissionName.EditProjectInfo,
+  );
   const handleOpenDialog = (dialog: ProjectHeaderDialogs) => () => {
     setDialog(dialog);
   };
@@ -55,6 +49,8 @@ export function ProjectHeader({
       open: true,
       onClose: () => setDialog(null),
     };
+    if (!canEditProject) return null;
+
     switch (dialog) {
       case ProjectHeaderDialogs.EDIT_PROJECT:
         return (
@@ -83,22 +79,33 @@ export function ProjectHeader({
             <img
               onClick={handleOpenDialog(ProjectHeaderDialogs.EDIT_PROJECT)}
               src={coverImage}
-              className="h-64 w-64 rounded-lg bg-indigo-500 object-cover object-center"
+              className={twMerge(
+                "h-56 w-56 rounded-lg bg-indigo-500 object-cover object-center",
+                canEditProject && "cursor-pointer",
+              )}
             ></img>
             <div className="flex flex-col justify-end">
               <div
                 onClick={handleOpenDialog(ProjectHeaderDialogs.EDIT_PROJECT)}
-                className="flex cursor-pointer flex-col justify-end"
+                className={twMerge(
+                  "flex flex-col justify-end",
+                  canEditProject && "cursor-pointer",
+                )}
               >
-                <Typography className="text-[70px] font-semibold">
+                <Typography className="text-[60px] font-semibold">
                   {name}
                 </Typography>
-                <Typography variant="lead">{description}</Typography>
+                <Typography className="text-lg">{description}</Typography>
                 <Typography variant="h4">{`${type} - ${trackCount} tracks`}</Typography>
               </div>
             </div>
           </div>
-          <MdModeEditOutline className="hidden text-4xl group-hover:block" />
+          {canEditProject && (
+            <MdModeEditOutline
+              onClick={handleOpenDialog(ProjectHeaderDialogs.EDIT_PROJECT)}
+              className="hidden cursor-pointer text-4xl group-hover:block"
+            />
+          )}
         </div>
       </div>
     </>

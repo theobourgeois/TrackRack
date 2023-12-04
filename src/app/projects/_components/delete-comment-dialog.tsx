@@ -9,6 +9,7 @@ import {
 import { DialogComponentProps } from "./project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import { useSnackBar } from "@/app/_providers/snackbar-provider";
 
 type DialogProps = {
   id: string;
@@ -20,13 +21,15 @@ export function DeleteCommentDialog({
   id,
 }: DialogComponentProps<DialogProps>) {
   const router = useRouter();
+  const { showErrorNotification } = useSnackBar();
   const { mutate, isLoading } = api.comments.delete.useMutation({
     onSuccess: () => {
       router.refresh();
       onClose();
     },
     onError: (err) => {
-      console.error("Error adding track:", err);
+      showErrorNotification("Error deleting comment");
+      console.error("Error deleting comment:", err);
     },
   });
 

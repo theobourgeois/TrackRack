@@ -1,5 +1,5 @@
 "use client";
-import { Track } from "@prisma/client";
+import { PermissionName, Track } from "@prisma/client";
 import { TracksTable } from "./tracks-table";
 import { useState } from "react";
 import {
@@ -29,16 +29,20 @@ export enum TracksTableDialogs {
   DELETE = "DELETE",
   ADD_TRACK = "ADD_TRACK",
 }
-export const TABLE_HEAD = ["#", "Name", "Updated", "Activity", "Actions"];
 
 type SortBy = "updatedAt" | "name";
 
 interface TracksTableProps {
   tracks: Track[];
   projectId: string;
+  userPermissions?: PermissionName[];
 }
 
-export function TracksTableWrapper({ tracks, projectId }: TracksTableProps) {
+export function TracksTableWrapper({
+  tracks,
+  projectId,
+  userPermissions,
+}: TracksTableProps) {
   const [dialog, setDialog] = useState<TracksTableDialogs | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>("updatedAt");
@@ -88,37 +92,36 @@ export function TracksTableWrapper({ tracks, projectId }: TracksTableProps) {
       <div className="mt-4 flex flex-col gap-2">
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
-            <Button
-              onClick={handleOpenDialog(TracksTableDialogs.ADD_TRACK)}
-              color="indigo"
-              variant="gradient"
-            >
-              + Add Track
-            </Button>
-            <Tooltip content="Invite user">
-              <div>
-                <IconButton variant="text">
-                  <IoPersonAdd className="cursor-pointer" size="30" />
-                </IconButton>
-              </div>
-            </Tooltip>
+            {userPermissions?.includes(PermissionName.AddTracks) && (
+              <Button
+                onClick={handleOpenDialog(TracksTableDialogs.ADD_TRACK)}
+                color="indigo"
+                variant="gradient"
+              >
+                + Add Track
+              </Button>
+            )}
 
-            <Popover placement="bottom-start">
-              <PopoverHandler>
+            {userPermissions?.includes(PermissionName.InviteGuests) && (
+              <Tooltip content="Invite user">
                 <div>
+                  <IconButton variant="text">
+                    <IoPersonAdd className="cursor-pointer" size="30" />
+                  </IconButton>
+                </div>
+              </Tooltip>
+            )}
+
+            {userPermissions?.includes(PermissionName.EditProjectInfo) && (
+              <DropDown placement="bottom-start">
+                <DropDownHandler>
                   <IconButton variant="text">
                     <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-4xl" />
                   </IconButton>
-                </div>
-              </PopoverHandler>
-              <PopoverContent>
-                <div className="flex flex-col gap-2">
-                  <Typography>Add Track</Typography>
-                  <Typography>Test</Typography>
-                  <Typography>Test</Typography>
-                </div>
-              </PopoverContent>
-            </Popover>
+                </DropDownHandler>
+                <DropDownContent>w</DropDownContent>
+              </DropDown>
+            )}
           </div>
           <div className="flex items-center">
             <DropDown placement="bottom-end">
@@ -140,7 +143,11 @@ export function TracksTableWrapper({ tracks, projectId }: TracksTableProps) {
             </DropDown>
           </div>
         </div>
-        <TracksTable onSelect={handleOpenDialog} tracks={filteredTracks} />
+        <TracksTable
+          userPermissions={userPermissions}
+          onSelect={handleOpenDialog}
+          tracks={filteredTracks}
+        />
       </div>
     </>
   );

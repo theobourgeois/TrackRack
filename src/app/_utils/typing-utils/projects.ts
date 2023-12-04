@@ -1,7 +1,7 @@
 export enum ProjectRole {
     ADMIN = 'Admin',
     COLLABORATOR = 'Collaborator',
-    GUEST = 'Guest',
+    LISTENER = 'Listener',
 }
 
 export enum ProjectType {

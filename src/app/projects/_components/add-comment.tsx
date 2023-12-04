@@ -5,11 +5,14 @@ import {
   Spinner,
   Textarea,
 } from "@/app/_components/mtw-wrappers";
+import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { getNewID } from "@/app/_utils/misc-utils";
 import { CommentType } from "@/app/_utils/typing-utils/comments";
 import { api } from "@/trpc/react";
+import { TextareaProps } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 
 type AddCommentProps = {
   id: string;
@@ -29,7 +32,7 @@ export function AddComment({
   onCancel,
   parent,
 }: AddCommentProps) {
-  const textareaId = getNewID();
+  const { showErrorNotification } = useSnackBar();
   const [comment, setComment] = useState(
     Boolean(parent) ? `@${parent?.username} ` : "",
   );
@@ -42,21 +45,10 @@ export function AddComment({
       onCancel?.(comment);
       router.refresh();
     },
+    onError: () => {
+      showErrorNotification("Something went wrong, please try again.");
+    },
   });
-
-  // Auto resize textarea. ref on text area not working, that's why we use id
-  useEffect(() => {
-    const textarea = document.getElementById(
-      "comment-textarea-" + textareaId,
-    ) as HTMLTextAreaElement;
-    if (!textarea) return;
-    if (Boolean(parent)) {
-      textarea.focus();
-      textarea.setSelectionRange(comment.length, comment.length);
-    }
-    textarea.style.height = "auto"; // Reset height to allow shrink
-    textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
-  }, [comment]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setComment(e.target.value);
@@ -84,14 +76,12 @@ export function AddComment({
     <div className="flex flex-col items-end gap-2">
       <div className="flex w-full gap-2">
         <Avatar size="sm" src={avatar} />
-        <Textarea
+        <AutoResizeTextarea
           autoFocus={Boolean(parent)}
-          id={"comment-textarea-" + textareaId}
-          className="!min-h-[auto]"
           onChange={handleChange}
           value={comment}
           onFocus={handleFocus}
-          label="Add a comment"
+          label={"Add a comment"}
         />
       </div>
       {(isCommenting || Boolean(parent)) && (
@@ -109,6 +99,91 @@ export function AddComment({
           </Button>
         </div>
       )}
+    </div>
+  );
+}
+
+function AutoResizeTextarea(props: TextareaProps) {
+  const textareaId = getNewID();
+
+  // Auto resize textarea. ref on text area not working, that's why we use id
+  useEffect(() => {
+    const textarea = document.getElementById(
+      "comment-textarea-" + textareaId,
+    ) as HTMLTextAreaElement;
+    if (!textarea) return;
+    if (!props.value) return;
+    const val = props.value as string;
+    if (Boolean(parent)) {
+      textarea.focus();
+      textarea.setSelectionRange(val.length, val.length);
+    }
+    textarea.style.height = "auto"; // Reset height to allow shrink
+    textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
+  }, [props.value]);
+
+  return (
+    <Textarea
+      ref={undefined}
+      {...props}
+      id={"comment-textarea-" + textareaId}
+      className={twMerge("!min-h-[auto]", props.className)}
+    />
+  );
+}
+
+interface EditComment {
+  projectId: string;
+  onCancel: () => void;
+  comment: string;
+}
+export function EditComment({ projectId, onCancel, comment }: EditComment) {
+  const { showErrorNotification } = useSnackBar();
+  const [text, setText] = useState(comment);
+  const { mutate, isLoading } = api.comments.update.useMutation({
+    onSuccess: () => {
+      onCancel();
+    },
+    onError: () => {
+      showErrorNotification("Something went wrong, please try again.");
+    },
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    mutate({
+      id: projectId,
+      text,
+    });
+  };
+
+  return (
+    <div className="flex flex-col items-end gap-2">
+      <div className="flex w-full gap-2">
+        <AutoResizeTextarea
+          autoFocus
+          onChange={handleChange}
+          value={text}
+          label={"Edit comment"}
+        />
+      </div>
+
+      <div className="flex flex-shrink-0 gap-2">
+        <Button size="sm" onClick={onCancel} variant="outlined">
+          Cancel
+        </Button>
+        <Button
+          disabled={comment === "" || isLoading}
+          onClick={handleSubmit}
+          size="sm"
+          color="indigo"
+        >
+          {isLoading ? <Spinner color="indigo" /> : "Save"}
+        </Button>
+      </div>
     </div>
   );
 }
