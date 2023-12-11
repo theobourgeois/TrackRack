@@ -5,29 +5,29 @@ import { useState } from "react";
 import {
   Button,
   IconButton,
-  Popover,
-  PopoverContent,
-  PopoverHandler,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
   Tooltip,
-  Typography,
 } from "@/app/_components/mtw-wrappers";
 import { DeleteTrackDialog } from "./delete-track-dialog";
 import { EditTrackDialog } from "./edit-track-table";
-import { MdOutlineSort } from "react-icons/md";
-import { DropDownOption } from "@/app/_components/popover-option";
+import { MdDelete, MdOutlineSort } from "react-icons/md";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { IoPersonAdd } from "react-icons/io5";
 import { CreateTrackDialog } from "./create-tracks-dialog";
-import {
-  DropDown,
-  DropDownContent,
-  DropDownHandler,
-} from "@/app/_components/drop-down";
+import { ChangeProjectPrivacyDialog } from "../projects/change-project-privacy-dialog";
+import { FaLock, FaLockOpen } from "react-icons/fa";
+import { InviteUsersDialog } from "../invite/invite-users-dialog";
+import { Session } from "next-auth";
 
 export enum TracksTableDialogs {
   EDIT = "EDIT",
   DELETE = "DELETE",
   ADD_TRACK = "ADD_TRACK",
+  CHANGE_PRIVACY = "CHANGE_PRIVACY",
+  INVITE_USERS = "INVITE_USERS",
 }
 
 type SortBy = "updatedAt" | "name";
@@ -36,12 +36,16 @@ interface TracksTableProps {
   tracks: Track[];
   projectId: string;
   userPermissions?: PermissionName[];
+  isPrivate: boolean;
+  session?: Session | null;
 }
 
 export function TracksTableWrapper({
   tracks,
   projectId,
+  isPrivate,
   userPermissions,
+  session,
 }: TracksTableProps) {
   const [dialog, setDialog] = useState<TracksTableDialogs | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
@@ -83,6 +87,26 @@ export function TracksTableWrapper({
     switch (dialog) {
       case TracksTableDialogs.ADD_TRACK:
         return <CreateTrackDialog {...defaultProps} projectId={projectId} />;
+      case TracksTableDialogs.CHANGE_PRIVACY:
+        return (
+          <ChangeProjectPrivacyDialog
+            {...defaultProps}
+            projectId={projectId}
+            isPrivate={isPrivate}
+          />
+        );
+      case TracksTableDialogs.INVITE_USERS:
+        return (
+          userPermissions &&
+          session && (
+            <InviteUsersDialog
+              {...defaultProps}
+              session={session}
+              userPermissions={userPermissions}
+              projectId={projectId}
+            />
+          )
+        );
     }
   };
 
@@ -105,7 +129,10 @@ export function TracksTableWrapper({
             {userPermissions?.includes(PermissionName.InviteGuests) && (
               <Tooltip content="Invite user">
                 <div>
-                  <IconButton variant="text">
+                  <IconButton
+                    onClick={handleOpenDialog(TracksTableDialogs.INVITE_USERS)}
+                    variant="text"
+                  >
                     <IoPersonAdd className="cursor-pointer" size="30" />
                   </IconButton>
                 </div>
@@ -113,34 +140,42 @@ export function TracksTableWrapper({
             )}
 
             {userPermissions?.includes(PermissionName.EditProjectInfo) && (
-              <DropDown closeOnClick placement="bottom-start">
-                <DropDownHandler>
+              <Menu placement="bottom-start">
+                <MenuHandler>
                   <IconButton variant="text">
                     <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-4xl" />
                   </IconButton>
-                </DropDownHandler>
-                <DropDownContent>w</DropDownContent>
-              </DropDown>
+                </MenuHandler>
+                <MenuList>
+                  <MenuItem icon={<MdDelete size="15" />}>
+                    Delete Project
+                  </MenuItem>
+                  <MenuItem
+                    onClick={handleOpenDialog(
+                      TracksTableDialogs.CHANGE_PRIVACY,
+                    )}
+                    icon={isPrivate ? <FaLockOpen /> : <FaLock />}
+                  >
+                    {isPrivate ? "Make public" : "Make private"}
+                  </MenuItem>
+                </MenuList>
+              </Menu>
             )}
           </div>
           <div className="flex items-center">
-            <DropDown placement="bottom-end">
-              <DropDownHandler>
+            <Menu placement="bottom-end">
+              <MenuHandler>
                 <div>
                   <Button className="flex items-center gap-2" variant="text">
                     <MdOutlineSort size="20" /> Sort by
                   </Button>
                 </div>
-              </DropDownHandler>
-              <DropDownContent>
-                <DropDownOption onClick={handleSortBy("updatedAt")}>
-                  Latest
-                </DropDownOption>
-                <DropDownOption onClick={handleSortBy("name")}>
-                  Name
-                </DropDownOption>
-              </DropDownContent>
-            </DropDown>
+              </MenuHandler>
+              <MenuList>
+                <MenuItem onClick={handleSortBy("updatedAt")}>Latest</MenuItem>
+                <MenuItem onClick={handleSortBy("name")}>Name</MenuItem>
+              </MenuList>
+            </Menu>
           </div>
         </div>
         <TracksTable

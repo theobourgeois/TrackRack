@@ -17,7 +17,6 @@ import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { HelperText } from "@/app/_components/input-helper-text";
 import { ProjectType } from "@/app/_utils/typing-utils/projects";
-import { Project } from "@prisma/client";
 import { useState } from "react";
 import { ImageInput } from "@/app/_components/image-uploader";
 

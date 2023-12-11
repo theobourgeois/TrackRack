@@ -1,11 +1,13 @@
-import { RightSidebar } from "@/app/projects/_components/right-sidebar";
+import { RightSidebar } from "@/app/projects/_components/projects/right-sidebar";
 import { ProjectType } from "@/app/_utils/typing-utils/projects";
 import { api } from "@/trpc/server";
-import { TracksTableWrapper } from "../_components/tracks-table-wrapper";
-import { ProjectComments } from "../_components/project-comments";
-import { ProjectHeader } from "../_components/project-header";
+import { TracksTableWrapper } from "../_components/tracks/tracks-table-wrapper";
+import { ProjectComments } from "../_components/comments/project-comments";
+import { ProjectHeader } from "../_components/projects/project-header";
 import { Project } from "@prisma/client";
 import { getServerAuthSession } from "@/server/auth";
+import { ProjectNotFound } from "../_components/projects/project-not-found";
+import { PrivateProject } from "../_components/projects/private-project";
 
 export type ProjectFields = Pick<
   Project,
@@ -34,10 +36,14 @@ export default async function Home({
     projectId: project?.id ?? "",
   });
 
+  if (!project) return <ProjectNotFound />;
+  if (project.isPrivate && !userPermissions?.length) return <PrivateProject />;
+
   return (
     <main className="flex h-screen">
       <div className="flex-grow overflow-y-auto px-12 pb-32 pt-12">
         <ProjectHeader
+          isPrivate={project.isPrivate}
           id={project?.id ?? ""}
           name={project?.name ?? ""}
           description={project?.description ?? ""}
@@ -48,9 +54,11 @@ export default async function Home({
         />
         {project?.tracks && (
           <TracksTableWrapper
+            isPrivate={project.isPrivate}
             projectId={project.id}
             tracks={project.tracks}
             userPermissions={userPermissions}
+            session={session}
           />
         )}
 

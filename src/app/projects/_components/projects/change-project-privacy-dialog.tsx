@@ -1,6 +1,5 @@
 "use client";
 import {
-  Alert,
   Button,
   Dialog,
   DialogFooter,
@@ -11,42 +10,44 @@ import { DialogComponentProps } from "./project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
-import { useContext } from "react";
-import { DeletedCommentContext } from "../_providers/deleted-comment-provider";
 
 type DialogProps = {
-  id: string;
+  projectId: string;
+  isPrivate: boolean;
 };
 
-export function DeleteCommentDialog({
+export function ChangeProjectPrivacyDialog({
   open,
   onClose,
-  id,
+  projectId,
+  isPrivate,
 }: DialogComponentProps<DialogProps>) {
   const router = useRouter();
   const { showErrorNotification } = useSnackBar();
-  const { setComment } = useContext(DeletedCommentContext);
-  const { mutate, isLoading } = api.comments.delete.useMutation({
-    onSuccess: (comment) => {
+  const { mutate, isLoading } = api.projects.changePrivacy.useMutation({
+    onSuccess: () => {
       router.refresh();
-      setComment(comment);
       onClose();
     },
     onError: (err) => {
-      showErrorNotification("Error deleting comment");
-      console.error("Error deleting comment:", err);
+      showErrorNotification("Error changing privacy");
+      console.error("Error changing privacy:", err);
     },
   });
 
   const handleSubmit = () => {
     mutate({
-      id,
+      projectId,
+      isPrivate: !isPrivate,
     });
   };
 
   return (
     <Dialog open={open} handler={onClose}>
-      <DialogHeader>Are you sure you want to delete this comment?</DialogHeader>
+      <DialogHeader>
+        Are you sure you want to make this project{" "}
+        {isPrivate ? "public" : "private"}?
+      </DialogHeader>
       <DialogFooter className="gap-2">
         <Button onClick={onClose} color="gray" variant="outlined">
           Cancel
@@ -58,7 +59,7 @@ export function DeleteCommentDialog({
           color="indigo"
           variant="gradient"
         >
-          {isLoading ? <Spinner color="indigo" /> : "Delete Comment"}
+          {isLoading ? <Spinner color="indigo" /> : "Yes"}
         </Button>
       </DialogFooter>
     </Dialog>

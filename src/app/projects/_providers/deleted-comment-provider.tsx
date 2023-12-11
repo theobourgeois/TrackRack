@@ -1,10 +1,9 @@
 "use client";
-import { CommentsWithReactionsAndReplies } from "@/app/_utils/typing-utils/comments";
-import { createContext, useState } from "react";
+import { Dispatch, createContext, useState } from "react";
 
 export const DeletedCommentContext = createContext<{
-  comment: CommentsWithReactionsAndReplies | null;
-  setComment: (comment: CommentsWithReactionsAndReplies | null) => void;
+  hiddenCommentId: string | null;
+  setHiddenCommentId: Dispatch<string | null>;
 }>(null!);
 
 export function DeletedCommentProvider({
@@ -12,11 +11,15 @@ export function DeletedCommentProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [comment, setComment] =
-    useState<CommentsWithReactionsAndReplies | null>(null);
+  const [hiddenCommentId, setHiddenCommentId] = useState<string | null>(null);
 
   return (
-    <DeletedCommentContext.Provider value={{ comment, setComment }}>
+    <DeletedCommentContext.Provider
+      value={{
+        hiddenCommentId,
+        setHiddenCommentId,
+      }}
+    >
       {children}
     </DeletedCommentContext.Provider>
   );

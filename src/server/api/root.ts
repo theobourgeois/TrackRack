@@ -3,6 +3,7 @@ import { tracksRouter } from "./routers/tracks";
 import { projectsRouter } from "./routers/projects";
 import { commentsRouter } from "./routers/comments";
 import { usersRouter } from "./routers/users";
+import { invitesRouter } from "./routers/invites";
 
 /**
  * This is the primary router for your server.
@@ -14,6 +15,7 @@ export const appRouter = createTRPCRouter({
   projects: projectsRouter,
   comments: commentsRouter,
   users: usersRouter,
+  invites: invitesRouter,
 });
 
 // export type definition of API

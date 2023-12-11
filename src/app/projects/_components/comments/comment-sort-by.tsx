@@ -1,11 +1,11 @@
 "use client";
 import {
-  DropDown,
-  DropDownHandler,
-  DropDownContent,
-} from "@/app/_components/drop-down";
-import { Button } from "@/app/_components/mtw-wrappers";
-import { DropDownOption } from "@/app/_components/popover-option";
+  Button,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
+} from "@/app/_components/mtw-wrappers";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { MdOutlineSort } from "react-icons/md";
 
@@ -24,18 +24,18 @@ export function CommentSortBy() {
   };
 
   return (
-    <DropDown placement="bottom-end">
-      <DropDownHandler>
+    <Menu placement="bottom-end">
+      <MenuHandler>
         <div>
           <Button className="flex items-center gap-2" variant="text" size="sm">
             <MdOutlineSort size="20" /> Sort by
           </Button>
         </div>
-      </DropDownHandler>
-      <DropDownContent>
-        <DropDownOption onClick={handleSortBy("desc")}>Latest</DropDownOption>
-        <DropDownOption onClick={handleSortBy("asc")}>Oldest</DropDownOption>
-      </DropDownContent>
-    </DropDown>
+      </MenuHandler>
+      <MenuList>
+        <MenuItem onClick={handleSortBy("desc")}>Latest</MenuItem>
+        <MenuItem onClick={handleSortBy("asc")}>Oldest</MenuItem>
+      </MenuList>
+    </Menu>
   );
 }

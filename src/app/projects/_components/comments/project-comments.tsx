@@ -6,7 +6,8 @@ import { getServerAuthSession } from "@/server/auth";
 import { PermissionName } from "@prisma/client";
 import { ViewMoreComments } from "./view-more-comments";
 import { CommentSortBy } from "./comment-sort-by";
-import { DeletedCommentProvider } from "../_providers/deleted-comment-provider";
+import { DeletedCommentProvider } from "../../_providers/deleted-comment-provider";
+import { UndoCommentChange } from "./undo-comment-change";
 
 export async function ProjectComments({
   comments,
@@ -41,26 +42,21 @@ export async function ProjectComments({
         )}
       </div>
       <div className="flex w-full flex-col gap-4">
-        <DeletedCommentProvider>
-          <>
-            {/* <UndoCommentChange as="project" /> */}
-            {comments.map(
-              (comment) =>
-                session && (
-                  <CommentComponent
-                    canDeleteComments={userPermissions?.includes(
-                      PermissionName.DeleteComments,
-                    )}
-                    session={session}
-                    key={comment.id}
-                    comment={comment}
-                    id={projectId}
-                    as="project"
-                  />
-                ),
-            )}
-          </>
-        </DeletedCommentProvider>
+        {comments.map(
+          (comment) =>
+            session && (
+              <CommentComponent
+                canDeleteComments={userPermissions?.includes(
+                  PermissionName.DeleteComments,
+                )}
+                session={session}
+                key={comment.id}
+                comment={comment}
+                id={projectId}
+                as="project"
+              />
+            ),
+        )}
       </div>
       <div className="mt-4 flex justify-center">
         <ViewMoreComments commentCount={commentCount} />

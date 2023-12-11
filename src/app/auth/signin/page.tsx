@@ -17,7 +17,7 @@ type ProviderData = {
   };
 };
 
-const providerData: ProviderData = {
+export const providerData: ProviderData = {
   discord: {
     icon: <FaDiscord size="20" />,
     color: "indigo",
@@ -30,12 +30,11 @@ const providerData: ProviderData = {
 
 export default async function Login() {
   const providers = (await getProviders()) ?? [];
-  console.log(providers);
   return (
     <div className="flex h-screen w-screen items-center justify-center drop-shadow-sm">
       <div className="flex flex-col gap-4 rounded-lg bg-blue-gray-50/50 p-8">
         <Typography variant="h2">
-          Welcome to Track<span className="text-indigo-500">Rack</span>
+          Sign in to Track<span className="text-indigo-500">Rack</span>
         </Typography>
         <SigninCredentials />
         <Typography variant="h5" className="text-center">

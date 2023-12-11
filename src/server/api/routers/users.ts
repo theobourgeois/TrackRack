@@ -3,28 +3,9 @@ import {
     createTRPCRouter,
     publicProcedure,
 } from "@/server/api/trpc";
+import bcrypt from "bcrypt";
 
 export const usersRouter = createTRPCRouter({
-    projectUsers: publicProcedure
-        .input(z.object({ project: z.string(), user: z.string() }))
-        .query(async ({ ctx, input }) => {
-            const user = await ctx.db.user.findFirst({
-                where: {
-                    name: input.user,
-                },
-            });
-            const project = await ctx.db.project.findFirst({
-                where: {
-                    name: input.project,
-                    createdById: user?.id,
-                },
-            });
-            return ctx.db.projectUser.findMany({
-                where: {
-                    projectId: project?.id,
-                },
-            });
-        }),
     getProjectUserPermissions: publicProcedure.input(
         z.object({ projectId: z.string(), userId: z.string() })
     ).query(async ({ ctx, input }) => {
@@ -67,7 +48,7 @@ export const usersRouter = createTRPCRouter({
                 },
             });
         }),
-    userByEmail: publicProcedure.
+    userByEmailAndPassword: publicProcedure.
         input(z.object({ email: z.string() }))
         .query(async ({ ctx, input }) => {
             return ctx.db.user.findFirst({
@@ -76,4 +57,34 @@ export const usersRouter = createTRPCRouter({
                 },
             });
         }),
+    get: publicProcedure
+        .input(z.object({ id: z.string().optional(), email: z.string().optional(), name: z.string().optional() }))
+        .query(async ({ ctx, input }) => {
+            return ctx.db.user.findFirst({
+                where: {
+                    id: input.id,
+                    email: input.email,
+                    name: input.name,
+                },
+            });
+        }),
+    create: publicProcedure
+        .input(
+            z.object({
+                email: z.string(),
+                name: z.string(),
+                password: z.string(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const hashedPassword = await bcrypt.hash(input.password, 10);
+            return ctx.db.user.create({
+                data: {
+                    email: input.email,
+                    name: input.name,
+                    hashedPassword,
+                },
+            });
+        }),
+
 });

@@ -1,16 +1,11 @@
 "use client";
-
-import {
-  Alert,
-  Button,
-  Input,
-  Typography,
-} from "@/app/_components/mtw-wrappers";
+import { Button, Input, Typography } from "@/app/_components/mtw-wrappers";
 import { color } from "@material-tailwind/react/types/components/alert";
 import { BuiltInProviderType } from "next-auth/providers/index";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { FaEye } from "react-icons/fa";
 import { FiAlertCircle } from "react-icons/fi";
 
 interface ProviderSigninButtonProps {
@@ -36,10 +31,18 @@ export function ProviderSigninButton({
 }
 
 export function SigninCredentials() {
-  const [email, setEmail] = useState("");
+  const searchParams = useSearchParams();
+  const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [label, setLabel] = useState("");
   const router = useRouter();
+  const submitDisabled = !email || !password;
+
+  useEffect(() => {
+    setLabel("");
+  }, [email, password]);
+
   const handleSignIn = () => {
     signIn("credentials", {
       email,
@@ -47,13 +50,23 @@ export function SigninCredentials() {
       redirect: false,
     }).then((res) => {
       if (res?.error) {
-        setLabel("User not found.");
+        setLabel("Invalid email or password");
       } else {
+        const invite = searchParams.get("invite");
+        if (invite) {
+          router.push(`/project-invite/${invite}?accept=true`);
+          return;
+        }
         router.push("/");
         setLabel("");
       }
     });
   };
+
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <>
       <form className="flex flex-col gap-2">
@@ -65,15 +78,21 @@ export function SigninCredentials() {
         <Input
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          type="password"
+          type={showPassword ? "text" : "password"}
           label="password"
+          icon={
+            <FaEye
+              className="cursor-pointer hover:text-indigo-500"
+              onClick={toggleShowPassword}
+            />
+          }
         />
         <Typography variant="small">Forgot your password?</Typography>
-        <Button onClick={handleSignIn} color="indigo">
+        <Button disabled={submitDisabled} onClick={handleSignIn} color="indigo">
           Sign in
         </Button>
         {label && (
-          <div className="flex h-12 items-center justify-center gap-1 rounded-lg bg-blue-gray-100/50 p-2 text-base">
+          <div className="flex h-10 items-center justify-center gap-1 rounded-lg bg-red-300 p-2  text-sm text-white">
             <FiAlertCircle />
             {label}
           </div>

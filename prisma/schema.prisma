@@ -53,20 +53,43 @@ model Session {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Invite {
+  id        String      @id @default(cuid())
+  email     String
+  projectId String
+  role      ProjectRoleName @default(Collaborator)
+  expires   DateTime
+}
+
+model Follower {
+  id           String   @id @default(cuid())
+  followerId   String   // ID of the user who is following
+  followingId  String   // ID of the user being followed
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  follower     User     @relation("FollowerToUser", fields: [followerId], references: [id])
+  following    User     @relation("FollowingToUser", fields: [followingId], references: [id])
+}
+
 model User {
-  id            String        @id @default(cuid())
-  name          String?
-  email         String?       @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  posts         Post[]
-  projects      Project[]
-  projectUsers  ProjectUser[]
-  comments      Comment[]
-  tracks        Track[]
-  reaction      Reaction[]
+  id             String    @id @default(cuid())
+  name           String?
+  email          String?   @unique
+  emailVerified  DateTime?
+  image          String?
+  hashedPassword String? // @db.Text
+
+  accounts     Account[]
+  sessions     Session[]
+  posts        Post[]
+  projects     Project[]
+  projectUsers ProjectUser[]
+  comments     Comment[]
+  tracks       Track[]
+  reaction     Reaction[]
+  followers    Follower[] @relation("FollowerToUser")
+  followings   Follower[] @relation("FollowingToUser")
 }
 
 model VerificationToken {
@@ -93,18 +116,18 @@ enum PermissionName {
 }
 
 model Permission {
-  id            Int   @id @default(autoincrement())
-  name          PermissionName 
-  roles         ProjectRolePermissions[]
+  id    Int                      @id @default(autoincrement())
+  name  PermissionName
+  roles ProjectRolePermissions[]
 }
 
 model ProjectRolePermissions {
-  id          String     @id @default(cuid())
-  roleId      Int
+  id           String @id @default(cuid())
+  roleId       Int
   permissionId Int
 
-  role        ProjectRole       @relation(fields: [roleId], references: [id])
-  permission  Permission @relation(fields: [permissionId], references: [id])
+  role       ProjectRole @relation(fields: [roleId], references: [id])
+  permission Permission  @relation(fields: [permissionId], references: [id])
 
   @@unique([roleId, permissionId])
 }
@@ -117,24 +140,23 @@ enum ProjectRoleName {
 }
 
 model ProjectRole {
-  id       Int   @id @default(autoincrement())
-  name ProjectRoleName
-  users    ProjectUser[]
+  id          Int                      @id @default(autoincrement())
+  name        ProjectRoleName
+  users       ProjectUser[]
   permissions ProjectRolePermissions[]
 }
 
 // Updating ProjectUser to include relation to Role
 model ProjectUser {
-  id        String   @id @default(cuid())
+  id        String @id @default(cuid())
   userId    String
   projectId String
   roleId    Int
 
-  user    User    @relation(fields: [userId], references: [id])
-  project Project @relation(fields: [projectId], references: [id])
-  role    ProjectRole    @relation(fields: [roleId], references: [id])
+  user    User        @relation(fields: [userId], references: [id])
+  project Project     @relation(fields: [projectId], references: [id])
+  role    ProjectRole @relation(fields: [roleId], references: [id])
 }
-
 
 model Project {
   id          String   @id @default(cuid())
@@ -146,10 +168,10 @@ model Project {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  isPrivate Boolean @default(false)
-  tracks   Track[]
-  users    ProjectUser[]
-  comments Comment[]
+  isPrivate Boolean       @default(false)
+  tracks    Track[]
+  users     ProjectUser[]
+  comments  Comment[]
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
@@ -205,9 +227,9 @@ model Comment {
   projectId String
 
   // Self-relation to implement replies
-  parentId String?    @map("parent_id")
-  parent   Comment?   @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
-  replies  Comment[]  @relation("CommentToComment")
+  parentId  String?    @map("parent_id")
+  parent    Comment?   @relation("CommentToComment", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[]  @relation("CommentToComment")
   reactions Reaction[]
 
   @@index([createdById])

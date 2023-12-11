@@ -2,21 +2,33 @@
 import { Alert, Button } from "@/app/_components/mtw-wrappers";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { api } from "@/trpc/react";
-import { Comment } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useRef } from "react";
 import { FaUndo } from "react-icons/fa";
 import { twMerge } from "tailwind-merge";
-import { DeletedCommentContext } from "../_providers/deleted-comment-provider";
-import { CommentType } from "@/app/_utils/typing-utils/comments";
+import { DeletedCommentContext } from "../../_providers/deleted-comment-provider";
 
 const UNDO_TIMER = 5000;
 
-export function UndoCommentChange({ as }: { as: CommentType }) {
-  const { comment, setComment } = useContext(DeletedCommentContext);
+export function UndoCommentChange() {
+  const { hiddenCommentId, setHiddenCommentId } = useContext(
+    DeletedCommentContext,
+  );
   const router = useRouter();
+  const changesUndone = useRef(false);
   const { showErrorNotification, showSuccessNotification } = useSnackBar();
-  const { mutate } = api.comments.create.useMutation({
+  const deleteComment = api.comments.delete.useMutation({
+    onSuccess: () => {
+      router.refresh();
+      showSuccessNotification("Comment deleted");
+    },
+    onError: (e) => {
+      console.error("Error updating comment:", e);
+      showErrorNotification("Error undoing changes");
+    },
+  });
+
+  const undoComment = api.comments.hideShow.useMutation({
     onSuccess: () => {
       router.refresh();
       showSuccessNotification("Comment undone");
@@ -28,25 +40,33 @@ export function UndoCommentChange({ as }: { as: CommentType }) {
   });
 
   useEffect(() => {
-    if (!comment) return;
+    if (!hiddenCommentId) return;
     // hide undo button after UNDO_TIMER seconds
     const timer = setTimeout(() => {
-      setComment(null);
+      if (changesUndone.current) return;
+      deleteComment.mutate({
+        id: hiddenCommentId,
+      });
+      setHiddenCommentId(null);
     }, UNDO_TIMER);
     return () => clearTimeout(timer);
-  }, [comment]);
+  }, [hiddenCommentId]);
 
   const handleUndo = () => {
-    if (!comment) return;
-    setComment(null);
-    mutate({});
+    if (!hiddenCommentId) return;
+    changesUndone.current = true;
+    setHiddenCommentId(null);
+    undoComment.mutate({
+      id: hiddenCommentId,
+      hide: false,
+    });
   };
 
   return (
     <div
       className={twMerge(
         "fixed bottom-2 mx-auto flex w-screen translate-y-0 justify-center transition-transform",
-        !comment ? "translate-y-40" : "translate-y-0",
+        !hiddenCommentId ? "translate-y-40" : "translate-y-0",
       )}
     >
       <Alert
@@ -59,6 +79,7 @@ export function UndoCommentChange({ as }: { as: CommentType }) {
             size="sm"
             className="!absolute right-3 top-3"
             onClick={handleUndo}
+            disabled={undoComment.isLoading}
           >
             Undo
           </Button>

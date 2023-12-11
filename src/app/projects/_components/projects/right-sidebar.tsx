@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverHandler,
   Typography,
-} from "../../_components/mtw-wrappers";
+} from "../../../_components/mtw-wrappers";
 import pluralize from "pluralize";
 import { ProjectRoleName, User } from "@prisma/client";
 import Link from "next/link";

@@ -1,40 +1,37 @@
 "use client";
 import {
+  Alert,
   Button,
   Dialog,
-  DialogBody,
   DialogFooter,
   DialogHeader,
-  Input,
   Spinner,
-  Textarea,
 } from "@/app/_components/mtw-wrappers";
-import { DialogComponentProps } from "./project-header";
+import { DialogComponentProps } from "../projects/project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
-import { HelperText } from "@/app/_components/input-helper-text";
+import { useContext } from "react";
 
 type DialogProps = {
   id: string;
 };
 
-export function DeleteTrackDialog({
+export function DeleteCommentDialog({
   open,
   onClose,
   id,
 }: DialogComponentProps<DialogProps>) {
   const router = useRouter();
-  const { showSuccessNotification, showErrorNotification } = useSnackBar();
-  const { mutate, isLoading } = api.tracks.delete.useMutation({
+  const { showErrorNotification } = useSnackBar();
+  const { mutate, isLoading } = api.comments.delete.useMutation({
     onSuccess: () => {
       router.refresh();
       onClose();
-      showSuccessNotification("Track deleted");
     },
     onError: (err) => {
-      console.error("Error adding track:", err);
-      showErrorNotification("Error deleting track");
+      showErrorNotification("Error deleting comment");
+      console.error("Error deleting comment:", err);
     },
   });
 
@@ -46,9 +43,7 @@ export function DeleteTrackDialog({
 
   return (
     <Dialog open={open} handler={onClose}>
-      <DialogHeader>
-        Are you sure you want to delete this track? This cannot be undone.
-      </DialogHeader>
+      <DialogHeader>Are you sure you want to delete this comment?</DialogHeader>
       <DialogFooter className="gap-2">
         <Button onClick={onClose} color="gray" variant="outlined">
           Cancel
@@ -57,10 +52,10 @@ export function DeleteTrackDialog({
           disabled={isLoading}
           onClick={handleSubmit}
           type="submit"
-          color="red"
+          color="indigo"
           variant="gradient"
         >
-          {isLoading ? <Spinner color="indigo" /> : "Delete Track"}
+          {isLoading ? <Spinner color="indigo" /> : "Delete Comment"}
         </Button>
       </DialogFooter>
     </Dialog>

@@ -11,6 +11,7 @@ import { env } from "@/env";
 import { db } from "@/server/db";
 import { api } from "@/trpc/server";
 import Credentials from "next-auth/providers/credentials";
+import bycrypt from "bcrypt";
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -39,15 +40,7 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authOptions: NextAuthOptions = {
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
-  },
+
   adapter: PrismaAdapter(db),
   providers: [
     DiscordProvider({
@@ -61,20 +54,54 @@ export const authOptions: NextAuthOptions = {
     Credentials({
       type: 'credentials',
       credentials: {
-        email: {},
+        email: { type: 'email' },
+        password: { type: 'password' }
       },
 
       async authorize(credentials, res) {
         const email = credentials?.email ?? '';
-        const user = await api.users.userByEmail.query({ email });
+        const user = await api.users.userByEmailAndPassword.query({ email });
         if (!user) return null;
+
+        const password = credentials?.password ?? '';
+        const isValid = await bycrypt.compare(password, user?.hashedPassword ?? '');
+        if (!isValid) return null;
+
+        console.log(user)
         return user;
       }
     }),
   ],
   pages: {
     signIn: "/auth/signin",
-  }
+    newUser: "/auth/signup",
+  },
+  callbacks: {
+    jwt({ token, account, user }) {
+      if (account) {
+        token.accessToken = account.access_token;
+        token.id = user.id;
+        token.name = user.name;
+        console.log({ user });
+      }
+      return token;
+    },
+    session: ({ session, token }) => {
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: token.id,
+        },
+      }
+    },
+  },
+  session: {
+    strategy: "jwt",
+  },
+  secret: env.NEXTAUTH_SECRET,
+
+
 };
 
 /**

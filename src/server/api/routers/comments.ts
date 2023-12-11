@@ -79,6 +79,7 @@ export const commentsRouter = createTRPCRouter({
             const comments = await ctx.db.comment.findMany({
                 where: {
                     projectId: input.id,
+                    parentId: null,
                 },
                 take: input.viewAmount,
                 include: {

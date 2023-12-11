@@ -163,7 +163,7 @@ export function EditComment({ id, onCancel, comment }: EditComment) {
   };
 
   return (
-    <div className="flex flex-col items-end gap-2">
+    <div className="mt-2 flex flex-col items-end gap-2">
       <div className="flex w-full gap-2">
         <AutoResizeTextarea
           autoFocus

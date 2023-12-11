@@ -9,7 +9,7 @@ import {
   Spinner,
   Textarea,
 } from "@/app/_components/mtw-wrappers";
-import { DialogComponentProps } from "./project-header";
+import { DialogComponentProps } from "../projects/project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";

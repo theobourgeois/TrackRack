@@ -1,18 +1,21 @@
 "use client";
-import { Card, IconButton, Typography } from "@/app/_components/mtw-wrappers";
-import { DropDownOption } from "@/app/_components/popover-option";
+import {
+  IconButton,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
+  Typography,
+} from "@/app/_components/mtw-wrappers";
 import { PermissionName, Track } from "@prisma/client";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import { TracksTableDialogs } from "./tracks-table-wrapper";
 import { FaEdit } from "react-icons/fa";
 import { getDateString } from "@/app/_utils/date-utils";
-import {
-  DropDown,
-  DropDownContent,
-  DropDownHandler,
-} from "@/app/_components/drop-down";
 import { twMerge } from "tailwind-merge";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const tableHeads = (showActions = false) => [
   { label: "#", className: "w-10" },
@@ -33,6 +36,7 @@ export function TracksTable({
   onSelect,
   userPermissions,
 }: TracksTableProps) {
+  const pathname = usePathname();
   return (
     <table className="mt-4 w-full min-w-max table-auto overflow-x-auto text-left">
       <thead>
@@ -74,9 +78,11 @@ export function TracksTable({
               <Typography
                 variant="small"
                 color="blue-gray"
-                className="font-normal"
+                className="font-normal underline"
               >
-                {track.name}
+                <Link href={`${pathname}/tracks/${track.urlName}`}>
+                  {track.name}
+                </Link>
               </Typography>
             </td>
             <td className="p-4">
@@ -99,31 +105,29 @@ export function TracksTable({
             </td>
             {userPermissions?.includes(PermissionName.AddTracks) && (
               <td className="p-4">
-                <DropDown placement="bottom-start">
-                  <DropDownHandler>
-                    <div>
-                      <IconButton variant="text">
-                        <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-2xl " />
-                      </IconButton>
-                    </div>
-                  </DropDownHandler>
-                  <DropDownContent>
+                <Menu placement="bottom-start">
+                  <MenuHandler>
+                    <IconButton variant="text">
+                      <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-2xl " />
+                    </IconButton>
+                  </MenuHandler>
+                  <MenuList>
                     <>
-                      <DropDownOption
+                      <MenuItem
                         onClick={onSelect(TracksTableDialogs.EDIT, track)}
-                        icon={FaEdit}
+                        icon={<FaEdit />}
                       >
                         Edit
-                      </DropDownOption>
-                      <DropDownOption
+                      </MenuItem>
+                      <MenuItem
                         onClick={onSelect(TracksTableDialogs.DELETE, track)}
-                        icon={MdDelete}
+                        icon={<MdDelete size="15" />}
                       >
                         Delete
-                      </DropDownOption>
+                      </MenuItem>
                     </>
-                  </DropDownContent>
-                </DropDown>
+                  </MenuList>
+                </Menu>
               </td>
             )}
           </tr>

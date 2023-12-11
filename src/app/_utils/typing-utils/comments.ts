@@ -14,11 +14,4 @@ export type CommentWithUserAndReplies = Comment & CommentsWithUsers & {
   replies: CommentWithUserAndReplies[];
 }
 
-export type CommentsWithReactionsAndReplies = Comment & {
-  reactions: Reaction[];
-  replies: Comment & {
-    reactions: Reaction[];
-  }[];
-}
-
 export type CommentType = "project" | "track";

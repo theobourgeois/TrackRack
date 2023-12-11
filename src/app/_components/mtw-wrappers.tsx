@@ -30,6 +30,10 @@ import {
   CardBody as MCardBody,
   CardFooter as MCardFooter,
   IconButton as MIconButton,
+  Menu as MMenu,
+  MenuHandler as MMenuHandler,
+  MenuList as MMenuList,
+  MenuItem as MMenuItem,
   PopoverContentProps,
   PopoverProps,
   PopoverHandlerProps,
@@ -42,6 +46,42 @@ import {
 } from "react";
 import ClickAwayListener from "react-click-away-listener";
 import { twMerge } from "tailwind-merge";
+
+export function Menu(props: ComponentProps<typeof MMenu>): JSX.Element {
+  return <MMenu {...props} />;
+}
+
+export function MenuHandler({
+  children,
+  ...props
+}: ComponentProps<typeof MMenuHandler>): JSX.Element {
+  return (
+    <MMenuHandler {...props}>
+      <div>{children}</div>
+    </MMenuHandler>
+  );
+}
+
+export function MenuList(props: ComponentProps<typeof MMenuList>): JSX.Element {
+  return <MMenuList {...props} />;
+}
+
+export function MenuItem({
+  icon,
+  className,
+  children,
+  ...props
+}: ComponentProps<typeof MMenuItem> & { icon?: React.ReactNode }): JSX.Element {
+  return (
+    <MMenuItem
+      className={twMerge("flex items-center gap-2", className)}
+      {...props}
+    >
+      {icon}
+      {children}
+    </MMenuItem>
+  );
+}
 
 export function IconButton(
   props: ComponentProps<typeof MIconButton>,

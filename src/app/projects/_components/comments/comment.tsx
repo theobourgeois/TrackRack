@@ -1,16 +1,14 @@
 "use client";
 import {
-  DropDown,
-  DropDownContent,
-  DropDownHandler,
-} from "@/app/_components/drop-down";
-import {
   Avatar,
   Button,
   IconButton,
+  Menu,
+  MenuHandler,
+  MenuItem,
+  MenuList,
   Typography,
 } from "@/app/_components/mtw-wrappers";
-import { DropDownOption } from "@/app/_components/popover-option";
 import { getDateString } from "@/app/_utils/date-utils";
 import {
   CommentType,
@@ -26,7 +24,6 @@ import { AddComment, EditComment } from "./add-comment";
 import { ReactionButton } from "@/app/_components/reactions-button";
 import { CommentReactions } from "./comment-reactions";
 import { Session } from "next-auth";
-import { Comment } from "@prisma/client";
 
 export enum CommentDialogs {
   DELETE = "DELETE",
@@ -103,31 +100,31 @@ export function CommentComponent({
                       </Typography>
                       {(session?.user.id === comment.createdBy.id ||
                         canDeleteComments) && (
-                        <DropDown placement="bottom-start">
-                          <DropDownHandler>
+                        <Menu placement="bottom-start">
+                          <MenuHandler>
                             <div className="opacity-0 group-hover:opacity-100">
                               <IconButton variant="text">
                                 <HiOutlineDotsVertical className="rotate-90 cursor-pointer text-2xl " />
                               </IconButton>
                             </div>
-                          </DropDownHandler>
-                          <DropDownContent>
-                            <DropDownOption
+                          </MenuHandler>
+                          <MenuList>
+                            <MenuItem
                               onClick={handleChangeDialog(
                                 CommentDialogs.DELETE,
                               )}
-                              icon={MdDelete}
+                              icon={<MdDelete size="15" />}
                             >
                               Delete
-                            </DropDownOption>
-                            <DropDownOption
+                            </MenuItem>
+                            <MenuItem
                               onClick={() => setIsEditing(true)}
-                              icon={FaEdit}
+                              icon={<FaEdit />}
                             >
                               Edit
-                            </DropDownOption>
-                          </DropDownContent>
-                        </DropDown>
+                            </MenuItem>
+                          </MenuList>
+                        </Menu>
                       )}
                     </div>
                     {comment.reactions.length > 0 && (

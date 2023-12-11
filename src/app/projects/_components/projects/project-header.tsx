@@ -24,6 +24,7 @@ interface ProjectHeaderProps {
   coverImage: string;
   trackCount: number;
   id: string;
+  isPrivate: boolean;
   userPermissions?: PermissionName[];
 }
 
@@ -33,6 +34,7 @@ export function ProjectHeader({
   coverImage,
   description,
   trackCount,
+  isPrivate,
   userPermissions,
   id,
 }: ProjectHeaderProps) {
@@ -88,10 +90,13 @@ export function ProjectHeader({
               <div
                 onClick={handleOpenDialog(ProjectHeaderDialogs.EDIT_PROJECT)}
                 className={twMerge(
-                  "flex flex-col justify-end",
+                  "flex flex-col justify-end ",
                   canEditProject && "cursor-pointer",
                 )}
               >
+                <Typography variant="lead">
+                  {isPrivate ? "Private" : "Public"}
+                </Typography>
                 <Typography className="text-[60px] font-semibold">
                   {name}
                 </Typography>

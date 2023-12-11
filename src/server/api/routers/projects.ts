@@ -7,12 +7,13 @@ import {
 } from "@/server/api/trpc";
 import { incrementName } from "@/app/_utils/db-utils";
 import { ProjectRole } from "@/app/_utils/typing-utils/projects";
-import { ProjectRoleName, ProjectUser, User } from "@prisma/client";
+import { ProjectRoleName } from "@prisma/client";
 
+const DEFAULT_PFP = "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg"
 
 export const projectsRouter = createTRPCRouter({
     get: publicProcedure
-        .input(z.object({ projectUrl: z.string() }))
+        .input(z.object({ projectUrl: z.string().optional(), id: z.string().optional() }))
         .query(async ({ ctx, input }) => {
             return ctx.db.project.findFirst({
                 include: {
@@ -27,6 +28,7 @@ export const projectsRouter = createTRPCRouter({
                     users: true,
                 },
                 where: {
+                    id: input.id,
                     urlName: input.projectUrl,
                 },
             });
@@ -64,6 +66,23 @@ export const projectsRouter = createTRPCRouter({
                 },
             });
         }),
+    changePrivacy: protectedProcedure
+        .input(
+            z.object({
+                projectId: z.string(),
+                isPrivate: z.boolean(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            return ctx.db.project.update({
+                where: {
+                    id: input.projectId,
+                },
+                data: {
+                    isPrivate: input.isPrivate,
+                },
+            });
+        }),
     create: protectedProcedure
         .input(
             z.object({
@@ -89,7 +108,7 @@ export const projectsRouter = createTRPCRouter({
                     urlName: projectUrl,
                     description: input.description,
                     type: input.type,
-                    coverImage: input.coverImage,
+                    coverImage: input.coverImage ?? DEFAULT_PFP,
                     createdById: ctx.session.user.id,
                 },
             });
@@ -110,12 +129,73 @@ export const projectsRouter = createTRPCRouter({
                 },
             });
         }),
+    updateProjectUser: protectedProcedure
+        .input(
+            z.object({
+                projectUserId: z.string(),
+                role: z.custom<ProjectRoleName>(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const role = await ctx.db.projectRole.findFirst({
+                where: {
+                    name: input.role,
+                },
+            });
+            if (!role) throw new Error("Role not found");
+
+            return ctx.db.projectUser.update({
+                where: {
+                    id: input.projectUserId,
+                },
+                data: {
+                    roleId: role.id,
+                },
+            });
+
+        }),
+    deleteProjectUser: protectedProcedure
+        .input(z.object({ projectId: z.string(), userId: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            return ctx.db.projectUser.delete({
+                where: {
+                    projectId: input.projectId,
+                    userId: input.userId,
+                },
+            });
+        }),
+    projectUsersAndInvites: protectedProcedure
+        .input(z.object({ projectId: z.string() }))
+        .query(async ({ ctx, input }) => {
+            const invites = await ctx.db.invite.findMany({
+                where: {
+                    projectId: input.projectId,
+                },
+            });
+
+            const projectUsers = await ctx.db.projectUser.findMany({
+                where: {
+                    projectId: input.projectId,
+                },
+                include: {
+                    user: true,
+                    role: true,
+                },
+            });
+
+            return {
+                invites,
+                projectUsers,
+            };
+
+        }),
     projectUsersGroupedByRole: publicProcedure
-        .input(z.object({ projectUrl: z.string() }))
+        .input(z.object({ projectUrl: z.string().optional(), projectId: z.string().optional() }))
         .query(async ({ ctx, input }) => {
             const projectWithUsers = await ctx.db.project.findFirst({
                 where: {
                     urlName: input.projectUrl,
+                    id: input.projectId,
                 },
                 include: {
                     users: {
@@ -127,18 +207,14 @@ export const projectsRouter = createTRPCRouter({
                 },
             });
 
-            // Check if projectWithUsers is not null
             if (!projectWithUsers) {
-                // Handle the case where the project is not found
-                throw new Error('Project not found');
+                throw new Error("Project not found");
             }
 
-            // Extract the projectUsers array
             const projectUsers = projectWithUsers.users;
 
-            // Group users by role
             const groupedByRole = projectUsers.reduce<{
-                [key in ProjectRole]?: (typeof projectUsers[number]['user'])[];
+                [key in ProjectRole]?: (typeof projectUsers)[number]["user"][];
             }>((group, user) => {
                 const role = user.role.name as ProjectRole;
                 group[role] = group[role] || [];
