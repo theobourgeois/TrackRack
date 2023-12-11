@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Logo } from "./logo";
 import { RxCross2 } from "react-icons/rx";
 import { FiMenu } from "react-icons/fi";
-import { Card, IconButton, Typography } from "./mtw-wrappers";
+import { Card, Collapse, IconButton, Typography } from "./mtw-wrappers";
 import { MobileNav } from "@material-tailwind/react";
 import { IconType } from "react-icons";
 
@@ -31,10 +31,10 @@ export function NavbarMobileDropdown({
           )}
         </IconButton>
       </div>
-      <MobileNav open={isOpen}>
+      <Collapse open={isOpen}>
         <div className="mt-2">
           {navLinks.map(({ href, text, icon }) => (
-            <Link href={href}>
+            <Link key={text} href={href}>
               <div className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-blue-gray-50/50">
                 {icon}
                 <Typography className="font-medium" color="black" variant="h6">
@@ -44,7 +44,7 @@ export function NavbarMobileDropdown({
             </Link>
           ))}
         </div>
-      </MobileNav>
+      </Collapse>
     </div>
   );
 }

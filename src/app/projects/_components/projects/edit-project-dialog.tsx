@@ -103,7 +103,9 @@ export function EditProjectDialog({
             label="Type"
           >
             {Object.values(ProjectType).map((type) => (
-              <Option value={type}>{type}</Option>
+              <Option key={type} value={type}>
+                {type}
+              </Option>
             ))}
           </Select>
           <div className=" h-full flex-grow [&>div]:h-full">
