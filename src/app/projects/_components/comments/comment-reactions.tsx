@@ -44,7 +44,7 @@ export function CommentReactions({
   return (
     <div className="flex items-center gap-2">
       {reactions.map((reaction) => (
-        <Popover key={reaction.id} hover delay={1000}>
+        <Popover key={reaction.id} hover delay={500}>
           <PopoverHandler>
             <Reaction
               key={reaction.id}

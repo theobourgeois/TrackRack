@@ -38,21 +38,21 @@ export const projectsRouter = createTRPCRouter({
         .input(
             z.object({
                 projectId: z.string(),
-                name: z.string().min(1),
+                name: z.string().min(1).optional(),
                 description: z.string().optional(),
                 type: z.string(),
                 coverImage: z.string().optional(),
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            const projectUrl = incrementName(
+            const projectUrl = input.name ? incrementName(
                 input.name,
                 await ctx.db.project.count({
                     where: {
                         name: input.name,
                     },
                 }),
-            );
+            ) : undefined;
             return ctx.db.project.update({
                 where: {
                     id: input.projectId,

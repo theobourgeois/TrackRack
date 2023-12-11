@@ -43,7 +43,7 @@ export function ChangeProjectPrivacyDialog({
   };
 
   return (
-    <Dialog open={open} handler={onClose}>
+    <Dialog size="xs" open={open} handler={onClose}>
       <DialogHeader>
         Are you sure you want to make this project{" "}
         {isPrivate ? "public" : "private"}?

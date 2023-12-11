@@ -8,19 +8,18 @@ interface ProfileCardProps {
 
 export function ProfileCard({ name, avatar }: ProfileCardProps) {
   return (
-    <div className="">
-      <div className="flex justify-center gap-8">
-        <Avatar size="sm" src={avatar} />
-
-        <Button size="sm" color="indigo">
-          Follow
-        </Button>
+    <div className="flex flex-col items-start gap-4">
+      <div className="flex items-center gap-2">
+        <Avatar size="md" src={avatar} />
+        <Link href={`/users/${name}`}>
+          <Typography className="hover:underline" variant="lead">
+            @{name}
+          </Typography>
+        </Link>
       </div>
-      <Link href={`/users/${name}`}>
-        <Typography className="hover:underline" variant="lead">
-          @{name}
-        </Typography>
-      </Link>
+      <Button size="sm" color="indigo">
+        Follow
+      </Button>
     </div>
   );
 }

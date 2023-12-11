@@ -40,8 +40,12 @@ export function EditProjectDialog({
   const { name, description, type, coverImage } = formValues;
   const { showSuccessNotification, showErrorNotification } = useSnackBar();
   const { mutate, error, isLoading } = api.projects.update.useMutation({
-    onSuccess: ({ urlName }) => {
-      router.push(`/projects/${urlName}`);
+    onSuccess: ({ urlName, name }) => {
+      if (name !== project.name) {
+        router.push(`/projects/${urlName}`);
+      } else {
+        router.refresh();
+      }
       onClose();
       showSuccessNotification("Project updated");
     },
@@ -68,7 +72,7 @@ export function EditProjectDialog({
   const handleSubmit = () => {
     mutate({
       projectId: project.id,
-      name,
+      name: name == project.name ? undefined : name,
       description,
       type,
       coverImage,
@@ -102,12 +106,14 @@ export function EditProjectDialog({
               <Option value={type}>{type}</Option>
             ))}
           </Select>
-          <Textarea
-            value={description}
-            onChange={handleChange("description")}
-            name="description"
-            label="Description"
-          />
+          <div className=" h-full flex-grow [&>div]:h-full">
+            <Textarea
+              value={description}
+              onChange={handleChange("description")}
+              name="description"
+              label="Description"
+            />
+          </div>
         </div>
       </DialogBody>
       <DialogFooter className="gap-2">

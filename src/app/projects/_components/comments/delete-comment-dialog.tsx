@@ -42,7 +42,7 @@ export function DeleteCommentDialog({
   };
 
   return (
-    <Dialog open={open} handler={onClose}>
+    <Dialog size="xs" open={open} handler={onClose}>
       <DialogHeader>Are you sure you want to delete this comment?</DialogHeader>
       <DialogFooter className="gap-2">
         <Button onClick={onClose} color="gray" variant="outlined">

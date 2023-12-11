@@ -45,7 +45,7 @@ export function DeleteTrackDialog({
   };
 
   return (
-    <Dialog open={open} handler={onClose}>
+    <Dialog size="xs" open={open} handler={onClose}>
       <DialogHeader>
         Are you sure you want to delete this track? This cannot be undone.
       </DialogHeader>

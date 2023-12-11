@@ -1,5 +1,4 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
 import { DialogComponentProps } from "../projects/project-header";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { Dialog, DialogBody } from "@material-tailwind/react";
@@ -7,6 +6,7 @@ import { api } from "@/trpc/react";
 import {
   Button,
   DialogHeader,
+  IconButton,
   Input,
   Spinner,
   Typography,
@@ -20,6 +20,7 @@ import {
   DeleteProjectUserDialog,
 } from "./delete-invite-user-dialog";
 import { Session } from "next-auth";
+import { RxCross1 } from "react-icons/rx";
 
 enum InviteUsersDialogsDialogs {
   DELETE_INVITE = "DELETE_INVITE",
@@ -102,13 +103,25 @@ export function InviteUsersDialog({
   return (
     <Dialog open={open} handler={onClose}>
       {renderDialog()}
-      <DialogHeader>Invite Users</DialogHeader>
+
+      <DialogHeader>
+        <div className="flex w-full items-center justify-between">
+          <Typography variant="h3">Invite Users</Typography>
+          <IconButton onClick={onClose} variant="text">
+            <RxCross1 size="25" />
+          </IconButton>
+        </div>
+      </DialogHeader>
+
       <div className="mx-4">
         <DialogBody className="flex w-full flex-col gap-2 px-0 pt-0">
           <InviteUserForm
             emails={projectUsers?.map((user) => user.user.email ?? "") ?? []}
             projectId={projectId}
           />
+          {invitesAndProjectUsers.isLoading && (
+            <Spinner className="mt-4" color="indigo" />
+          )}
           {projectUsers?.map((user) => {
             return (
               <ProjectUser

@@ -19,16 +19,15 @@ interface SidebarProfileProps {
 
 function SidebarProfile({ name, avatar }: SidebarProfileProps) {
   return (
-    <Popover placement="bottom-start">
-      <PopoverHandler>
-        <div className="flex cursor-pointer select-none gap-2 rounded-lg">
-          <Avatar size="sm" src={avatar} />
-          <Typography variant="h6">{name}</Typography>
-        </div>
-      </PopoverHandler>
-      <PopoverContent className="flex select-none flex-col gap-1">
-        <ProfileCard name={name} avatar={avatar} />
-      </PopoverContent>
+    <Popover delay={300} hover placement="bottom-start">
+      <div className="flex cursor-pointer select-none gap-2 rounded-lg">
+        <Avatar size="sm" src={avatar} />
+        <Link href={`/users/${name}`}>
+          <Typography className="hover:underline" variant="h6">
+            {name}
+          </Typography>
+        </Link>
+      </div>
     </Popover>
   );
 }

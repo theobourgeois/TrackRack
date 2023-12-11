@@ -43,6 +43,7 @@ import {
   type ComponentProps,
   useState,
   createContext,
+  useRef,
 } from "react";
 import ClickAwayListener from "react-click-away-listener";
 import { twMerge } from "tailwind-merge";
@@ -221,18 +222,24 @@ export function Popover({
   ...rest
 }: PopoverProps & { closeOnClick?: boolean; hover?: boolean; delay?: number }) {
   const [open, setOpen] = useState(false);
-  const [mouseLeft, setMouseLeft] = useState(false);
+  const openTimeoutRef = useRef<any>(null);
+  const closeTimeoutRef = useRef<any>(null);
+
+  const closePopover = () => {
+    if (openTimeoutRef.current) {
+      clearTimeout(openTimeoutRef.current);
+    }
+    setOpen(false);
+  };
 
   const triggers = {
     onMouseEnter: () => {
-      setMouseLeft(false);
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
       if (delay) {
-        setTimeout(() => {
-          setOpen(!mouseLeft);
-          setMouseLeft((mouseLeft) => {
-            setOpen(!mouseLeft);
-            return mouseLeft;
-          });
+        openTimeoutRef.current = setTimeout(() => {
+          setOpen(true);
         }, delay);
       } else {
         setOpen(true);
@@ -240,8 +247,9 @@ export function Popover({
     },
 
     onMouseLeave: () => {
-      setMouseLeft(true);
-      setOpen(false);
+      closeTimeoutRef.current = setTimeout(() => {
+        closePopover();
+      }, delay || 300); // delay before closing, you can adjust this value
     },
   };
 

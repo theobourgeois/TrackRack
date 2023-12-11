@@ -40,7 +40,7 @@ export function DeleteInviteUserDialog({
   };
 
   return (
-    <Dialog open={open} handler={onClose}>
+    <Dialog size="xs" open={open} handler={onClose}>
       <DialogHeader>Are you sure you want to delete this invite?</DialogHeader>
       <DialogFooter className="flex gap-2">
         <Button variant="outlined" onClick={onClose}>
@@ -87,7 +87,7 @@ export function DeleteProjectUserDialog({
   };
 
   return (
-    <Dialog open={open} handler={onClose}>
+    <Dialog size="xs" open={open} handler={onClose}>
       <DialogHeader>
         Are you sure you want to remove this user from the project?
       </DialogHeader>
