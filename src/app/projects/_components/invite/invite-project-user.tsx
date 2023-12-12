@@ -110,7 +110,7 @@ export function ProjectUser({
     });
   };
 
-  // if user is owner, or user is admin and can't invite admins, show only text.
+  // if user is owner, or user is admin and can't add/remove admins, show only text.
   const showOnlyText =
     isAuthUser ||
     role === ProjectRoleName.Owner ||
@@ -161,10 +161,8 @@ export function ProjectUser({
 function RoleSelect({
   onChange,
   role,
-  canInviteAdmins,
 }: {
   role?: ProjectRoleName;
-  canInviteAdmins?: boolean;
   onChange?: (role: ProjectRoleName) => void;
 }) {
   const [selectedRole, setSelectedRole] = useState(role);
@@ -175,30 +173,22 @@ function RoleSelect({
   };
 
   // if user can invite admins, show admin in role options
-  const roles = Object.values(ProjectRoleName).filter(
-    (role) =>
-      (role !== ProjectRoleName.Admin || canInviteAdmins) &&
-      role !== ProjectRoleName.Owner,
-  );
-
-  // if user is owner, or user is admin and can't invite admins, show only text.
-  const showOnlyText =
-    selectedRole === ProjectRoleName.Owner ||
-    (selectedRole === ProjectRoleName.Admin && !canInviteAdmins);
+  const roles = Object.values(ProjectRoleName).filter((r) => {
+    if (r === ProjectRoleName.Owner) return false;
+    if (r === ProjectRoleName.Admin && role !== ProjectRoleName.Admin)
+      return true;
+    return true;
+  });
 
   return (
     <div className="max-w-40 w-min">
-      {showOnlyText ? (
-        <Typography variant="small">{selectedRole}</Typography>
-      ) : (
-        <Select onChange={handleChange} value={selectedRole} label="Role">
-          {roles.map((type) => (
-            <SelectOption key={type} value={type}>
-              {type}
-            </SelectOption>
-          ))}
-        </Select>
-      )}
+      <Select onChange={handleChange} value={selectedRole} label="Role">
+        {roles.map((type) => (
+          <SelectOption key={type} value={type}>
+            {type}
+          </SelectOption>
+        ))}
+      </Select>
     </div>
   );
 }

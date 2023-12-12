@@ -1,5 +1,6 @@
 "use client";
 import { Button, Input, Typography } from "@/app/_components/mtw-wrappers";
+import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { color } from "@material-tailwind/react/types/components/alert";
 import { BuiltInProviderType } from "next-auth/providers/index";
 import { signIn } from "next-auth/react";
@@ -57,8 +58,9 @@ export function SigninCredentials() {
           router.push(`/project-invite/${invite}?accept=true`);
           return;
         }
-        router.push("/");
         setLabel("");
+        router.push("/");
+        router.refresh();
       }
     });
   };

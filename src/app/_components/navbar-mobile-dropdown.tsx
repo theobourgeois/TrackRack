@@ -1,49 +1,62 @@
 "use client";
-import { useState } from "react";
-import Link from "next/link";
-import { Logo } from "./logo";
+import { createContext, useContext, useState } from "react";
 import { RxCross2 } from "react-icons/rx";
 import { FiMenu } from "react-icons/fi";
-import { Collapse, IconButton, Typography } from "./mtw-wrappers";
+import { Collapse, IconButton } from "./mtw-wrappers";
 
-export function NavbarMobileDropdown({
-  navLinks,
-}: {
-  navLinks: { href: string; text: string; icon: React.ReactNode }[];
-}) {
-  const [isOpen, setIsOpen] = useState(false);
+const MobileNavBarContext = createContext<{
+  isShowingMobileNavBar: boolean;
+  setIsShowingMobileNavBar: React.Dispatch<React.SetStateAction<boolean>>;
+}>(null!);
+
+function MobileNavBarProvider({ children }: { children: React.ReactNode }) {
+  const [isShowingMobileNavBar, setIsShowingMobileNavBar] = useState(false);
+
+  return (
+    <MobileNavBarContext.Provider
+      value={{
+        isShowingMobileNavBar,
+        setIsShowingMobileNavBar,
+      }}
+    >
+      {children}
+    </MobileNavBarContext.Provider>
+  );
+}
+
+function MobileNavbarButton() {
+  const { isShowingMobileNavBar, setIsShowingMobileNavBar } =
+    useContext(MobileNavBarContext);
 
   const handleToggleOpen = () => {
-    setIsOpen(!isOpen);
+    setIsShowingMobileNavBar(!isShowingMobileNavBar);
   };
 
   return (
-    <div className="block lg:hidden">
-      <div className="flex w-full items-center justify-between">
-        <Logo />
-        <IconButton variant="text">
-          {isOpen ? (
-            <RxCross2 size="40" color="black" onClick={handleToggleOpen} />
-          ) : (
-            <FiMenu size="40" color="black" onClick={handleToggleOpen} />
-          )}
-        </IconButton>
-      </div>
-      <Collapse open={isOpen}>
-        <div className="mt-2">
-          {navLinks.map(({ href, text, icon }) => (
-            <Link
-              href={href}
-              className="flex items-center gap-2 rounded-md py-1 hover:bg-blue-gray-50/50"
-            >
-              {icon}
-              <Typography variant="h5" color="black">
-                {text}
-              </Typography>
-            </Link>
-          ))}
-        </div>
-      </Collapse>
-    </div>
+    <>
+      <IconButton variant="text">
+        {isShowingMobileNavBar ? (
+          <RxCross2 size="40" color="black" onClick={handleToggleOpen} />
+        ) : (
+          <FiMenu size="40" color="black" onClick={handleToggleOpen} />
+        )}
+      </IconButton>
+    </>
   );
 }
+
+function MobileNavbarCollapse({ children }: { children: React.ReactNode }) {
+  const { isShowingMobileNavBar } = useContext(MobileNavBarContext);
+  return (
+    <Collapse open={isShowingMobileNavBar}>
+      <div className="mt-2 flex flex-col gap-3 lg:hidden">{children}</div>
+    </Collapse>
+  );
+}
+
+export { MobileNavbarButton, MobileNavBarProvider, MobileNavbarCollapse };
+module.exports = {
+  MobileNavbarButton,
+  MobileNavBarProvider,
+  MobileNavbarCollapse,
+};

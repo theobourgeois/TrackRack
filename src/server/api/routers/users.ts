@@ -5,6 +5,8 @@ import {
 } from "@/server/api/trpc";
 import bcrypt from "bcrypt";
 
+const DEFAULT_PFP = "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg"
+
 export const usersRouter = createTRPCRouter({
     getProjectUserPermissions: publicProcedure.input(
         z.object({ projectId: z.string(), userId: z.string() })
@@ -77,14 +79,34 @@ export const usersRouter = createTRPCRouter({
             }),
         )
         .mutation(async ({ ctx, input }) => {
+            const existingEmail = await ctx.db.user.findFirst({
+                where: {
+                    email: input.email,
+                },
+            });
+
+            if (existingEmail) {
+                throw new Error("Email already exists");
+            }
+
+            const existingName = await ctx.db.user.findFirst({
+                where: {
+                    name: input.name,
+                },
+            });
+
+            if (existingName) {
+                throw new Error("Name already exists");
+            }
+
             const hashedPassword = await bcrypt.hash(input.password, 10);
             return ctx.db.user.create({
                 data: {
                     email: input.email,
                     name: input.name,
                     hashedPassword,
+                    image: DEFAULT_PFP,
                 },
             });
         }),
-
 });

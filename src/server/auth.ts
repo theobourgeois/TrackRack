@@ -67,7 +67,6 @@ export const authOptions: NextAuthOptions = {
         const isValid = await bycrypt.compare(password, user?.hashedPassword ?? '');
         if (!isValid) return null;
 
-        console.log(user)
         return user;
       }
     }),

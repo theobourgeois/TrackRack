@@ -9,7 +9,6 @@ import { incrementName } from "@/app/_utils/db-utils";
 import { ProjectRole } from "@/app/_utils/typing-utils/projects";
 import { ProjectRoleName } from "@prisma/client";
 
-const DEFAULT_PFP = "https://wallpapers-clan.com/wp-content/uploads/2022/08/default-pfp-1.jpg"
 
 export const projectsRouter = createTRPCRouter({
     get: publicProcedure
@@ -108,7 +107,7 @@ export const projectsRouter = createTRPCRouter({
                     urlName: projectUrl,
                     description: input.description,
                     type: input.type,
-                    coverImage: input.coverImage ?? DEFAULT_PFP,
+                    coverImage: input.coverImage,
                     createdById: ctx.session.user.id,
                 },
             });
@@ -121,13 +120,15 @@ export const projectsRouter = createTRPCRouter({
             });
             if (!ownerRoleId) throw new Error("Owner role not found");
 
-            return ctx.db.projectUser.create({
+            await ctx.db.projectUser.create({
                 data: {
                     userId: ctx.session.user.id,
                     roleId: ownerRoleId?.id,
                     projectId: project.id,
                 },
             });
+
+            return project;
         }),
     updateProjectUser: protectedProcedure
         .input(

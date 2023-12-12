@@ -18,7 +18,7 @@ import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { HelperText } from "@/app/_components/input-helper-text";
 import { ProjectType } from "@/app/_utils/typing-utils/projects";
 import { useState } from "react";
-import { ImageInput } from "@/app/_components/image-uploader";
+import { ImageInput } from "@/app/_components/image-input";
 
 type DialogProps = {
   project: {
@@ -96,18 +96,20 @@ export function EditProjectDialog({
               label="Name"
             />
           </HelperText>
-          <Select
-            onChange={handleChange("type")}
-            value={type}
-            name="type"
-            label="Type"
-          >
-            {Object.values(ProjectType).map((type) => (
-              <Option key={type} value={type}>
-                {type}
-              </Option>
-            ))}
-          </Select>
+          <div className="h-max">
+            <Select
+              onChange={handleChange("type")}
+              value={type}
+              name="type"
+              label="Type"
+            >
+              {Object.values(ProjectType).map((type) => (
+                <Option key={type} value={type}>
+                  {type}
+                </Option>
+              ))}
+            </Select>
+          </div>
           <div className=" h-full flex-grow [&>div]:h-full">
             <Textarea
               value={description}

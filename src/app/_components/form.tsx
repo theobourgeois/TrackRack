@@ -1,6 +1,8 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "../_providers/snackbar-provider";
+import { useState } from "react";
+import { Button, Spinner } from "./mtw-wrappers";
 
 interface ServerFormProps {
   action: (formData: FormData) => Promise<any>;
@@ -8,6 +10,8 @@ interface ServerFormProps {
   successMessage?: string;
   errorMessage?: string;
   className?: string;
+  submitText?: string;
+  redirectUrl?: string;
 }
 
 export function ServerForm({
@@ -15,16 +19,19 @@ export function ServerForm({
   children,
   className = "",
   successMessage,
+  submitText,
   errorMessage,
+  redirectUrl,
 }: ServerFormProps) {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
   const { showSuccessNotification, showErrorNotification } = useSnackBar();
   function handleAction(formData: FormData) {
+    setIsLoading(true);
     action(formData)
-      .then((data) => {
-        const url = data?.url;
-        if (url) {
-          router.push(url);
+      .then(() => {
+        if (redirectUrl) {
+          router.push(redirectUrl);
         } else {
           router.refresh();
         }
@@ -38,7 +45,9 @@ export function ServerForm({
         }
         console.error(`Error with form:`, err);
       })
-      .finally(() => {});
+      .finally(() => {
+        setIsLoading(false);
+      });
   }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -50,6 +59,16 @@ export function ServerForm({
   return (
     <form onSubmit={handleSubmit} className={className}>
       {children}
+      {submitText && (
+        <Button
+          variant="gradient"
+          type="submit"
+          color="indigo"
+          disabled={isLoading}
+        >
+          {isLoading ? <Spinner color="indigo" /> : submitText}
+        </Button>
+      )}
     </form>
   );
 }

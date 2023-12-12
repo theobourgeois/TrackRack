@@ -95,7 +95,7 @@ export function ProjectHeader({
                 )}
               >
                 <Typography variant="lead">
-                  {isPrivate ? "Private" : "Public"}
+                  {isPrivate ? "Private" : "Public"} project
                 </Typography>
                 <Typography className="text-[60px] font-semibold">
                   {name}

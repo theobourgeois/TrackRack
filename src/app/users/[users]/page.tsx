@@ -1,4 +1,5 @@
 import { Avatar, Button, Typography } from "@/app/_components/mtw-wrappers";
+import { getServerAuthSession } from "@/server/auth";
 import { api } from "@/trpc/server";
 import Link from "next/link";
 
@@ -6,6 +7,8 @@ export default async function Home({ params }: { params: { users: string } }) {
   const user = await api.users.get.query({
     name: params.users,
   });
+
+  const session = await getServerAuthSession();
 
   const userProjects = await api.users.userProjects.query({
     userId: user?.id ?? "",
@@ -57,24 +60,28 @@ export default async function Home({ params }: { params: { users: string } }) {
             Projects
           </Typography>
           <div className="flex flex-wrap gap-4">
-            {userProjects.map((project) => (
-              <Link href={`/projects/${project.project.urlName}`}>
-                <div className="flex flex-col flex-wrap gap-2">
-                  <img
-                    src={project.project.coverImage ?? ""}
-                    className="h-64 w-64 rounded-md"
-                  />
-                  <div className="h-min ">
-                    <Typography
-                      className="cursor-pointer hover:underline"
-                      variant="h3"
-                    >
-                      {project.project.name}
-                    </Typography>
-                  </div>
-                </div>
-              </Link>
-            ))}
+            {userProjects.map(
+              (project) =>
+                (!project.project.isPrivate || // only show non-private projects except for if the project is the auth user's
+                  user.id === session?.user.id) && (
+                  <Link href={`/projects/${project.project.urlName}`}>
+                    <div className="flex flex-col flex-wrap gap-2">
+                      <img
+                        src={project.project.coverImage ?? ""}
+                        className="h-64 w-64 rounded-md"
+                      />
+                      <div className="h-min ">
+                        <Typography
+                          className="cursor-pointer hover:underline"
+                          variant="h3"
+                        >
+                          {project.project.name}
+                        </Typography>
+                      </div>
+                    </div>
+                  </Link>
+                ),
+            )}
           </div>
         </div>
       </div>
