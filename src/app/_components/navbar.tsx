@@ -16,23 +16,13 @@ import Link from "next/link";
 import { NavbarMobileDropdown } from "./navbar-mobile-dropdown";
 import { CgProfile } from "react-icons/cg";
 import { IoHome } from "react-icons/io5";
-import { RiFolderMusicLine } from "react-icons/ri";
+import { IoIosLogOut } from "react-icons/io";
 
 export const navLinks = [
   {
     href: "/",
     text: "Home",
     icon: <IoHome color="black" size="20" />,
-  },
-  {
-    href: "/projects",
-    text: "Projects",
-    icon: <RiFolderMusicLine color="black" size="20" />,
-  },
-  {
-    href: "/users",
-    text: "Profile",
-    icon: <CgProfile color="black" size="20" />,
   },
 ];
 
@@ -68,16 +58,16 @@ export async function Navbar() {
         <div className="flex items-center gap-4">
           <ul className="mb-4 mt-2 flex flex-col gap-1 lg:mb-0 lg:mt-0 lg:flex-row lg:items-center lg:gap-6">
             {navLinks.map((link) => (
-              <Typography
-                key={link.href}
-                as="li"
-                color="blue-gray"
-                className="p-1 font-normal hover:text-black"
-              >
-                <Link href={link.href} className="flex items-center">
+              <Link href={link.href}>
+                <Button
+                  size="sm"
+                  variant="text"
+                  className="flex items-center gap-2"
+                >
+                  {link.icon}
                   {link.text}
-                </Link>
-              </Typography>
+                </Button>
+              </Link>
             ))}
           </ul>
           <Input icon={<IoSearchOutline />} label="Search" />
@@ -92,15 +82,14 @@ export async function Navbar() {
               </div>
             </MenuHandler>
             <MenuList>
-              <Link href={`/users/${session?.user.name}`}>
-                <MenuItem>Profile</MenuItem>
-              </Link>
-              <Link href={`/users/${session?.user.name}`}>
-                <MenuItem>Projects</MenuItem>
-              </Link>
-              <Link href="/api/auth/signout">
-                <MenuItem>Sign out</MenuItem>
-              </Link>
+              <MenuItem className="flex items-center">
+                <CgProfile size="20" />
+                <Link href={`/users/${session?.user.name}`}>Profile</Link>
+              </MenuItem>
+              <MenuItem className="flex items-center border-t">
+                <IoIosLogOut size="20" />
+                <Link href="/api/auth/signout">Sign out</Link>
+              </MenuItem>
             </MenuList>
           </Menu>
         </div>
