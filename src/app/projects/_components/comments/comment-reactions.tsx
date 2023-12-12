@@ -10,7 +10,6 @@ import { ReactionWithUser } from "@/app/_utils/typing-utils/comments";
 import { api } from "@/trpc/react";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import { useMemo } from "react";
 import { twMerge } from "tailwind-merge";
 
 interface CommentReactionsProps {
