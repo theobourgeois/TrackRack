@@ -5,12 +5,11 @@ import {
   PopoverHandler,
   Typography,
 } from "@/app/_components/mtw-wrappers";
-import { ReactionButton } from "@/app/_components/reactions-button";
+import { ReactionSelector } from "@/app/_components/comment-reactions-selector";
 import { ReactionWithUser } from "@/app/_utils/typing-utils/comments";
 import { api } from "@/trpc/react";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 interface CommentReactionsProps {
@@ -41,38 +40,58 @@ export function CommentReactions({
     });
   };
 
+  // reaction type and the number of reactions e.g: { "👍": 2, "👎": 1 }
+  const reactionsAndCount = reactions.reduce(
+    (acc, reaction) => {
+      if (!acc[reaction.type]) {
+        acc[reaction.type] = 1;
+      } else {
+        acc[reaction.type]++;
+      }
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
+
   return (
     <div className="flex items-center gap-2">
-      {reactions.map((reaction) => (
-        <Popover key={reaction.id} hover delay={500}>
+      {Object.keys(reactionsAndCount).map((reaction) => (
+        <Popover key={reaction} hover delay={500}>
           <PopoverHandler>
             <Reaction
-              key={reaction.id}
-              reaction={reaction.type}
-              isUserReaction={session?.user.id === reaction.createdById}
-              numberOfReaction={
-                reactions.filter((r) => r.type === reaction.type).length
-              }
+              reaction={reaction}
+              isUserReaction={Boolean(
+                reactions
+                  .filter((r) => r.type === reaction)
+                  .find((r) => r.createdById === session?.user.id),
+              )}
+              numberOfReaction={reactionsAndCount[reaction] as number}
               onChange={handleChange}
             />
           </PopoverHandler>
           <PopoverContent>
-            <div className="flex flex-col gap-2">
+            <div className="flex flex-col">
+              <Typography className="font-normal" variant="paragraph">
+                People who reacted with {reaction}
+              </Typography>
               {reactions
-                .filter((r) => r.type === reaction.type)
+                .filter((r) => r.type === reaction)
                 .map((reaction) => (
-                  <div key={reaction.id} className="flex items-center gap-2">
-                    <Typography variant="h6">
+                  <div key={reaction.id} className="flex items-center">
+                    <Typography variant="paragraph">
                       {reaction.createdBy.name}
                     </Typography>
-                    <Typography variant="h6">{reaction.type}</Typography>
                   </div>
                 ))}
             </div>
           </PopoverContent>
         </Popover>
       ))}
-      <ReactionButton userReactions={reactions} commentId={commentId} />
+      <ReactionSelector
+        userId={session?.user.id ?? ""}
+        userReactions={reactions}
+        commentId={commentId}
+      />
     </div>
   );
 }

@@ -21,7 +21,7 @@ import { useState } from "react";
 import { DeleteCommentDialog } from "./delete-comment-dialog";
 import { VscTriangleDown } from "react-icons/vsc";
 import { AddComment, EditComment } from "./add-comment";
-import { ReactionButton } from "@/app/_components/reactions-button";
+import { ReactionSelector } from "@/app/_components/comment-reactions-selector";
 import { CommentReactions } from "./comment-reactions";
 import { Session } from "next-auth";
 
@@ -138,7 +138,8 @@ export function CommentComponent({
                     )}
                     <div className="flex w-full items-center gap-2">
                       {comment.reactions.length <= 0 && (
-                        <ReactionButton
+                        <ReactionSelector
+                          userId={session?.user.id ?? ""}
                           userReactions={comment.reactions}
                           commentId={comment.id}
                         />

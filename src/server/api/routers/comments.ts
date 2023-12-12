@@ -119,7 +119,12 @@ export const commentsRouter = createTRPCRouter({
     addReaction: protectedProcedure
         .input(z.object({ commentId: z.string(), reaction: z.string() }))
         .mutation(async ({ ctx, input }) => {
-            const existingReaction = await ctx.db.reaction.findFirst({
+            /**
+             * There's something wrong with the prisma 'findFirst' method for reactions.
+             * Instead of returning the first reaction with the given parameters, it returns the first reaction from the comment.
+             * This is a workaround that selects every reaction from the comment and filters them manually.
+             */
+            const existingReactions = await ctx.db.reaction.findMany({
                 where: {
                     commentId: input.commentId,
                     createdById: ctx.session.user.id,
@@ -127,20 +132,23 @@ export const commentsRouter = createTRPCRouter({
                 },
             });
 
-            if (existingReaction) {
-                return ctx.db.reaction.delete({
+            const selectedReaction = existingReactions.find((reaction) => reaction.type === input.reaction)
+            if (selectedReaction) {
+                await ctx.db.reaction.delete({
                     where: {
-                        id: existingReaction.id,
+                        id: selectedReaction.id,
+                    },
+                });
+            } else {
+                return ctx.db.reaction.create({
+                    data: {
+                        commentId: input.commentId,
+                        type: input.reaction,
+                        createdById: ctx.session.user.id,
                     },
                 });
             }
 
-            return ctx.db.reaction.create({
-                data: {
-                    commentId: input.commentId,
-                    type: input.reaction,
-                    createdById: ctx.session.user.id,
-                },
-            });
+
         }),
 });
