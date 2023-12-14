@@ -8,7 +8,6 @@ import {
   MenuHandler,
   MenuItem,
   MenuList,
-  Typography,
 } from "./mtw-wrappers";
 import { Logo } from "./logo";
 import { IoSearchOutline } from "react-icons/io5";
@@ -21,15 +20,22 @@ import {
 import { CgProfile } from "react-icons/cg";
 import { IoHome } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
+import { GoIssueTracks } from "react-icons/go";
 
 const navLinks = [
-  <Link href="/">
+  <Link href="/projects">
+    <Button size="sm" variant="text" className="flex w-full items-center gap-2">
+      <GoIssueTracks color="black" size="20" />
+      Projects
+    </Button>
+  </Link>,
+  <Link className="lg:mr-4" href="/">
     <Button size="sm" variant="text" className="flex w-full items-center gap-2">
       <IoHome color="black" size="20" />
       Home
     </Button>
   </Link>,
-  <Link href="/create-project">
+  <Link className="lg:mr-4" href="/create-project">
     <Button
       variant="gradient"
       color="indigo"
@@ -71,7 +77,7 @@ export async function Navbar() {
         <div className="flex justify-between">
           <Logo />
           <div className="flex items-center gap-4">
-            <ul className="mb-4 mt-2 hidden flex-col lg:mb-0 lg:mt-0 lg:flex lg:flex-row lg:items-center lg:gap-6">
+            <ul className="mb-4 mt-2 hidden flex-col lg:mb-0 lg:mt-0 lg:flex lg:flex-row lg:items-center">
               {navLinks}
             </ul>
             <div className="flex lg:hidden">

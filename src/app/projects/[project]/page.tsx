@@ -8,6 +8,7 @@ import { Project } from "@prisma/client";
 import { getServerAuthSession } from "@/server/auth";
 import { ProjectNotFound } from "../_components/projects/project-not-found";
 import { PrivateProject } from "../_components/projects/private-project";
+import { Suspense } from "react";
 
 export type ProjectFields = Pick<
   Project,
@@ -42,37 +43,45 @@ export default async function Home({
   return (
     <main className="flex h-screen">
       <div className="flex-grow overflow-y-auto px-12 pb-32 pt-12">
-        <ProjectHeader
-          isPrivate={project.isPrivate}
-          id={project?.id ?? ""}
-          name={project?.name ?? ""}
-          description={project?.description ?? ""}
-          userPermissions={userPermissions}
-          type={project?.type as ProjectType}
-          coverImage={project?.coverImage ?? ""}
-          trackCount={project?.tracks.length ?? 0}
-        />
-        {project?.tracks && (
-          <TracksTableWrapper
+        <Suspense>
+          <ProjectHeader
             isPrivate={project.isPrivate}
-            projectId={project.id}
-            tracks={project.tracks}
+            id={project?.id ?? ""}
+            name={project?.name ?? ""}
+            description={project?.description ?? ""}
             userPermissions={userPermissions}
-            session={session}
+            type={project?.type as ProjectType}
+            coverImage={project?.coverImage ?? ""}
+            trackCount={project?.tracks.length ?? 0}
           />
-        )}
-
-        {projectComments && (
-          <ProjectComments
-            userPermissions={userPermissions}
-            // @ts-ignore
-            comments={projectComments.comments}
-            commentCount={projectComments.count}
-            projectId={project?.id ?? ""}
-          />
-        )}
+        </Suspense>
+        <Suspense>
+          {project?.tracks && (
+            <TracksTableWrapper
+              projectName={project.name}
+              isPrivate={project.isPrivate}
+              projectId={project.id}
+              tracks={project.tracks}
+              userPermissions={userPermissions}
+              session={session}
+            />
+          )}
+        </Suspense>
+        <Suspense>
+          {projectComments && (
+            <ProjectComments
+              userPermissions={userPermissions}
+              // @ts-ignore
+              comments={projectComments.comments}
+              commentCount={projectComments.count}
+              projectId={project?.id ?? ""}
+            />
+          )}
+        </Suspense>
       </div>
-      <RightSidebar projectUrl={params.project} />
+      <Suspense>
+        <RightSidebar projectUrl={params.project} />
+      </Suspense>
     </main>
   );
 }

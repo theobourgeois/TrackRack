@@ -16,11 +16,13 @@ export function camelCaseToTitleCase(str: string) {
  */
 export const adjustFontSize = (text: string) => {
   const length = text.length;
+  console.log(length)
   if (length > 50) {
     return "text-4xl";
-  } else if (length > 30) {
-    return "text-[40px]";
-  } else {
-    return "text-[60px]";
   }
+  if (length > 30) {
+    return "text-[40px]";
+  }
+  return "text-[60px]";
+
 };

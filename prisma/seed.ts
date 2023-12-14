@@ -15,6 +15,7 @@ const rolePermissionsMapping = {
     PermissionName.ViewProjectTracksAndFiles,
     PermissionName.AddComments,
     PermissionName.DeleteComments,
+    PermissionName.DeleteProjects,
   ],
   Admin: [
     PermissionName.AddRemoveNonAdmin,

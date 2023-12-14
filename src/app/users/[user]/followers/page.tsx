@@ -42,12 +42,14 @@ export default async function Home({ params }: { params: { user: string } }) {
                 />
               </div>
             ))}
+            <div className="flex h-full w-full items-center justify-center">
+              {followers.length === 0 && (
+                <NoUsers
+                  title={`${params.user} isn't followed by anyone yet`}
+                />
+              )}
+            </div>
           </Suspense>
-          <div className="flex h-full w-full items-center justify-center">
-            {followers.length === 0 && (
-              <NoUsers title={`${params.user} isn't followed by anyone yet`} />
-            )}
-          </div>
         </div>
       </UserConnectionsList>
     </main>

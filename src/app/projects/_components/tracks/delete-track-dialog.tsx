@@ -2,18 +2,14 @@
 import {
   Button,
   Dialog,
-  DialogBody,
   DialogFooter,
   DialogHeader,
-  Input,
   Spinner,
-  Textarea,
 } from "@/app/_components/mtw-wrappers";
 import { DialogComponentProps } from "../projects/project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
-import { HelperText } from "@/app/_components/input-helper-text";
 
 type DialogProps = {
   id: string;
@@ -33,7 +29,7 @@ export function DeleteTrackDialog({
       showSuccessNotification("Track deleted");
     },
     onError: (err) => {
-      console.error("Error adding track:", err);
+      console.error("Error deleting track:", err);
       showErrorNotification("Error deleting track");
     },
   });

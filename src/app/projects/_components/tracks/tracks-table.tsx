@@ -10,7 +10,7 @@ import {
 import { PermissionName, Track } from "@prisma/client";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
-import { TracksTableDialogs } from "./tracks-table-wrapper";
+import { ProjectDialog } from "./tracks-table-wrapper";
 import { FaEdit } from "react-icons/fa";
 import { getDateString } from "@/app/_utils/date-utils";
 import { twMerge } from "tailwind-merge";
@@ -27,7 +27,7 @@ const tableHeads = (showActions = false) => [
 
 interface TracksTableProps {
   tracks: Track[];
-  onSelect: (dialogType: TracksTableDialogs, track: Track) => () => void;
+  onSelect: (dialogType: ProjectDialog, track: Track) => () => void;
   userPermissions?: PermissionName[];
 }
 
@@ -114,13 +114,13 @@ export function TracksTable({
                   <MenuList>
                     <>
                       <MenuItem
-                        onClick={onSelect(TracksTableDialogs.EDIT, track)}
+                        onClick={onSelect(ProjectDialog.EDIT_TRACK, track)}
                         icon={<FaEdit />}
                       >
                         Edit
                       </MenuItem>
                       <MenuItem
-                        onClick={onSelect(TracksTableDialogs.DELETE, track)}
+                        onClick={onSelect(ProjectDialog.DELETE_TRACK, track)}
                         icon={<MdDelete size="15" />}
                       >
                         Delete

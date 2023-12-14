@@ -7,12 +7,16 @@ import {
 } from "@/server/api/trpc";
 import { incrementName } from "@/app/_utils/db-utils";
 import { ProjectRole } from "@/app/_utils/typing-utils/projects";
-import { ProjectRoleName } from "@prisma/client";
-
+import { PermissionName, ProjectRoleName } from "@prisma/client";
 
 export const projectsRouter = createTRPCRouter({
     get: publicProcedure
-        .input(z.object({ projectUrl: z.string().optional(), id: z.string().optional() }))
+        .input(
+            z.object({
+                projectUrl: z.string().optional(),
+                id: z.string().optional(),
+            }),
+        )
         .query(async ({ ctx, input }) => {
             return ctx.db.project.findFirst({
                 include: {
@@ -44,14 +48,16 @@ export const projectsRouter = createTRPCRouter({
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            const projectUrl = input.name ? incrementName(
-                input.name,
-                await ctx.db.project.count({
-                    where: {
-                        name: input.name,
-                    },
-                }),
-            ) : undefined;
+            const projectUrl = input.name
+                ? incrementName(
+                    input.name,
+                    await ctx.db.project.count({
+                        where: {
+                            name: input.name,
+                        },
+                    }),
+                )
+                : undefined;
             return ctx.db.project.update({
                 where: {
                     id: input.projectId,
@@ -153,7 +159,53 @@ export const projectsRouter = createTRPCRouter({
                     roleId: role.id,
                 },
             });
+        }),
+    delete: protectedProcedure
+        .input(z.object({ id: z.string(), confirmationName: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const userDeletingProject = await ctx.db.projectUser.findFirst({
+                where: {
+                    userId: ctx.session.user.id,
+                    projectId: input.id,
+                },
+                include: {
+                    project: true,
+                    role: {
+                        include: {
+                            permissions: {
+                                include: {
+                                    permission: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
 
+            if (!userDeletingProject) {
+                throw new Error("User is not a member of this project");
+            }
+
+            const hasDeletePermission = Boolean(
+                userDeletingProject.role.permissions.find(
+                    (permission) =>
+                        permission.permission.name === PermissionName.DeleteProjects,
+                ),
+            );
+
+            if (!hasDeletePermission) {
+                throw new Error("You do not have permission to delete this project");
+            }
+
+            if (input.confirmationName !== userDeletingProject.project.name) {
+                throw new Error("Confirmation name does not match project name");
+            }
+
+            return ctx.db.project.delete({
+                where: {
+                    id: input.id,
+                },
+            });
         }),
     deleteProjectUser: protectedProcedure
         .input(z.object({ projectId: z.string(), userId: z.string() }))
@@ -188,10 +240,14 @@ export const projectsRouter = createTRPCRouter({
                 invites,
                 projectUsers,
             };
-
         }),
     projectUsersGroupedByRole: publicProcedure
-        .input(z.object({ projectUrl: z.string().optional(), projectId: z.string().optional() }))
+        .input(
+            z.object({
+                projectUrl: z.string().optional(),
+                projectId: z.string().optional(),
+            }),
+        )
         .query(async ({ ctx, input }) => {
             const projectWithUsers = await ctx.db.project.findFirst({
                 where: {

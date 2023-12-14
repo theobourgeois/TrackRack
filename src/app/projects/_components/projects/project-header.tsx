@@ -100,21 +100,28 @@ export function ProjectHeader({
                 </Typography>
                 <Typography
                   title={name}
-                  className={twMerge("font-semibold", adjustFontSize(name))}
+                  className={twMerge(
+                    "flex items-center gap-4 font-semibold",
+                    adjustFontSize(name),
+                  )}
                 >
                   {name}
+                  {canEditProject && (
+                    <span>
+                      <MdModeEditOutline
+                        onClick={handleOpenDialog(
+                          ProjectHeaderDialogs.EDIT_PROJECT,
+                        )}
+                        className="hidden cursor-pointer text-4xl group-hover:block"
+                      />
+                    </span>
+                  )}
                 </Typography>
                 <Typography className="text-lg">{description}</Typography>
                 <Typography variant="h4">{`${type} - ${trackCount} tracks`}</Typography>
               </div>
             </div>
           </div>
-          {canEditProject && (
-            <MdModeEditOutline
-              onClick={handleOpenDialog(ProjectHeaderDialogs.EDIT_PROJECT)}
-              className="hidden cursor-pointer text-4xl group-hover:block"
-            />
-          )}
         </div>
       </div>
     </>

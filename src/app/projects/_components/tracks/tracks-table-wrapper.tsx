@@ -21,11 +21,13 @@ import { ChangeProjectPrivacyDialog } from "../projects/change-project-privacy-d
 import { FaLock, FaLockOpen } from "react-icons/fa";
 import { InviteUsersDialog } from "../invite/invite-users-dialog";
 import { Session } from "next-auth";
+import { DeleteProjectDialog } from "../projects/delete-project-dialogs";
 
-export enum TracksTableDialogs {
-  EDIT = "EDIT",
-  DELETE = "DELETE",
+export enum ProjectDialog {
+  EDIT_TRACK = "EDIT_TRACK",
+  DELETE_TRACK = "DELETE_TRACK",
   ADD_TRACK = "ADD_TRACK",
+  DELETE_PROJECT = "DELETE_PROJECT",
   CHANGE_PRIVACY = "CHANGE_PRIVACY",
   INVITE_USERS = "INVITE_USERS",
 }
@@ -35,6 +37,7 @@ type SortBy = "updatedAt" | "name";
 interface TracksTableProps {
   tracks: Track[];
   projectId: string;
+  projectName: string;
   userPermissions?: PermissionName[];
   isPrivate: boolean;
   session?: Session | null;
@@ -43,11 +46,12 @@ interface TracksTableProps {
 export function TracksTableWrapper({
   tracks,
   projectId,
+  projectName,
   isPrivate,
   userPermissions,
   session,
 }: TracksTableProps) {
-  const [dialog, setDialog] = useState<TracksTableDialogs | null>(null);
+  const [dialog, setDialog] = useState<ProjectDialog | null>(null);
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>("updatedAt");
   const filteredTracks = tracks.sort((a, b) => {
@@ -62,13 +66,12 @@ export function TracksTableWrapper({
     setSortBy(sortBy);
   };
 
-  const handleOpenDialog =
-    (dialog: TracksTableDialogs, track?: Track) => () => {
-      if (track) {
-        setSelectedTrack(track);
-      }
-      setDialog(dialog);
-    };
+  const handleOpenDialog = (dialog: ProjectDialog, track?: Track) => () => {
+    if (track) {
+      setSelectedTrack(track);
+    }
+    setDialog(dialog);
+  };
 
   const renderDialogs = () => {
     const defaultProps = {
@@ -77,17 +80,17 @@ export function TracksTableWrapper({
     };
     if (selectedTrack) {
       switch (dialog) {
-        case TracksTableDialogs.DELETE:
+        case ProjectDialog.DELETE_TRACK:
           return <DeleteTrackDialog id={selectedTrack.id} {...defaultProps} />;
-        case TracksTableDialogs.EDIT:
+        case ProjectDialog.EDIT_TRACK:
           return <EditTrackDialog track={selectedTrack} {...defaultProps} />;
       }
     }
 
     switch (dialog) {
-      case TracksTableDialogs.ADD_TRACK:
+      case ProjectDialog.ADD_TRACK:
         return <CreateTrackDialog {...defaultProps} projectId={projectId} />;
-      case TracksTableDialogs.CHANGE_PRIVACY:
+      case ProjectDialog.CHANGE_PRIVACY:
         return (
           <ChangeProjectPrivacyDialog
             {...defaultProps}
@@ -95,7 +98,7 @@ export function TracksTableWrapper({
             isPrivate={isPrivate}
           />
         );
-      case TracksTableDialogs.INVITE_USERS:
+      case ProjectDialog.INVITE_USERS:
         return (
           userPermissions &&
           session && (
@@ -106,6 +109,14 @@ export function TracksTableWrapper({
               projectId={projectId}
             />
           )
+        );
+      case ProjectDialog.DELETE_PROJECT:
+        return (
+          <DeleteProjectDialog
+            {...defaultProps}
+            id={projectId}
+            projectName={projectName}
+          />
         );
     }
   };
@@ -118,7 +129,7 @@ export function TracksTableWrapper({
           <div className="flex items-center gap-2">
             {userPermissions?.includes(PermissionName.AddTracks) && (
               <Button
-                onClick={handleOpenDialog(TracksTableDialogs.ADD_TRACK)}
+                onClick={handleOpenDialog(ProjectDialog.ADD_TRACK)}
                 color="indigo"
                 variant="gradient"
               >
@@ -130,7 +141,7 @@ export function TracksTableWrapper({
               <Tooltip content="Invite user">
                 <div>
                   <IconButton
-                    onClick={handleOpenDialog(TracksTableDialogs.INVITE_USERS)}
+                    onClick={handleOpenDialog(ProjectDialog.INVITE_USERS)}
                     variant="text"
                   >
                     <IoPersonAdd className="cursor-pointer" size="30" />
@@ -147,13 +158,14 @@ export function TracksTableWrapper({
                   </IconButton>
                 </MenuHandler>
                 <MenuList>
-                  <MenuItem icon={<MdDelete size="15" />}>
+                  <MenuItem
+                    onClick={handleOpenDialog(ProjectDialog.DELETE_PROJECT)}
+                    icon={<MdDelete size="15" />}
+                  >
                     Delete Project
                   </MenuItem>
                   <MenuItem
-                    onClick={handleOpenDialog(
-                      TracksTableDialogs.CHANGE_PRIVACY,
-                    )}
+                    onClick={handleOpenDialog(ProjectDialog.CHANGE_PRIVACY)}
                     icon={isPrivate ? <FaLockOpen /> : <FaLock />}
                   >
                     {isPrivate ? "Make public" : "Make private"}
