@@ -6,6 +6,7 @@ import { MdModeEditOutline } from "react-icons/md";
 import { EditProjectDialog } from "./edit-project-dialog";
 import { PermissionName } from "@prisma/client";
 import { twMerge } from "tailwind-merge";
+import { adjustFontSize } from "@/app/_utils/string-utils";
 
 export enum ProjectHeaderDialogs {
   ADD_TRACK = "Add Track",
@@ -97,7 +98,10 @@ export function ProjectHeader({
                 <Typography variant="lead">
                   {isPrivate ? "Private" : "Public"} project
                 </Typography>
-                <Typography className="text-[60px] font-semibold">
+                <Typography
+                  title={name}
+                  className={twMerge("font-semibold", adjustFontSize(name))}
+                >
                   {name}
                 </Typography>
                 <Typography className="text-lg">{description}</Typography>

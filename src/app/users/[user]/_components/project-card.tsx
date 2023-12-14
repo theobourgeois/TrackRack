@@ -8,18 +8,23 @@ interface ProjectCardProps {
 }
 export function ProjectCard({ project, role }: ProjectCardProps) {
   return (
-    <Link href={`/projects/${project.urlName}`}>
-      <div className="group flex flex-col flex-wrap gap-2">
-        <img src={project.coverImage ?? ""} className="h-64 w-64 rounded-md" />
-        <div className="h-min ">
+    <div>
+      <Link href={`/projects/${project.urlName}`}>
+        <div className="group flex flex-col flex-wrap gap-2">
+          <img
+            src={project.coverImage ?? ""}
+            className="h-64 w-64 rounded-md"
+          />
           <Typography
-            className="w-min cursor-pointer break-words group-hover:underline"
+            className="w-64 max-w-full cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap group-hover:underline"
+            title={project.name}
             variant="h3"
           >
             {project.name}
           </Typography>
+          <Typography variant="lead">{role}</Typography>
         </div>
-      </div>
-    </Link>
+      </Link>
+    </div>
   );
 }
