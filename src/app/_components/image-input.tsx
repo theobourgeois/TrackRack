@@ -17,17 +17,20 @@ interface ImageInputProps {
   defaultImage?: string;
   name: string;
   sizeStyles?: string;
+  onChange?: (image: File) => void;
 }
 export function ImageInput({
   defaultImage,
   name,
   sizeStyles = "w-64 h-64",
+  onChange,
 }: ImageInputProps) {
   const [image, setImage] = useState<string>(defaultImage ?? "");
   const { showErrorNotification } = useSnackBar();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      onChange?.(file);
       const fileReader = new FileReader();
       fileReader.onload = () => {
         if (IMAGE_FORMATS.includes(file.type)) {

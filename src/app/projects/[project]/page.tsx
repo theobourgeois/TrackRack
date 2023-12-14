@@ -65,6 +65,7 @@ export default async function Home({
         {projectComments && (
           <ProjectComments
             userPermissions={userPermissions}
+            // @ts-ignore
             comments={projectComments.comments}
             commentCount={projectComments.count}
             projectId={project?.id ?? ""}

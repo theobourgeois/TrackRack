@@ -89,14 +89,21 @@ export async function Navbar() {
                 </div>
               </MenuHandler>
               <MenuList>
-                <MenuItem className="flex items-center">
-                  <CgProfile size="20" />
-                  <Link href={`/users/${session.user.name}`}>Profile</Link>
-                </MenuItem>
-                <MenuItem className="flex items-center border-t">
-                  <IoIosLogOut size="20" />
-                  <Link href="/api/auth/signout">Sign out</Link>
-                </MenuItem>
+                <Link
+                  className="hover:outline-none"
+                  href={`/users/${session.user.name}`}
+                >
+                  <MenuItem className="flex items-center">
+                    <CgProfile size="20" />
+                    Profile
+                  </MenuItem>
+                </Link>
+                <Link className="hover:outline-none" href="/api/auth/signout">
+                  <MenuItem className="flex items-center border-t">
+                    <IoIosLogOut size="20" />
+                    Sign out
+                  </MenuItem>
+                </Link>
               </MenuList>
             </Menu>
           </div>

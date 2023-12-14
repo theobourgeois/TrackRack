@@ -1,3 +1,7 @@
+/**
+ * This file contains wrappers for Material Tailwind components.
+ * This is done because server components can't use raw mtw components.
+ */
 "use client";
 import {
   Button as MButton,
@@ -34,6 +38,10 @@ import {
   MenuHandler as MMenuHandler,
   MenuList as MMenuList,
   MenuItem as MMenuItem,
+  TabsHeader as MTabsHeader,
+  TabsBody as MTabsBody,
+  TabPanel as MTabPanel,
+  Tab as MTab,
   PopoverContentProps,
   PopoverProps,
   PopoverHandlerProps,
@@ -186,6 +194,18 @@ export function Switch(props: ComponentProps<typeof MSwitch>): JSX.Element {
 
 export function Tabs(props: ComponentProps<typeof MTabs>): JSX.Element {
   return <MTabs {...props} />;
+}
+
+export function Tab(props: ComponentProps<typeof MTab>): JSX.Element {
+  return <MTab {...props} />;
+}
+
+export function TabsBody(props: ComponentProps<typeof MTabsBody>) {
+  return <MTabsBody {...props} />;
+}
+
+export function TabPanel(props: ComponentProps<typeof MTabPanel>) {
+  return <MTabPanel {...props} />;
 }
 
 export function Radio(props: ComponentProps<typeof MRadio>): JSX.Element {

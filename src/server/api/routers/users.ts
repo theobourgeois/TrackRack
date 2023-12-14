@@ -1,6 +1,7 @@
 import { z } from "zod";
 import {
     createTRPCRouter,
+    protectedProcedure,
     publicProcedure,
 } from "@/server/api/trpc";
 import bcrypt from "bcrypt";
@@ -44,6 +45,7 @@ export const usersRouter = createTRPCRouter({
             return ctx.db.projectUser.findMany({
                 include: {
                     project: true,
+                    role: true,
                 },
                 where: {
                     userId: input.userId,
@@ -109,4 +111,128 @@ export const usersRouter = createTRPCRouter({
                 },
             });
         }),
+    follow: protectedProcedure
+        .input(
+            z.object({
+                userId: z.string(),
+            }),
+        )
+        .mutation(async ({ ctx, input }) => {
+            const existing = await ctx.db.follower.findFirst({
+                where: {
+                    followingId: ctx.session.user.id,
+                    followerId: input.userId,
+                },
+            });
+
+
+            // stop following if already following
+            if (existing) {
+                return ctx.db.follower.delete({
+                    where: {
+                        id: existing.id,
+                    },
+                });
+            }
+
+            return ctx.db.follower.create({
+                data: {
+                    followingId: ctx.session.user.id,
+                    followerId: input.userId,
+                },
+            });
+        }),
+    isFollowing: protectedProcedure
+        .input(
+            z.object({
+                userId: z.string(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            const existing = await ctx.db.follower.findFirst({
+                where: {
+                    followingId: ctx.session.user.id,
+                    followerId: input.userId,
+                },
+            });
+
+            return Boolean(existing);
+        }),
+    following: publicProcedure
+        .input(
+            z.object({
+                userName: z.string(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            return ctx.db.follower.findMany({
+                where: {
+                    following: {
+                        name: input.userName,
+                    },
+                },
+                include: {
+                    follower: {
+                        include: {
+                            _count: {
+                                select: {
+                                    followers: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        }),
+    followers: publicProcedure
+        .input(
+            z.object({
+                userName: z.string(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            return ctx.db.follower.findMany({
+                where: {
+                    follower: {
+                        name: input.userName,
+                    },
+                },
+                include: {
+                    following: {
+                        include: {
+                            _count: {
+                                select: {
+                                    followers: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        }),
+    connectionsCount: publicProcedure
+        .input(
+            z.object({
+                userId: z.string(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            const following = await ctx.db.follower.count({
+                where: {
+                    followingId: input.userId,
+                },
+            });
+
+            const followers = await ctx.db.follower.count({
+                where: {
+                    followerId: input.userId,
+                },
+            });
+
+            return {
+                following,
+                followers,
+            };
+        }),
+
 });
