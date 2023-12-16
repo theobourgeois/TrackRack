@@ -1,5 +1,5 @@
 import { RightSidebar } from "@/app/projects/_components/projects/right-sidebar";
-import { ProjectType } from "@/app/_utils/typing-utils/projects";
+import { ProjectType } from "@/utils/typing-utils/projects";
 import { api } from "@/trpc/server";
 import { TracksTableWrapper } from "../_components/tracks/tracks-table-wrapper";
 import { ProjectComments } from "../_components/comments/project-comments";

@@ -16,7 +16,7 @@ import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { HelperText } from "@/app/_components/input-helper-text";
-import { ProjectType } from "@/app/_utils/typing-utils/projects";
+import { ProjectType } from "@/utils/typing-utils/projects";
 import { useState } from "react";
 import { ImageInput } from "@/app/_components/image-input";
 

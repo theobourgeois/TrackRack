@@ -5,8 +5,8 @@ import {
     protectedProcedure,
     publicProcedure,
 } from "@/server/api/trpc";
-import { incrementName } from "@/app/_utils/db-utils";
-import { ProjectRole } from "@/app/_utils/typing-utils/projects";
+import { incrementName } from "@/utils/db-utils";
+import { ProjectRole } from "@/utils/typing-utils/projects";
 import { PermissionName, ProjectRoleName } from "@prisma/client";
 
 export const projectsRouter = createTRPCRouter({

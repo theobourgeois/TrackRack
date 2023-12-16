@@ -1,12 +1,12 @@
 "use client";
 import { Typography } from "@/app/_components/mtw-wrappers";
-import { ProjectType } from "@/app/_utils/typing-utils/projects";
+import { ProjectType } from "@/utils/typing-utils/projects";
 import { useState } from "react";
 import { MdModeEditOutline } from "react-icons/md";
 import { EditProjectDialog } from "./edit-project-dialog";
 import { PermissionName } from "@prisma/client";
 import { twMerge } from "tailwind-merge";
-import { adjustFontSize } from "@/app/_utils/string-utils";
+import { adjustFontSize } from "@/utils/string-utils";
 
 export enum ProjectHeaderDialogs {
   ADD_TRACK = "Add Track",

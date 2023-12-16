@@ -5,7 +5,7 @@ import {
     protectedProcedure,
     publicProcedure,
 } from "@/server/api/trpc";
-import { incrementName } from "@/app/_utils/db-utils";
+import { incrementName } from "@/utils/db-utils";
 
 export const tracksRouter = createTRPCRouter({
     create: protectedProcedure

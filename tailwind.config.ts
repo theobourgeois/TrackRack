@@ -1,8 +1,9 @@
 import { type Config } from "tailwindcss";
 import { fontFamily } from "tailwindcss/defaultTheme";
 import withMT from "@material-tailwind/react/utils/withMT";
+import { withUt } from "uploadthing/tw";
 
-module.exports = withMT({
+module.exports = withMT(withUt({
   content: ["./src/**/*.tsx"],
   theme: {
     extend: {
@@ -12,4 +13,4 @@ module.exports = withMT({
     },
   },
   plugins: [],
-} satisfies Config);
+} satisfies Config));

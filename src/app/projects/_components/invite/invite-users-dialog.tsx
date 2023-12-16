@@ -13,7 +13,7 @@ import {
 } from "@/app/_components/mtw-wrappers";
 import { PermissionName, ProjectRoleName } from "@prisma/client";
 import { useState } from "react";
-import { EMAIL_REGEX } from "@/app/_utils/validation";
+import { EMAIL_REGEX } from "@/utils/validation";
 import { InviteUser, ProjectUser } from "./invite-project-user";
 import {
   DeleteInviteUserDialog,

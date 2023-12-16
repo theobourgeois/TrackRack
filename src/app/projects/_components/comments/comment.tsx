@@ -9,11 +9,11 @@ import {
   MenuList,
   Typography,
 } from "@/app/_components/mtw-wrappers";
-import { getDateString } from "@/app/_utils/date-utils";
+import { getDateString } from "@/utils/date-utils";
 import {
   CommentType,
   CommentWithUserAndReplies,
-} from "@/app/_utils/typing-utils/comments";
+} from "@/utils/typing-utils/comments";
 import { FaEdit } from "react-icons/fa";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdDelete, MdOutlineAddReaction } from "react-icons/md";

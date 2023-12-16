@@ -6,7 +6,7 @@ import {
   Typography,
 } from "@/app/_components/mtw-wrappers";
 import { ReactionSelector } from "@/app/_components/comment-reactions-selector";
-import { ReactionWithUser } from "@/app/_utils/typing-utils/comments";
+import { ReactionWithUser } from "@/utils/typing-utils/comments";
 import { api } from "@/trpc/react";
 import { Session } from "next-auth";
 import { useRouter } from "next/navigation";

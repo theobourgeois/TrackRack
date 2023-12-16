@@ -91,6 +91,7 @@ model User {
   reaction     Reaction[]
   followers    Follower[] @relation("FollowerToUser")
   followings   Follower[] @relation("FollowingToUser")
+  files        File[]
 }
 
 model VerificationToken {
@@ -193,6 +194,32 @@ model Track {
   createdById String
   project     Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   projectId   String
+
+  files      File[]
+
+  @@index([name])
+}
+
+enum FileType {
+  Stem
+  Demo
+  Instrumental
+  Master
+  DAWProject
+  Image
+  Other
+}
+model File {
+  id          String   @id @default(cuid())
+  name        String
+  trackId     String
+  track      Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  type        FileType
+  url         String
+  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdById String
+
 
   @@index([name])
 }

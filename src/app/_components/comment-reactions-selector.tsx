@@ -16,7 +16,7 @@ import { useState } from "react";
 import { api } from "@/trpc/react";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
-import { ReactionWithUser } from "../_utils/typing-utils/comments";
+import { ReactionWithUser } from "../../utils/typing-utils/comments";
 
 const reactions = ["👍", "👎", "🔥", "😄", "😕", "🎉", "😡", "🚀", "👀"];
 

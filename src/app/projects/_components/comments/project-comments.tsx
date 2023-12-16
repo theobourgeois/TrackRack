@@ -1,6 +1,6 @@
 import { Typography } from "@/app/_components/mtw-wrappers";
 import { AddComment } from "./add-comment";
-import { CommentWithUserAndReplies } from "@/app/_utils/typing-utils/comments";
+import { CommentWithUserAndReplies } from "@/utils/typing-utils/comments";
 import { CommentComponent } from "./comment";
 import { getServerAuthSession } from "@/server/auth";
 import { PermissionName } from "@prisma/client";

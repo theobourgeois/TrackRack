@@ -9,7 +9,7 @@ import {
   Textarea,
 } from "@/app/_components/mtw-wrappers";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
-import { ProjectType } from "@/app/_utils/typing-utils/projects";
+import { ProjectType } from "@/utils/typing-utils/projects";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";

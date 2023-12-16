@@ -12,7 +12,7 @@ import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import { ProjectDialog } from "./tracks-table-wrapper";
 import { FaEdit } from "react-icons/fa";
-import { getDateString } from "@/app/_utils/date-utils";
+import { getDateString } from "@/utils/date-utils";
 import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

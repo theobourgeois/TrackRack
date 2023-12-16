@@ -1,7 +1,7 @@
 "use client";
 import { Button, Input, Typography } from "@/app/_components/mtw-wrappers";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
-import { EMAIL_REGEX } from "@/app/_utils/validation";
+import { EMAIL_REGEX } from "@/utils/validation";
 import { api } from "@/trpc/react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
