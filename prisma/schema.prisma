@@ -205,6 +205,8 @@ enum FileType {
   Demo
   Instrumental
   Master
+  Midi
+  Lyrics
   DAWProject
   Image
   Other
@@ -215,6 +217,7 @@ model File {
   trackId     String
   track      Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
 
+  size       Int
   type        FileType
   url         String
   createdBy   User   @relation(fields: [createdById], references: [id])

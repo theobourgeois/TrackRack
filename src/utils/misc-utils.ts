@@ -5,4 +5,4 @@ function* idGenerator() {
   }
 }
 const idGen = idGenerator();
-export const getNewID = (): number => idGen.next().value as number;
+export const getNewId = (): number => idGen.next().value as number;

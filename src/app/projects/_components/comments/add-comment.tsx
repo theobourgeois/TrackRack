@@ -6,7 +6,7 @@ import {
   Textarea,
 } from "@/app/_components/mtw-wrappers";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
-import { getNewID } from "@/utils/misc-utils";
+import { getNewId } from "@/utils/misc-utils";
 import { CommentType } from "@/utils/typing-utils/comments";
 import { api } from "@/trpc/react";
 import { TextareaProps } from "@material-tailwind/react";
@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
 
 function AutoResizeTextarea(props: Omit<TextareaProps, "ref">) {
-  const textareaId = getNewID();
+  const textareaId = getNewId();
 
   // Auto resize textarea. ref on text area not working, that's why we use id
   useEffect(() => {

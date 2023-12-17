@@ -78,4 +78,17 @@ export const tracksRouter = createTRPCRouter({
                 },
             });
         }),
+    get: publicProcedure
+        .input(z.object({ id: z.string().optional(), urlName: z.string().optional() }))
+        .query(async ({ ctx, input }) => {
+            return ctx.db.track.findFirst({
+                where: {
+                    id: input.id,
+                    urlName: input.urlName,
+                },
+                include: {
+                    files: true,
+                }
+            });
+        }),
 });
