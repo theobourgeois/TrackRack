@@ -26,6 +26,7 @@ export const ourFileRouter = {
         trackId: metadata.input.trackId,
         url: file.url,
         createdById: metadata.userId,
+        size: file.size,
       })
       return { name: file.name };
     }),

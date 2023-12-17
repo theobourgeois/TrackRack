@@ -20,16 +20,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-      <AudioPlayerProvider>
-        <body className="flex-col overflow-hidden">
+      <body className="flex-col overflow-hidden">
+        <AudioPlayerProvider>
           <Navbar />
           <TRPCReactProvider cookies={cookies().toString()}>
             <SnackBarProvider>
               <ThemeProvider>{children}</ThemeProvider>
             </SnackBarProvider>
           </TRPCReactProvider>
-        </body>
-      </AudioPlayerProvider>
+        </AudioPlayerProvider>
+      </body>
     </html>
   );
 }

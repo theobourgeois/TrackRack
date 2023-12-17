@@ -38,7 +38,6 @@ import {
   MenuHandler as MMenuHandler,
   MenuList as MMenuList,
   MenuItem as MMenuItem,
-  TabsHeader as MTabsHeader,
   TabsBody as MTabsBody,
   TabPanel as MTabPanel,
   Tab as MTab,

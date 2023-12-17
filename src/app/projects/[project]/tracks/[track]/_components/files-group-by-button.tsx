@@ -8,26 +8,26 @@ import {
 } from "@/app/_components/mtw-wrappers";
 import { useRouter } from "next/navigation";
 
-export enum FileSortByType {
+export enum FileGroupByType {
   FileType = "File type",
   Date = "Date",
 }
 
-export function FileSortBy() {
+export function FileGroupByButton() {
   const router = useRouter();
-  const handleChangeSortBy = (sortBy: FileSortByType) => () => {
-    router.replace("?sortBy=" + sortBy);
+  const handleChangeSortBy = (groupBy: FileGroupByType) => () => {
+    router.replace("?groupBy=" + groupBy);
   };
 
   return (
     <Menu>
       <MenuHandler>
         <Button color="indigo" variant="outlined">
-          Sort by
+          Group by
         </Button>
       </MenuHandler>
       <MenuList className="z-[100]">
-        {Object.values(FileSortByType).map((sortBy) => (
+        {Object.values(FileGroupByType).map((sortBy) => (
           <MenuItem onClick={handleChangeSortBy(sortBy)} key={sortBy}>
             {sortBy}
           </MenuItem>

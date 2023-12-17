@@ -16,6 +16,7 @@ export const filesRouter = createTRPCRouter({
         trackId: z.string(),
         url: z.string(),
         createdById: z.string(),
+        size: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -26,6 +27,8 @@ export const filesRouter = createTRPCRouter({
           url: input.url,
           trackId: input.trackId,
           createdById: input.createdById,
+          createdAt: new Date(),
+          size: input.size,
         },
       })
     }),

@@ -11,10 +11,12 @@ import { IconButton, Typography } from "../_components/mtw-wrappers";
 import { IoPause, IoPlay } from "react-icons/io5";
 import { IoMdVolumeHigh } from "react-icons/io";
 import { Slider } from "@material-tailwind/react";
+import Link from "next/link";
 
 type Audio = {
   name: string;
   url: string;
+  redirect?: string;
 };
 
 // when the value in slider is 0, the knob doesn't go to the start, but weirdly goes to the middle.
@@ -71,8 +73,18 @@ export function AudioPlayerProvider({
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
+    // get audio from local storage
+    const audio = localStorage.getItem("audio");
+    if (!audio) return;
+    setAudio(JSON.parse(audio));
+  }, []);
+
+  useEffect(() => {
     // reset time when audio changes
     setCurrentTime(START_TIME);
+
+    // store the audio in local storage
+    localStorage.setItem("audio", JSON.stringify(audio));
 
     if (!audioRef.current) return;
 
@@ -191,13 +203,19 @@ export function AudioPlayerProvider({
           <div className="flex items-center gap-2">
             <IconButton
               className="rounded-full"
-              variant="text"
+              variant="gradient"
+              color="indigo"
               onClick={togglePlay}
               size="md"
             >
               {isPlaying ? <IoPause size="20" /> : <IoPlay size="20" />}
             </IconButton>
-            <Typography variant="h6">{audio.name}</Typography>
+            <Link
+              className="cursor-pointer hover:underline"
+              href={audio.redirect ?? ""}
+            >
+              <Typography variant="h6">{audio.name}</Typography>
+            </Link>
           </div>
           <div className="flex flex-grow items-center gap-2">
             <div className="flex flex-grow items-center gap-2">
@@ -220,7 +238,7 @@ export function AudioPlayerProvider({
               </IconButton>
               <div className="absolute bottom-5 left-5 z-10 hidden origin-left -rotate-90 rounded-md bg-white p-4 drop-shadow-md group-hover:flex">
                 <Slider
-                  value={isMuted ? START_TIME : volume}
+                  value={isMuted ? START_TIME : volume || START_TIME}
                   onChange={(e) => changeVolume(Number(e.target.value))}
                   color="indigo"
                 />
