@@ -101,8 +101,7 @@ export function ProjectHeader({
                 <Typography
                   title={name}
                   className={twMerge(
-                    "flex items-center gap-4 font-semibold",
-                    adjustFontSize(name),
+                    "flex items-center gap-4 text-[60px] font-semibold",
                   )}
                 >
                   {name}

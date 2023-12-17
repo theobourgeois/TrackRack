@@ -74,15 +74,40 @@ export function AudioPlayerProvider({
     // reset time when audio changes
     setCurrentTime(START_TIME);
 
-    // set duration
     if (!audioRef.current) return;
-    audioRef.current.addEventListener("loadedmetadata", () => {
-      setDuration(audioRef.current!.duration);
-    });
-    // adjust time every second
-    audioRef.current.addEventListener("timeupdate", () => {
+
+    const handleSeekToCurrentTime = () => {
       setCurrentTime(audioRef.current!.currentTime);
-    });
+    };
+
+    const initializeDuration = () => {
+      setDuration(audioRef.current!.duration);
+    };
+
+    audioRef.current.addEventListener("loadedmetadata", initializeDuration);
+    audioRef.current.addEventListener("timeupdate", handleSeekToCurrentTime);
+
+    // handle keyboard shortcuts
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === "Space") {
+        e.preventDefault();
+        togglePlay();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      audioRef.current?.removeEventListener(
+        "loadedmetadata",
+        initializeDuration,
+      );
+      audioRef.current?.removeEventListener(
+        "timeupdate",
+        handleSeekToCurrentTime,
+      );
+      window.removeEventListener("keydown", handleKeyDown);
+    };
   }, [audio]);
 
   const play = () => {

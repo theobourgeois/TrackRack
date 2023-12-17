@@ -58,19 +58,20 @@ export function UserConnectionsList({
             ];
 
           return (
-            <Typography
-              as="a"
-              href={tabName}
-              variant="h4"
-              className={twMerge(
-                tabName === tab
-                  ? "border-b-4 border-indigo-400 pb-1 text-indigo-400"
-                  : "border-black pb-1 hover:border-b-4",
-              )}
-              color="black"
-            >
-              {tabName}
-            </Typography>
+            <Link href={`/users/${user}/${tabName}`}>
+              <Typography
+                href={tabName}
+                variant="h4"
+                className={twMerge(
+                  tabName === tab
+                    ? "border-b-4 border-indigo-400 pb-1 text-indigo-400"
+                    : "border-black pb-1 hover:border-b-4",
+                )}
+                color="black"
+              >
+                {tabName}
+              </Typography>
+            </Link>
           );
         })}
       </div>

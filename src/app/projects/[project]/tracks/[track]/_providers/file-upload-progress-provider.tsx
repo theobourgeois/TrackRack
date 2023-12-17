@@ -5,7 +5,6 @@ import {
   Typography,
 } from "@/app/_components/mtw-wrappers";
 import { createContext, useContext, useState } from "react";
-import { RxCross2 } from "react-icons/rx";
 
 type FileUpload = {
   id: number | string;
@@ -52,16 +51,8 @@ export function FileUploadProgressProvider({
         <div className="fixed bottom-0 right-0 m-4 flex flex-col gap-2 rounded-md p-4 drop-shadow-md">
           {files.map(({ id, name }) => (
             <div key={id} className="flex items-center justify-end gap-2">
-              <Typography variant="small">{name}</Typography>
-              <Spinner />
-              <IconButton
-                className="rounded-full"
-                size="sm"
-                variant="text"
-                onClick={() => removeFile(id)}
-              >
-                <RxCross2 />
-              </IconButton>
+              <Typography variant="h6">{name}</Typography>
+              <Spinner color="indigo" />
             </div>
           ))}
         </div>

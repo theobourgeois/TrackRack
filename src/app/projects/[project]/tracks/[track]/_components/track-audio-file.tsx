@@ -5,7 +5,7 @@ import { File } from "@prisma/client";
 import { IoPause, IoPlay } from "react-icons/io5";
 
 export function TrackAudioFile({ file }: { file: File }) {
-  const { togglePlay, setAudio, isPlaying, audio } = useAudioPlayer();
+  const { togglePlay, setAudio, play, isPlaying, audio } = useAudioPlayer();
 
   const handleTogglePlay = () => {
     if (audio?.url !== file.url) {
@@ -13,6 +13,7 @@ export function TrackAudioFile({ file }: { file: File }) {
         name: file.name,
         url: file.url,
       });
+      return play();
     }
     togglePlay();
   };
@@ -31,7 +32,7 @@ export function TrackAudioFile({ file }: { file: File }) {
           <IoPlay size="20" />
         )}
       </IconButton>
-      <Typography variant="paragraph">{file.name}</Typography>
+      <Typography variant="h6">{file.name}</Typography>
     </div>
   );
 }
