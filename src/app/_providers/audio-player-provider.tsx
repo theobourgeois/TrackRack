@@ -9,7 +9,13 @@ import {
 } from "react";
 import { IconButton, Typography } from "../_components/mtw-wrappers";
 import { IoPause, IoPlay } from "react-icons/io5";
-import { IoMdVolumeHigh } from "react-icons/io";
+import {
+  IoMdFastforward,
+  IoMdRewind,
+  IoMdVolumeHigh,
+  IoMdVolumeLow,
+  IoMdVolumeOff,
+} from "react-icons/io";
 import { Slider } from "@material-tailwind/react";
 import Link from "next/link";
 
@@ -42,6 +48,18 @@ const getTimeStrings = (time: number, duration: number) => {
   return { currentTime, endTime };
 };
 
+/**
+ * get the volume icon based on the volume and whether the audio is muted or not
+ * @param volume volume in percentage
+ * @param isMuted whether the audio is muted or not
+ * @returns volume icon
+ */
+const getVolumeIcon = (volume: number, isMuted: boolean) => {
+  if (isMuted || volume === 0) return <IoMdVolumeOff size="25" />;
+  if (volume < 50) return <IoMdVolumeLow size="25" />;
+  return <IoMdVolumeHigh size="25" />;
+};
+
 const AudioPlayerContext = createContext<{
   audio: Audio | null;
   setAudio: (audio: Audio) => void;
@@ -57,6 +75,7 @@ const AudioPlayerContext = createContext<{
   currentTime: number;
   duration: number;
   seek: (time: number) => void;
+  createQueue: (audio: Audio[]) => void;
 }>(undefined!);
 
 export function AudioPlayerProvider({
@@ -65,6 +84,7 @@ export function AudioPlayerProvider({
   children: React.ReactNode;
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [audioQueue, setAudioQueue] = useState<Audio[]>([]);
   const [audio, setAudio] = useState<Audio | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -73,18 +93,38 @@ export function AudioPlayerProvider({
   const [duration, setDuration] = useState(0);
 
   useEffect(() => {
+    if (Boolean(audio)) return;
     // get audio from local storage
-    const audio = localStorage.getItem("audio");
-    if (!audio) return;
-    setAudio(JSON.parse(audio));
+    const audioStorage = localStorage.getItem("audio");
+    if (audioStorage) {
+      setAudio(JSON.parse(audioStorage));
+    }
+
+    // get volume from local storage
+    const volumeStorage = localStorage.getItem("volume");
+    if (volumeStorage) {
+      const parsedVolume = parseInt(JSON.parse(volumeStorage));
+      changeVolume(parsedVolume);
+    }
   }, []);
+
+  useEffect(() => {
+    // set volume in local storage. debounce it so it doesn't get called too many times
+    const timeout = setTimeout(() => {
+      localStorage.setItem("volume", JSON.stringify(volume));
+    }, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [volume]);
 
   useEffect(() => {
     // reset time when audio changes
     setCurrentTime(START_TIME);
 
     // store the audio in local storage
-    localStorage.setItem("audio", JSON.stringify(audio));
+    if (Boolean(audio)) {
+      localStorage.setItem("audio", JSON.stringify(audio));
+    }
 
     if (!audioRef.current) return;
 
@@ -126,10 +166,12 @@ export function AudioPlayerProvider({
     audioRef.current?.play();
     setIsPlaying(true);
   };
+
   const pause = () => {
     audioRef.current?.pause();
     setIsPlaying(false);
   };
+
   const togglePlay = () => {
     setIsPlaying((prev) => !prev);
     if (isPlaying) {
@@ -148,8 +190,14 @@ export function AudioPlayerProvider({
   };
 
   const next = () => {};
+
   const previous = () => {};
+
   const addToQueue = (audio: string) => {};
+
+  const createQueue = (audio: Audio[]) => {
+    setAudioQueue([...audio]);
+  };
 
   const toggleMute = () => {
     if (!audioRef.current) return;
@@ -184,6 +232,7 @@ export function AudioPlayerProvider({
         audio,
         setAudio,
         togglePlay,
+        createQueue,
         play,
         pause,
         next,
@@ -199,8 +248,8 @@ export function AudioPlayerProvider({
     >
       {children}
       {audio && (
-        <div className="fixed bottom-4 left-1/2 right-0 flex translate-x-[-50%] flex-col items-center justify-start gap-2 rounded-full bg-white p-4 drop-shadow-md md:flex-row ">
-          <div className="flex items-center gap-2">
+        <div className="fixed bottom-4 left-1/2 right-0 flex translate-x-[-50%] flex-col items-center justify-start gap-4 rounded-full bg-white p-4 drop-shadow-md md:flex-row">
+          <div className="flex items-center gap-3">
             <IconButton
               className="rounded-full"
               variant="gradient"
@@ -210,11 +259,12 @@ export function AudioPlayerProvider({
             >
               {isPlaying ? <IoPause size="20" /> : <IoPlay size="20" />}
             </IconButton>
+
             <Link
               className="cursor-pointer hover:underline"
               href={audio.redirect ?? ""}
             >
-              <Typography variant="h6">{audio.name}</Typography>
+              <Typography variant="h5">{audio.name}</Typography>
             </Link>
           </div>
           <div className="flex flex-grow items-center gap-2">
@@ -234,12 +284,13 @@ export function AudioPlayerProvider({
                 size="md"
                 className="group relative rounded-full"
               >
-                <IoMdVolumeHigh size="25" />
+                {getVolumeIcon(volume, isMuted)}
               </IconButton>
               <div className="absolute bottom-5 left-5 z-10 hidden origin-left -rotate-90 rounded-md bg-white p-4 drop-shadow-md group-hover:flex">
                 <Slider
                   value={isMuted ? START_TIME : volume || START_TIME}
                   onChange={(e) => changeVolume(Number(e.target.value))}
+                  style={{ width: "50px" }}
                   color="indigo"
                 />
               </div>

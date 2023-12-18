@@ -50,7 +50,7 @@ export function getDateString(
         case 'hour':
           return 'Less than an hour ago';
         case 'day':
-          return 'Today';
+          return 'Less than 24 hours ago';
         case 'week':
           return 'This week';
         case 'month':

@@ -2,6 +2,7 @@ import {
   Menu,
   MenuHandler,
   MenuItem,
+  MenuList,
   Typography,
 } from "@/app/_components/mtw-wrappers";
 import { TrackFileUploaderButton } from "./_components/track-file-uploader-button";
@@ -9,15 +10,17 @@ import { api } from "@/trpc/server";
 import { FileUploadProgressProvider } from "./_providers/file-upload-progress-provider";
 import _ from "lodash";
 import Link from "next/link";
-import { FileGroupByButton } from "./_components/files-group-by-button";
-import { FileList } from "./_components/file-list";
-import { MenuList } from "@/app/_components/mtw-wrappers-exports";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { FileType } from "@prisma/client";
+import { FileTypeTabs } from "./_components/file-type-tabs";
+import { FilesGroupedByDate } from "./_components/file-list";
 
 export default async function Home({
   params,
+  searchParams,
 }: {
   params: { project: string; track: string };
+  searchParams: { type: FileType };
 }) {
   const track = await api.tracks.get.query({
     urlName: params.track,
@@ -27,6 +30,13 @@ export default async function Home({
   });
 
   if (!track) return <div>Track not found</div>;
+
+  const files = track.files.filter((file) => {
+    if (searchParams.type) {
+      return file.type === searchParams.type;
+    }
+    return true;
+  });
 
   return (
     <main className="h-[calc(100vh-200px)] w-full overflow-y-auto py-8">
@@ -68,11 +78,15 @@ export default async function Home({
             </div>
             <div className="flex items-center gap-2">
               <TrackFileUploaderButton trackId={track.id} />
-              <FileGroupByButton />
             </div>
+            <FileTypeTabs
+              files={track.files}
+              baseUrl={`/projects/${params.project}/tracks/${params.track}`}
+              paramsType={searchParams.type}
+            />
           </div>
         </FileUploadProgressProvider>
-        <FileList files={track.files} />
+        <FilesGroupedByDate files={files} />
       </div>
     </main>
   );

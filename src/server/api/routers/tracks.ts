@@ -87,7 +87,14 @@ export const tracksRouter = createTRPCRouter({
                     urlName: input.urlName,
                 },
                 include: {
-                    files: true,
+                    files: {
+                        orderBy: {
+                            createdAt: "desc",
+                        },
+                        include: {
+                            createdBy: true,
+                        }
+                    },
                 }
             });
         }),

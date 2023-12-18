@@ -41,6 +41,7 @@ import {
   TabsBody as MTabsBody,
   TabPanel as MTabPanel,
   Tab as MTab,
+  TabsHeader as MTabsHeader,
   PopoverContentProps,
   PopoverProps,
   PopoverHandlerProps,
@@ -55,11 +56,11 @@ import {
 import ClickAwayListener from "react-click-away-listener";
 import { twMerge } from "tailwind-merge";
 
-export function Menu(props: ComponentProps<typeof MMenu>): JSX.Element {
+function Menu(props: ComponentProps<typeof MMenu>): JSX.Element {
   return <MMenu {...props} />;
 }
 
-export function MenuHandler({
+function MenuHandler({
   children,
   ...props
 }: ComponentProps<typeof MMenuHandler>): JSX.Element {
@@ -70,11 +71,11 @@ export function MenuHandler({
   );
 }
 
-export function MenuList(props: ComponentProps<typeof MMenuList>): JSX.Element {
+function MenuList(props: ComponentProps<typeof MMenuList>): JSX.Element {
   return <MMenuList {...props} />;
 }
 
-export function MenuItem({
+function MenuItem({
   icon,
   className,
   children,
@@ -91,131 +92,125 @@ export function MenuItem({
   );
 }
 
-export function IconButton(
-  props: ComponentProps<typeof MIconButton>,
-): JSX.Element {
+function IconButton(props: ComponentProps<typeof MIconButton>): JSX.Element {
   return <MIconButton {...props} />;
 }
 
-export function Card(props: ComponentProps<typeof MCard>): JSX.Element {
+function Card(props: ComponentProps<typeof MCard>): JSX.Element {
   return <MCard {...props} />;
 }
 
-export function CardBody(props: ComponentProps<typeof MCardBody>): JSX.Element {
+function CardBody(props: ComponentProps<typeof MCardBody>): JSX.Element {
   return <MCardBody {...props} />;
 }
 
-export function CardFooter(
-  props: ComponentProps<typeof MCardFooter>,
-): JSX.Element {
+function CardFooter(props: ComponentProps<typeof MCardFooter>): JSX.Element {
   return <MCardFooter {...props} />;
 }
 
-export function Button(props: ComponentProps<typeof MButton>): JSX.Element {
+function Button(props: ComponentProps<typeof MButton>): JSX.Element {
   return <MButton {...props} />;
 }
 
-export function Select(props: ComponentProps<typeof MSelect>): JSX.Element {
+function Select(props: ComponentProps<typeof MSelect>): JSX.Element {
   return <MSelect color="indigo" {...props} />;
 }
 
-export function Option(props: ComponentProps<typeof MOption>): JSX.Element {
+function Option(props: ComponentProps<typeof MOption>): JSX.Element {
   return <MOption {...props} />;
 }
 
-export function Dialog(props: ComponentProps<typeof MDialog>): JSX.Element {
+function Dialog(props: ComponentProps<typeof MDialog>): JSX.Element {
   return <MDialog {...props} />;
 }
 
-export function DialogHeader(
+function DialogHeader(
   props: ComponentProps<typeof MDialogHeader>,
 ): JSX.Element {
   return <MDialogHeader {...props} />;
 }
 
-export function DialogBody(
-  props: ComponentProps<typeof MDialogBody>,
-): JSX.Element {
+function DialogBody(props: ComponentProps<typeof MDialogBody>): JSX.Element {
   return <MDialogBody {...props} />;
 }
 
-export function DialogFooter(
+function DialogFooter(
   props: ComponentProps<typeof MDialogFooter>,
 ): JSX.Element {
   return <MDialogFooter {...props} />;
 }
 
-export function Input(
+function Input(
   props: Omit<ComponentProps<typeof MInput>, "crossOrigin">,
 ): JSX.Element {
   return <MInput color="indigo" crossOrigin={undefined} {...props} />;
 }
 
-export function Collapse(props: ComponentProps<typeof MCollapse>): JSX.Element {
+function Collapse(props: ComponentProps<typeof MCollapse>): JSX.Element {
   return <MCollapse {...props} />;
 }
 
-export function Spinner(props: ComponentProps<typeof MSpinner>): JSX.Element {
+function Spinner(props: ComponentProps<typeof MSpinner>): JSX.Element {
   return <MSpinner {...props} />;
 }
 
-export function SpeedDial(
-  props: ComponentProps<typeof MSpeedDial>,
-): JSX.Element {
+function SpeedDial(props: ComponentProps<typeof MSpeedDial>): JSX.Element {
   return <MSpeedDial {...props} />;
 }
 
-export function Tooltip(props: ComponentProps<typeof MTooltip>): JSX.Element {
+function Tooltip(props: ComponentProps<typeof MTooltip>): JSX.Element {
   return <MTooltip {...props} />;
 }
 
-export function Avatar(props: ComponentProps<typeof MAvatar>): JSX.Element {
+function Avatar(props: ComponentProps<typeof MAvatar>): JSX.Element {
   return <MAvatar {...props} />;
 }
 
-export function Badge(props: ComponentProps<typeof MBadge>): JSX.Element {
+function Badge(props: ComponentProps<typeof MBadge>): JSX.Element {
   return <MBadge {...props} />;
 }
 
-export function Textarea(props: ComponentProps<typeof MTextarea>): JSX.Element {
+function Textarea(props: ComponentProps<typeof MTextarea>): JSX.Element {
   return <MTextarea color="indigo" {...props} />;
 }
 
-export function Typography(
-  props: ComponentProps<typeof MTypography>,
-): JSX.Element {
+function Typography(props: ComponentProps<typeof MTypography>): JSX.Element {
   return <MTypography {...props} />;
 }
 
-export function Switch(props: ComponentProps<typeof MSwitch>): JSX.Element {
+function Switch(props: ComponentProps<typeof MSwitch>): JSX.Element {
   return <MSwitch {...props} />;
 }
 
-export function Tabs(props: ComponentProps<typeof MTabs>): JSX.Element {
+function TabsHeader(props: ComponentProps<typeof MTabsHeader>) {
+  return <MTabsHeader {...props} />;
+}
+
+function Tabs(props: ComponentProps<typeof MTabs>): JSX.Element {
   return <MTabs {...props} />;
 }
 
-export function Tab(props: ComponentProps<typeof MTab>): JSX.Element {
+function Tab(props: ComponentProps<typeof MTab>): JSX.Element {
   return <MTab {...props} />;
 }
 
-export function TabsBody(props: ComponentProps<typeof MTabsBody>) {
+function TabsBody(props: ComponentProps<typeof MTabsBody>) {
   return <MTabsBody {...props} />;
 }
 
-export function TabPanel(props: ComponentProps<typeof MTabPanel>) {
+function TabPanel(props: ComponentProps<typeof MTabPanel>) {
   return <MTabPanel {...props} />;
 }
 
-export function Radio(props: ComponentProps<typeof MRadio>): JSX.Element {
+function Radio(props: ComponentProps<typeof MRadio>): JSX.Element {
   return <MRadio {...props} />;
 }
 
-export function Alert(props: ComponentProps<typeof MAlert>): JSX.Element {
+function Alert(props: ComponentProps<typeof MAlert>): JSX.Element {
   return <MAlert {...props} />;
 }
 
-export function Progress(props: ComponentProps<typeof MProgress>): JSX.Element {
+function Progress(props: ComponentProps<typeof MProgress>): JSX.Element {
   return <MProgress {...props} />;
 }
 
@@ -234,7 +229,7 @@ const PopoverContext = createContext<{
   triggers: undefined,
 });
 
-export function Popover({
+function Popover({
   closeOnClick = true,
   hover = false,
   delay,
@@ -293,11 +288,7 @@ export function Popover({
   );
 }
 
-export function PopoverHandler({
-  children,
-  onClick,
-  ...rest
-}: PopoverHandlerProps) {
+function PopoverHandler({ children, onClick, ...rest }: PopoverHandlerProps) {
   const { open, setOpen, triggers } = useContext(PopoverContext);
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     onClick?.(e);
@@ -310,7 +301,7 @@ export function PopoverHandler({
   );
 }
 
-export function PopoverContent({
+function PopoverContent({
   className,
   onClick,
   ...props
@@ -335,10 +326,94 @@ export function PopoverContent({
   );
 }
 
-export function Checkbox(props: ComponentProps<typeof MCheckbox>): JSX.Element {
+function Checkbox(props: ComponentProps<typeof MCheckbox>): JSX.Element {
   return <MCheckbox {...props} />;
 }
 
-export function Navbar(props: ComponentProps<typeof MNavbar>): JSX.Element {
+function Navbar(props: ComponentProps<typeof MNavbar>): JSX.Element {
   return <MNavbar {...props} />;
 }
+
+const exports = {
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  IconButton,
+  Card,
+  CardBody,
+  CardFooter,
+  Button,
+  Select,
+  Option,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Input,
+  Collapse,
+  Spinner,
+  SpeedDial,
+  Tooltip,
+  Avatar,
+  Badge,
+  Textarea,
+  Typography,
+  Switch,
+  Tabs,
+  Tab,
+  TabsBody,
+  TabPanel,
+  Radio,
+  Alert,
+  Progress,
+  Popover,
+  PopoverHandler,
+  PopoverContent,
+  Checkbox,
+  Navbar,
+  TabsHeader,
+};
+
+export {
+  Menu,
+  MenuHandler,
+  MenuList,
+  MenuItem,
+  IconButton,
+  Card,
+  CardBody,
+  CardFooter,
+  Button,
+  Select,
+  Option,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Input,
+  Collapse,
+  Spinner,
+  SpeedDial,
+  Tooltip,
+  Avatar,
+  Badge,
+  Textarea,
+  Typography,
+  Switch,
+  Tabs,
+  Tab,
+  TabsBody,
+  TabPanel,
+  Radio,
+  Alert,
+  Progress,
+  Popover,
+  PopoverHandler,
+  PopoverContent,
+  Checkbox,
+  Navbar,
+  TabsHeader,
+};
+
+module.exports = exports;

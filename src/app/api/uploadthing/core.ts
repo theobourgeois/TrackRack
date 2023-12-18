@@ -7,7 +7,7 @@ import { z } from "zod";
 const f = createUploadthing();
 
 export const ourFileRouter = {
-  trackAudioUploader: f({ audio: { maxFileSize: "8MB", maxFileCount: 2 } })
+  trackAudioUploader: f({ audio: { maxFileSize: "8MB", maxFileCount: 10 } })
     .input(
       z.object({
         type: z.custom<FileType>(),

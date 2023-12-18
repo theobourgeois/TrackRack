@@ -1,7 +1,8 @@
-import { File, FileType } from "@prisma/client";
+import { FileType } from "@prisma/client";
 import { TrackAudioFile } from "./track-audio-file";
+import { FileWithMeta } from "@/utils/typing-utils/files";
 
-export function TrackFile({ file }: { file: File }) {
+export function TrackFile({ file }: { file: FileWithMeta }) {
   switch (file.type) {
     case FileType.Stem:
     case FileType.Demo:

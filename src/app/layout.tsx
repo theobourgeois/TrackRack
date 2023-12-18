@@ -21,8 +21,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className="flex-col overflow-hidden">
+        <Navbar />
         <AudioPlayerProvider>
-          <Navbar />
           <TRPCReactProvider cookies={cookies().toString()}>
             <SnackBarProvider>
               <ThemeProvider>{children}</ThemeProvider>

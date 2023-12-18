@@ -20,12 +20,12 @@ import {
 import { CgProfile } from "react-icons/cg";
 import { IoHome } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
-import { GoIssueTracks } from "react-icons/go";
+import { MdOutlineLibraryMusic } from "react-icons/md";
 
 const navLinks = [
   <Link href="/projects">
     <Button size="sm" variant="text" className="flex w-full items-center gap-2">
-      <GoIssueTracks color="black" size="20" />
+      <MdOutlineLibraryMusic color="black" size="20" />
       Projects
     </Button>
   </Link>,

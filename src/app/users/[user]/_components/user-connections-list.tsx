@@ -1,4 +1,4 @@
-import { Avatar, Typography } from "@/app/_components/mtw-wrappers";
+import { Avatar, Button, Typography } from "@/app/_components/mtw-wrappers";
 import { UserConnectionsListTabs } from "../followers/page";
 import { twMerge } from "tailwind-merge";
 import Link from "next/link";
@@ -58,19 +58,20 @@ export function UserConnectionsList({
             ];
 
           return (
-            <Link href={`/users/${user}/${tabName}`}>
-              <Typography
-                href={tabName}
-                variant="h4"
+            <Link href={`/users/${user}/${tabName}`} replace>
+              <Button
+                variant="text"
+                color={tabName === tab ? "indigo" : "gray"}
+                size="sm"
                 className={twMerge(
+                  "rounded-none text-base",
                   tabName === tab
-                    ? "border-b-4 border-indigo-400 pb-1 text-indigo-400"
-                    : "border-black pb-1 hover:border-b-4",
+                    ? "border-b-4 border-indigo-400 pb-1 "
+                    : "border-b-4 border-transparent pb-1 hover:border-black",
                 )}
-                color="black"
               >
                 {tabName}
-              </Typography>
+              </Button>
             </Link>
           );
         })}
