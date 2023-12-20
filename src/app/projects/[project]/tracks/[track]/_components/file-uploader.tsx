@@ -1,7 +1,7 @@
 import { MenuItem } from "@/app/_components/mtw-wrappers";
 import { useUploadThing } from "@/utils/uploadthing";
-import { FileType } from "@prisma/client";
-import { FileWithPath } from "@uploadthing/react";
+import { type FileType } from "@prisma/client";
+import { type FileWithPath } from "@uploadthing/react";
 import { useDropzone } from "@uploadthing/react/hooks";
 import { useCallback } from "react";
 import { generateClientDropzoneAccept } from "uploadthing/client";
@@ -20,7 +20,7 @@ export function FileUploader({ fileType, trackId }: AudioUploaderProps) {
   const { showErrorNotification } = useSnackBar();
   const router = useRouter();
 
-  const { startUpload, permittedFileInfo, isUploading } = useUploadThing(
+  const { startUpload, permittedFileInfo } = useUploadThing(
     typeData.fileRouter,
     {
       onClientUploadComplete: (files) => {
@@ -44,8 +44,8 @@ export function FileUploader({ fileType, trackId }: AudioUploaderProps) {
     },
   );
 
-  const onDrop = useCallback((acceptedFiles: FileWithPath[]) => {
-    startUpload(acceptedFiles, {
+  const onDrop = useCallback(async (acceptedFiles: FileWithPath[]) => {
+    await startUpload(acceptedFiles, {
       trackId,
       type: fileType,
     });
@@ -56,6 +56,7 @@ export function FileUploader({ fileType, trackId }: AudioUploaderProps) {
     : [];
 
   const { getRootProps, getInputProps } = useDropzone({
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     onDrop,
     accept: fileTypes ? generateClientDropzoneAccept(fileTypes) : undefined,
   });

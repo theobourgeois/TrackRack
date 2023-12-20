@@ -3,7 +3,8 @@ import {
   createTRPCRouter,
   publicProcedure,
 } from "@/server/api/trpc";
-import { FileType } from "@prisma/client";
+import { type FileType } from "@prisma/client";
+import { utapi } from "@/app/api/uploadthing/server";
 
 
 export const filesRouter = createTRPCRouter({
@@ -16,6 +17,7 @@ export const filesRouter = createTRPCRouter({
         url: z.string(),
         createdById: z.string(),
         size: z.number(),
+        fileKey: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -25,10 +27,25 @@ export const filesRouter = createTRPCRouter({
           type: input.type,
           url: input.url,
           trackId: input.trackId,
+          fileKey: input.fileKey,
           createdById: input.createdById,
           createdAt: new Date(),
           size: input.size,
         },
       })
+    }),
+  delete: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const file = await ctx.db.file.delete({
+        where: {
+          id: input.id,
+        },
+      })
+      return utapi.deleteFiles(file.fileKey);
     }),
 });

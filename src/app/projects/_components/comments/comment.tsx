@@ -11,19 +11,20 @@ import {
 } from "@/app/_components/mtw-wrappers";
 import { getDateString } from "@/utils/date-utils";
 import {
-  CommentType,
-  CommentWithUserAndReplies,
+  type CommentType,
+  type CommentWithUserAndReplies,
 } from "@/utils/typing-utils/comments";
 import { FaEdit } from "react-icons/fa";
 import { HiOutlineDotsVertical } from "react-icons/hi";
-import { MdDelete, MdOutlineAddReaction } from "react-icons/md";
+import { MdDelete } from "react-icons/md";
 import { useState } from "react";
 import { DeleteCommentDialog } from "./delete-comment-dialog";
 import { VscTriangleDown } from "react-icons/vsc";
 import { AddComment, EditComment } from "./add-comment";
 import { ReactionSelector } from "@/app/_components/comment-reactions-selector";
 import { CommentReactions } from "./comment-reactions";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
+import Link from "next/link";
 
 export enum CommentDialogs {
   DELETE = "DELETE",
@@ -75,13 +76,17 @@ export function CommentComponent({
       <div className=" flex w-full justify-between">
         <div className="flex w-full flex-col gap-2">
           <div className="flex w-full gap-2">
-            <Avatar size="sm" src={comment.createdBy.image ?? ""} />
+            <Link href={`/users/${comment.createdBy.name}`}>
+              <Avatar size="sm" src={comment.createdBy.image ?? ""} />
+            </Link>
             <div className="flex w-full flex-col">
               <div className="group">
                 <div className="flex items-center gap-2">
-                  <Typography variant="h6">
-                    @{comment.createdBy.name}
-                  </Typography>
+                  <Link href={`/users/${comment.createdBy.name}`}>
+                    <Typography className="hover:underline" variant="h6">
+                      @{comment.createdBy.name}
+                    </Typography>
+                  </Link>
                   <Typography variant="small">
                     {getDateString(comment.createdAt)}
                   </Typography>

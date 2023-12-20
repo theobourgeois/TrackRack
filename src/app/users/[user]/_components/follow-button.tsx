@@ -2,8 +2,8 @@
 import { Button } from "@/app/_components/mtw-wrappers";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { api } from "@/trpc/react";
-import { Spinner } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
+import { IoPersonAddOutline, IoPersonRemoveOutline } from "react-icons/io5";
 
 type FollowButtonProps = {
   isFollowing: boolean;
@@ -45,8 +45,14 @@ export function FollowButton({
       variant={isFollowing ? "outlined" : "gradient"}
       disabled={follow.isLoading}
       color="indigo"
+      className="flex items-center gap-2"
     >
-      {isFollowing ? "Unfollow" : "Follow"}
+      {isFollowing ? (
+        <IoPersonRemoveOutline size="20" />
+      ) : (
+        <IoPersonAddOutline size="20" />
+      )}
+      {isFollowing ? "Following" : "Follow"}
     </Button>
   );
 }

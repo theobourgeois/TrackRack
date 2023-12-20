@@ -1,6 +1,5 @@
 "use client";
 import {
-  Badge,
   IconButton,
   Menu,
   MenuHandler,
@@ -8,17 +7,16 @@ import {
   MenuList,
   Typography,
 } from "@/app/_components/mtw-wrappers";
-import { PermissionName, Track } from "@prisma/client";
+import { PermissionName, type Track } from "@prisma/client";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import { ProjectDialog } from "./tracks-table-wrapper";
-import { FaEdit, FaFile, FaFileAlt } from "react-icons/fa";
+import { FaEdit, FaFileAlt } from "react-icons/fa";
 import { getDateString } from "@/utils/date-utils";
 import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TrackWithMeta } from "@/utils/typing-utils/tracks";
-import { IoFileTray } from "react-icons/io5";
+import { type TrackWithMeta } from "@/utils/typing-utils/tracks";
 
 const tableHeads = (showActions = false) => [
   { label: "#", className: "w-10" },
@@ -99,7 +97,10 @@ export function TracksTable({
             </td>
             <td className="p-4">
               {Boolean(track._count.files) && (
-                <div className="flex items-center gap-1">
+                <div
+                  className="flex items-center gap-1"
+                  title={`${track._count.files} files`}
+                >
                   <FaFileAlt size="20" />
                   <Typography variant="small" className="font-normal">
                     {track._count.files}

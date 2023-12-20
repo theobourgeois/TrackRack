@@ -25,7 +25,7 @@ export default async function Home({ params }: { params: { user: string } }) {
         user={params.user}
         tab={UserConnectionsListTabs.Followers}
       >
-        <div className="flex flex-wrap items-center justify-evenly gap-10">
+        <div className="flex flex-wrap items-center gap-10">
           <Suspense
             fallback={
               <div className="flex w-full justify-center">

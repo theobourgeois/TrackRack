@@ -58,18 +58,18 @@ export const fileTypeData = {
     icon: <RiFileMusicLine size="20" />,
     label: "DAW Project",
     tabLabel: "DAW Projects",
-    fileRouter: "trackAudioUploader",
+    fileRouter: "trackBlobUploader",
   },
   [FileType.Lyrics]: {
     icon: <PiMicrophoneStageBold size="20" />,
     label: "Lyrics",
     tabLabel: "Lyrics",
-    fileRouter: "trackAudioUploader",
+    fileRouter: "trackTextUploader",
   },
   [FileType.Midi]: {
     icon: <SiMidi size="20" />,
     label: "Midi",
     tabLabel: "Midi",
-    fileRouter: "trackAudioUploader",
+    fileRouter: "trackBlobUploader",
   },
 } as const;

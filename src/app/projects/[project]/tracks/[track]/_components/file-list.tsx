@@ -3,7 +3,7 @@ import { Typography } from "@/app/_components/mtw-wrappers";
 import { TrackFile } from "./track-file";
 import _ from "lodash";
 import { getDateString } from "@/utils/date-utils";
-import { FileWithMeta } from "@/utils/typing-utils/files";
+import { type FileWithMeta } from "@/utils/typing-utils/files";
 
 type FileListProps = {
   files: FileWithMeta[];

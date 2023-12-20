@@ -40,7 +40,7 @@ export const usersRouter = createTRPCRouter({
     }),
 
     userProjects: publicProcedure.
-        input(z.object({ userId: z.string() }))
+        input(z.object({ userId: z.string().optional(), userName: z.string().optional() }))
         .query(async ({ ctx, input }) => {
             return ctx.db.projectUser.findMany({
                 include: {
@@ -49,6 +49,9 @@ export const usersRouter = createTRPCRouter({
                 },
                 where: {
                     userId: input.userId,
+                    user: {
+                        name: input.userName,
+                    },
                 },
             });
         }),

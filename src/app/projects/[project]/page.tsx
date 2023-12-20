@@ -1,10 +1,10 @@
 import { RightSidebar } from "@/app/projects/_components/projects/right-sidebar";
-import { ProjectType } from "@/utils/typing-utils/projects";
+import { type ProjectType } from "@/utils/typing-utils/projects";
 import { api } from "@/trpc/server";
 import { TracksTableWrapper } from "../_components/tracks/tracks-table-wrapper";
 import { ProjectComments } from "../_components/comments/project-comments";
 import { ProjectHeader } from "../_components/projects/project-header";
-import { Project } from "@prisma/client";
+import { type Project } from "@prisma/client";
 import { getServerAuthSession } from "@/server/auth";
 import { ProjectNotFound } from "../_components/projects/project-not-found";
 import { PrivateProject } from "../_components/projects/private-project";
@@ -26,16 +26,21 @@ export default async function Home({
   const project = await api.projects.get.query({
     projectUrl: params.project,
   });
-  const projectComments = await api.comments.getEntityComments.query({
+  const projectCommentsData = api.comments.getEntityComments.query({
     id: project?.id ?? "",
     as: "project",
     viewAmount: parseInt(searchParams?.viewAmount ?? "10"),
     sortBy: searchParams?.sortBy,
   });
-  const userPermissions = await api.users.getProjectUserPermissions.query({
+  const userPermissionsData = api.users.getProjectUserPermissions.query({
     userId: session?.user.id ?? "",
     projectId: project?.id ?? "",
   });
+
+  const [projectComments, userPermissions] = await Promise.all([
+    projectCommentsData,
+    userPermissionsData,
+  ]);
 
   if (!project) return <ProjectNotFound />;
   if (project.isPrivate && !userPermissions?.length) return <PrivateProject />;
@@ -71,7 +76,7 @@ export default async function Home({
           {projectComments && (
             <ProjectComments
               userPermissions={userPermissions}
-              // @ts-ignore
+              // @ts-expect-error @TODO fix this
               comments={projectComments.comments}
               commentCount={projectComments.count}
               projectId={project?.id ?? ""}

@@ -1,4 +1,4 @@
-import { File, User } from "@prisma/client"
+import { type File, type User } from "@prisma/client"
 
 export type FileWithMeta = File & {
   createdBy: User;

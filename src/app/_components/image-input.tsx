@@ -3,6 +3,7 @@ import { useState } from "react";
 import { FiEdit2 } from "react-icons/fi";
 import { twMerge } from "tailwind-merge";
 import { useSnackBar } from "../_providers/snackbar-provider";
+import Image from "next/image";
 
 export const IMAGE_FORMATS = [
   "image/apng",
@@ -45,8 +46,11 @@ export function ImageInput({
   return (
     <div className="relative rounded-lg">
       {image ? (
-        <img
+        <Image
           src={image}
+          width={500}
+          height={500}
+          alt="Image preview"
           className={twMerge(
             sizeStyles,
             "rounded-lg bg-indigo-500 object-cover drop-shadow-md",

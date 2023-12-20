@@ -49,7 +49,7 @@ function MobileNavbarCollapse({ children }: { children: React.ReactNode }) {
   const { isShowingMobileNavBar } = useContext(MobileNavBarContext);
   return (
     <Collapse open={isShowingMobileNavBar}>
-      <div className="mt-2 flex flex-col gap-3 lg:hidden">{children}</div>
+      <div className="mt-2 flex flex-col gap-3 md:hidden">{children}</div>
     </Collapse>
   );
 }

@@ -8,6 +8,7 @@ import {
   MenuHandler,
   MenuItem,
   MenuList,
+  Typography,
 } from "./mtw-wrappers";
 import { Logo } from "./logo";
 import { IoSearchOutline } from "react-icons/io5";
@@ -21,31 +22,89 @@ import { CgProfile } from "react-icons/cg";
 import { IoHome } from "react-icons/io5";
 import { IoIosLogOut } from "react-icons/io";
 import { MdOutlineLibraryMusic } from "react-icons/md";
+import { api } from "@/trpc/server";
+import { type Session } from "next-auth";
+import Image from "next/image";
+import _ from "lodash";
+import pluralize from "pluralize";
+import { TbChevronDown } from "react-icons/tb";
+import { FaPlus } from "react-icons/fa6";
 
-const navLinks = [
-  <Link href="/projects">
-    <Button size="sm" variant="text" className="flex w-full items-center gap-2">
-      <MdOutlineLibraryMusic color="black" size="20" />
-      Projects
-    </Button>
-  </Link>,
+const navLinks = (session: Session) => [
+  <ProjectNavLink session={session} />,
   <Link className="lg:mr-4" href="/">
     <Button size="sm" variant="text" className="flex w-full items-center gap-2">
       <IoHome color="black" size="20" />
       Home
     </Button>
   </Link>,
-  <Link className="lg:mr-4" href="/create-project">
-    <Button
-      variant="gradient"
-      color="indigo"
-      className="flex w-max items-center gap-2"
-    >
-      + Create Project
-    </Button>
-  </Link>,
   <Input icon={<IoSearchOutline />} label="Search" />,
 ];
+
+async function ProjectNavLink({ session }: { session: Session }) {
+  const projects = await api.users.userProjects.query({
+    userId: session?.user.id,
+  });
+  const projectsGroupedByRole = _.groupBy(
+    projects,
+    (project) => project.role.name,
+  );
+
+  return (
+    <Menu>
+      <MenuHandler>
+        <Button
+          size="sm"
+          variant="text"
+          className="flex w-full items-center gap-2"
+        >
+          <MdOutlineLibraryMusic color="black" size="20" />
+          Projects <TbChevronDown size="20" />
+        </Button>
+      </MenuHandler>
+      <MenuList>
+        <Link href="/projects">
+          <MenuItem className="flex items-center px-1 text-blue-600">
+            View all
+          </MenuItem>
+        </Link>
+        <hr className="my-1" />
+        <div className="max-h-72 overflow-y-auto">
+          {Object.entries(projectsGroupedByRole).map(([role, projects]) => (
+            <div className="hover:border-none">
+              <Typography className="text-sm font-bold">
+                {pluralize(role)}
+              </Typography>
+
+              {projects.map((project) => (
+                <Link href={`/projects/${project.project.urlName}`}>
+                  <MenuItem className="flex items-center px-1">
+                    <Image
+                      alt="Project cover image"
+                      className="rounded-md"
+                      width={24}
+                      height={24}
+                      src={project.project.coverImage ?? ""}
+                    />
+                    {project.project.name}
+                  </MenuItem>
+                </Link>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        <hr className="my-1" />
+        <Link href="/create-project">
+          <MenuItem className="flex items-center gap-2">
+            <FaPlus />
+            Create new project
+          </MenuItem>
+        </Link>
+      </MenuList>
+    </Menu>
+  );
+}
 
 export async function Navbar() {
   const session = await getServerAuthSession();
@@ -78,7 +137,7 @@ export async function Navbar() {
           <Logo />
           <div className="flex items-center gap-4">
             <ul className="mb-4 mt-2 hidden flex-col lg:mb-0 lg:mt-0 lg:flex lg:flex-row lg:items-center">
-              {navLinks}
+              {navLinks(session)}
             </ul>
             <div className="flex lg:hidden">
               <MobileNavbarButton />
@@ -94,7 +153,16 @@ export async function Navbar() {
                   />
                 </div>
               </MenuHandler>
+
               <MenuList>
+                <div>
+                  <Typography className="font-bold" variant="small">
+                    @{session.user.name}
+                  </Typography>
+                  <Typography variant="small">
+                    {session.user.email ?? ""}
+                  </Typography>
+                </div>
                 <Link
                   className="hover:outline-none"
                   href={`/users/${session.user.name}`}
@@ -104,8 +172,9 @@ export async function Navbar() {
                     Profile
                   </MenuItem>
                 </Link>
+                <hr className="my-1" />
                 <Link className="hover:outline-none" href="/api/auth/signout">
-                  <MenuItem className="flex items-center border-t">
+                  <MenuItem className="flex items-center">
                     <IoIosLogOut size="20" />
                     Sign out
                   </MenuItem>
@@ -114,7 +183,7 @@ export async function Navbar() {
             </Menu>
           </div>
         </div>
-        <MobileNavbarCollapse key="1">{navLinks}</MobileNavbarCollapse>
+        <MobileNavbarCollapse key="1">{navLinks(session)}</MobileNavbarCollapse>
       </MobileNavBarProvider>
     </MNavbar>
   );

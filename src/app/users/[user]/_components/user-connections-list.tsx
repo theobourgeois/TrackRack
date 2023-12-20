@@ -50,7 +50,7 @@ export function UserConnectionsList({
           {getHeaderName(tab, user)}
         </Typography>
       </div>
-      <div className="flex w-full items-center gap-4 border-b">
+      <div className="flex w-full items-center border-b">
         {Object.keys(UserConnectionsListTabs).map((key) => {
           const tabName =
             UserConnectionsListTabs[
@@ -76,7 +76,7 @@ export function UserConnectionsList({
           );
         })}
       </div>
-      <div className="h-screen w-fit overflow-y-auto pt-8">{children}</div>
+      <div className="h-screen w-full overflow-y-auto pt-8">{children}</div>
     </div>
   );
 }

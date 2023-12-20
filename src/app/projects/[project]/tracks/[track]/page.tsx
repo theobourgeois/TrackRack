@@ -8,12 +8,13 @@ import {
 import { TrackFileUploaderButton } from "./_components/track-file-uploader-button";
 import { api } from "@/trpc/server";
 import { FileUploadProgressProvider } from "./_providers/file-upload-progress-provider";
-import _ from "lodash";
 import Link from "next/link";
 import { IoMdArrowDropdown } from "react-icons/io";
-import { FileType } from "@prisma/client";
+import { type FileType } from "@prisma/client";
 import { FileTypeTabs } from "./_components/file-type-tabs";
 import { FilesGroupedByDate } from "./_components/file-list";
+import { twMerge } from "tailwind-merge";
+import Image from "next/image";
 
 export default async function Home({
   params,
@@ -22,12 +23,14 @@ export default async function Home({
   params: { project: string; track: string };
   searchParams: { type: FileType };
 }) {
-  const track = await api.tracks.get.query({
+  const trackData = api.tracks.get.query({
     urlName: params.track,
   });
-  const project = await api.projects.get.query({
+  const projectData = api.projects.get.query({
     projectUrl: params.project,
   });
+
+  const [track, project] = await Promise.all([trackData, projectData]);
 
   if (!track) return <div>Track not found</div>;
 
@@ -48,10 +51,13 @@ export default async function Home({
                 className="flex items-center gap-2"
                 href={`/projects/${params.project}`}
               >
-                <img
-                  className="h-12 w-12 rounded-sm"
+                <Image
+                  alt="Project cover image"
+                  className="rounded-sm"
+                  width={48}
+                  height={48}
                   src={project?.coverImage ?? ""}
-                ></img>
+                ></Image>
                 <Typography className="hover:underline" variant="lead">
                   {project?.name}
                 </Typography>
@@ -65,13 +71,17 @@ export default async function Home({
                   </div>
                 </MenuHandler>
                 <MenuList>
-                  {project?.tracks.map((track) => (
+                  {project?.tracks.map(({ urlName, id, _count, name }) => (
                     <Link
-                      key={track.id}
-                      href={`/projects/${project?.urlName}/tracks/${track.urlName}`}
+                      key={id}
+                      href={`/projects/${project?.urlName}/tracks/${urlName}`}
                     >
-                      <MenuItem>
-                        {`${track.name} (${track._count.files})`}
+                      <MenuItem
+                        className={twMerge(
+                          id == track.id && "bg-blue-gray-50 text-black",
+                        )}
+                      >
+                        {`${name} (${_count.files})`}
                       </MenuItem>
                     </Link>
                   ))}

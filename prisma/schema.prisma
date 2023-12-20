@@ -216,6 +216,8 @@ model File {
   name        String
   trackId     String
   track      Track    @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  urlName     String  @default("")
+  fileKey    String  @default("")
 
   size       Int     @default(0)
   type        FileType

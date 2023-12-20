@@ -71,8 +71,11 @@ function MenuHandler({
   );
 }
 
-function MenuList(props: ComponentProps<typeof MMenuList>): JSX.Element {
-  return <MMenuList {...props} />;
+function MenuList({
+  className,
+  ...props
+}: ComponentProps<typeof MMenuList>): JSX.Element {
+  return <MMenuList className={twMerge("p-2", className)} {...props} />;
 }
 
 function MenuItem({
@@ -83,7 +86,7 @@ function MenuItem({
 }: ComponentProps<typeof MMenuItem> & { icon?: React.ReactNode }): JSX.Element {
   return (
     <MMenuItem
-      className={twMerge("flex items-center gap-2", className)}
+      className={twMerge("flex items-center gap-2 px-1", className)}
       {...props}
     >
       {icon}

@@ -1,10 +1,11 @@
 "use client";
-import { FileWithMeta } from "@/utils/typing-utils/files";
+import { type FileWithMeta } from "@/utils/typing-utils/files";
 import { TrackFileCard } from "./track-file";
 import { Dialog, DialogBody, Typography } from "@/app/_components/mtw-wrappers";
 import { fileTypeData } from "@/utils/misc-utils";
 import { FileMenu } from "./file-menu";
 import { useState } from "react";
+import Image from "next/image";
 
 interface TrackFileImageProps {
   file: FileWithMeta;
@@ -21,11 +22,13 @@ export function TrackFileImage({ file }: TrackFileImageProps) {
         open={isOpen}
       >
         <DialogBody>
-          <img
+          <Image
             className="h-[90vh] w-screen object-contain"
+            width={1000}
+            height={1000}
             src={file.url}
             alt={file.name}
-          ></img>
+          ></Image>
         </DialogBody>
       </Dialog>
       <TrackFileCard>
@@ -41,11 +44,14 @@ export function TrackFileImage({ file }: TrackFileImageProps) {
             </div>
             <FileMenu file={file} />
           </div>
-          <img
+          <Image
             onClick={handleToggleOpen}
             className="h-auto w-1/4 rounded-sm"
+            width={1000}
+            height={1000}
+            alt={file.name}
             src={file.url}
-          ></img>
+          ></Image>
         </div>
       </TrackFileCard>
     </>
