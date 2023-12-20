@@ -1,6 +1,5 @@
 "use client";
-import { File } from "@prisma/client";
-import { Tooltip, Typography } from "@/app/_components/mtw-wrappers";
+import { Typography } from "@/app/_components/mtw-wrappers";
 import { TrackFile } from "./track-file";
 import _ from "lodash";
 import { getDateString } from "@/utils/date-utils";
@@ -15,25 +14,24 @@ export function FilesGroupedByDate({ files }: FileListProps) {
     (a, b) => new Date(a).getTime() - new Date(b).getTime(),
   );
 
+  if (!files.length) {
+    return (
+      <div>
+        <Typography variant="h4">No files yet</Typography>
+        <Typography variant="lead">
+          Upload a file with the button above
+        </Typography>
+      </div>
+    );
+  }
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 rounded-lg bg-gradient-to-bl from-indigo-50/50 from-10% p-4">
       {sortedDates.map((date) => (
         <div className="flex flex-col gap-4" key={date}>
           <div className="flex items-center gap-2">
-            <Tooltip
-              content={filesByDate[date]?.[0]?.createdAt.toLocaleDateString(
-                "en-US",
-                {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                },
-              )}
-            >
-              <Typography variant="h3">{date}</Typography>
-            </Tooltip>
+            <Typography variant="h4">{date}</Typography>
           </div>
-          <div className="flex flex-wrap">
+          <div className="flex flex-wrap gap-2">
             {filesByDate[date]?.map((file) => (
               <TrackFile file={file} key={file.id} />
             ))}

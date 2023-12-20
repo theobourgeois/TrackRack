@@ -39,7 +39,7 @@ export default async function Home({
   });
 
   return (
-    <main className="h-[calc(100vh-200px)] w-full overflow-y-auto py-8">
+    <main className="h-[calc(100vh-100px)] w-full overflow-y-auto py-8">
       <div className="mx-auto flex w-3/4 flex-col gap-4">
         <FileUploadProgressProvider>
           <div className="flex flex-col gap-4">
@@ -70,7 +70,9 @@ export default async function Home({
                       key={track.id}
                       href={`/projects/${project?.urlName}/tracks/${track.urlName}`}
                     >
-                      <MenuItem>{track.name}</MenuItem>
+                      <MenuItem>
+                        {`${track.name} (${track._count.files})`}
+                      </MenuItem>
                     </Link>
                   ))}
                 </MenuList>

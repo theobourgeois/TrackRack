@@ -22,6 +22,7 @@ import { FaLock, FaLockOpen } from "react-icons/fa";
 import { InviteUsersDialog } from "../invite/invite-users-dialog";
 import { Session } from "next-auth";
 import { DeleteProjectDialog } from "../projects/delete-project-dialogs";
+import { TrackWithMeta } from "@/utils/typing-utils/tracks";
 
 export enum ProjectDialog {
   EDIT_TRACK = "EDIT_TRACK",
@@ -35,7 +36,7 @@ export enum ProjectDialog {
 type SortBy = "updatedAt" | "name";
 
 interface TracksTableProps {
-  tracks: Track[];
+  tracks: TrackWithMeta[];
   projectId: string;
   projectName: string;
   userPermissions?: PermissionName[];
@@ -55,10 +56,13 @@ export function TracksTableWrapper({
   const [selectedTrack, setSelectedTrack] = useState<Track | null>(null);
   const [sortBy, setSortBy] = useState<SortBy>("updatedAt");
   const filteredTracks = tracks.sort((a, b) => {
-    if (sortBy === "updatedAt") {
-      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
-    } else {
-      return a.name.localeCompare(b.name);
+    switch (sortBy) {
+      case "updatedAt":
+        return (
+          new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        );
+      case "name":
+        return a.name.localeCompare(b.name);
     }
   });
 

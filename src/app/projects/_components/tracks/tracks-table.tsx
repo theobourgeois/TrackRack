@@ -1,5 +1,6 @@
 "use client";
 import {
+  Badge,
   IconButton,
   Menu,
   MenuHandler,
@@ -11,11 +12,13 @@ import { PermissionName, Track } from "@prisma/client";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { MdDelete } from "react-icons/md";
 import { ProjectDialog } from "./tracks-table-wrapper";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit, FaFile, FaFileAlt } from "react-icons/fa";
 import { getDateString } from "@/utils/date-utils";
 import { twMerge } from "tailwind-merge";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { TrackWithMeta } from "@/utils/typing-utils/tracks";
+import { IoFileTray } from "react-icons/io5";
 
 const tableHeads = (showActions = false) => [
   { label: "#", className: "w-10" },
@@ -26,7 +29,7 @@ const tableHeads = (showActions = false) => [
 ];
 
 interface TracksTableProps {
-  tracks: Track[];
+  tracks: TrackWithMeta[];
   onSelect: (dialogType: ProjectDialog, track: Track) => () => void;
   userPermissions?: PermissionName[];
 }
@@ -95,13 +98,14 @@ export function TracksTable({
               </Typography>
             </td>
             <td className="p-4">
-              <Typography
-                variant="small"
-                color="blue-gray"
-                className="font-medium"
-              >
-                Activity
-              </Typography>
+              {Boolean(track._count.files) && (
+                <div className="flex items-center gap-1">
+                  <FaFileAlt size="20" />
+                  <Typography variant="small" className="font-normal">
+                    {track._count.files}
+                  </Typography>
+                </div>
+              )}
             </td>
             {userPermissions?.includes(PermissionName.AddTracks) && (
               <td className="p-4">

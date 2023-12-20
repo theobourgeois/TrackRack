@@ -30,7 +30,7 @@ export const tracksRouter = createTRPCRouter({
                         projectId: project?.id ?? "",
                     },
                 }),
-            );
+            ) as string;
             return ctx.db.track.create({
                 data: {
                     name: input.name,
@@ -44,9 +44,10 @@ export const tracksRouter = createTRPCRouter({
     update: protectedProcedure
         .input(
             z.object({
-                id: z.string(),
-                name: z.string().min(1),
+                id: z.string().optional(),
+                name: z.string().min(1).optional(),
                 description: z.string().optional(),
+                updatedAt: z.date(),
             }),
         )
         .mutation(async ({ ctx, input }) => {
@@ -66,6 +67,7 @@ export const tracksRouter = createTRPCRouter({
                     urlName: trackUrl,
                     name: input.name,
                     description: input.description,
+                    updatedAt: input.updatedAt,
                 },
             });
         }),

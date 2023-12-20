@@ -1,16 +1,8 @@
 import { api } from "@/trpc/server";
-import {
-  Avatar,
-  Button,
-  Popover,
-  PopoverContent,
-  PopoverHandler,
-  Typography,
-} from "../../../_components/mtw-wrappers";
+import { Avatar, Typography } from "../../../_components/mtw-wrappers";
 import pluralize from "pluralize";
 import { ProjectRoleName, User } from "@prisma/client";
 import Link from "next/link";
-import { ProfileCard } from "@/app/_components/profile-card";
 
 interface SidebarProfileProps {
   name: string;
@@ -19,16 +11,14 @@ interface SidebarProfileProps {
 
 function SidebarProfile({ name, avatar }: SidebarProfileProps) {
   return (
-    <Popover delay={300} hover placement="bottom-start">
-      <div className="flex cursor-pointer select-none gap-2 rounded-lg">
+    <Link href={`/users/${name}`}>
+      <div className="group flex cursor-pointer select-none gap-2 rounded-lg py-2 hover:bg-indigo-50">
         <Avatar size="sm" src={avatar} />
-        <Link href={`/users/${name}`}>
-          <Typography className="hover:underline" variant="h6">
-            {name}
-          </Typography>
-        </Link>
+        <Typography className="group-hover:underline" variant="h6">
+          {name}
+        </Typography>
       </div>
-    </Popover>
+    </Link>
   );
 }
 
@@ -39,8 +29,8 @@ interface ProfilesByPermissionsProps {
 
 function ProfilesByPermissions({ role, users }: ProfilesByPermissionsProps) {
   return (
-    <div className="dark:text-slate-200 mb-5 flex flex-col gap-2">
-      <Typography variant="h5">
+    <div className="dark:text-slate-200 mb-1 flex flex-col">
+      <Typography variant="h6">
         {pluralize(role) + " - " + users.length}
       </Typography>
       <div className="flex flex-col gap-3">
@@ -60,7 +50,7 @@ export async function RightSidebar({ projectUrl }: { projectUrl: string }) {
   });
 
   return (
-    <aside className="hidden h-[calc(100vh-64px)] w-64 min-w-[16rem] flex-col overflow-y-auto bg-blue-gray-50/50 xl:flex">
+    <aside className="hidden h-[calc(100vh-64px)] w-64 min-w-[16rem] flex-col overflow-y-auto bg-gradient-to-b from-indigo-50/50 from-[2%] xl:flex">
       <div className="flex-grow px-4 py-4">
         {Object.entries(users).map(([key, value]) => (
           <ProfilesByPermissions

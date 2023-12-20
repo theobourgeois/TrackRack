@@ -1,9 +1,5 @@
 "use client";
-import {
-  IconButton,
-  Spinner,
-  Typography,
-} from "@/app/_components/mtw-wrappers";
+import { Spinner, Typography } from "@/app/_components/mtw-wrappers";
 import { createContext, useContext, useState } from "react";
 
 type FileUpload = {
@@ -48,7 +44,7 @@ export function FileUploadProgressProvider({
     >
       {children}
       {Object.keys(files).length > 0 && (
-        <div className="fixed bottom-0 right-0 m-4 flex flex-col gap-2 rounded-md p-4 drop-shadow-md">
+        <div className="fixed bottom-0 right-0 z-[1000] m-4 flex flex-col gap-2 rounded-md bg-gradient-to-t from-indigo-50 to-white to-[5%] p-4 drop-shadow-md">
           {files.map(({ id, name }) => (
             <div key={id} className="flex items-center justify-end gap-2">
               <Typography variant="h6">{name}</Typography>

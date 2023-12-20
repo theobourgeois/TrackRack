@@ -23,6 +23,11 @@ export const projectsRouter = createTRPCRouter({
                     tracks: {
                         include: {
                             createdBy: true,
+                            _count: {
+                                select: {
+                                    files: true,
+                                },
+                            },
                         },
                         orderBy: {
                             createdAt: "desc",
@@ -105,7 +110,7 @@ export const projectsRouter = createTRPCRouter({
                         name: input.name,
                     },
                 }),
-            );
+            ) as string;
 
             const project = await ctx.db.project.create({
                 data: {
@@ -211,6 +216,7 @@ export const projectsRouter = createTRPCRouter({
         .input(z.object({ projectId: z.string(), userId: z.string() }))
         .mutation(async ({ ctx, input }) => {
             return ctx.db.projectUser.delete({
+                // @ts-ignore
                 where: {
                     projectId: input.projectId,
                     userId: input.userId,
