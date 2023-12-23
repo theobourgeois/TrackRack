@@ -1,5 +1,6 @@
 import { Typography } from "@/app/_components/mtw-wrappers";
-import { Project, ProjectRoleName } from "@prisma/client";
+import { type Project, type ProjectRoleName } from "@prisma/client";
+import Image from "next/image";
 import Link from "next/link";
 
 interface ProjectCardProps {
@@ -11,8 +12,11 @@ export function ProjectCard({ project, role }: ProjectCardProps) {
     <div>
       <Link href={`/projects/${project.urlName}`}>
         <div className="group flex flex-col flex-wrap gap-2">
-          <img
+          <Image
             src={project.coverImage ?? ""}
+            alt={project.coverImage ?? ""}
+            width={256}
+            height={100}
             className="h-64 w-64 rounded-md"
           />
           <Typography

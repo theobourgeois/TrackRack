@@ -43,6 +43,7 @@ export function EditProjectDialog({
     onSuccess: ({ urlName, name }) => {
       if (name !== project.name) {
         router.push(`/projects/${urlName}`);
+        router.refresh();
       } else {
         router.refresh();
       }

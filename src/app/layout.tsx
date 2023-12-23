@@ -4,9 +4,8 @@ import { ThemeProvider } from "./_providers/theme-provider";
 import { TRPCReactProvider } from "@/trpc/react";
 import { GeistSans } from "geist/font/sans";
 import { SnackBarProvider } from "./_providers/snackbar-provider";
-import { Navbar } from "./_components/navbar";
 import { AudioPlayerProvider } from "./_providers/audio-player-provider";
-import { AudioPlayerFooter } from "./_components/audio-player-footer";
+import { Navbar } from "./_components/navbar";
 
 export const metadata = {
   title: "TrackRack",
@@ -21,17 +20,16 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
-      <AudioPlayerProvider>
-        <body className="flex-col overflow-hidden">
-          <Navbar />
+      <body className="flex-col overflow-hidden">
+        <Navbar />
+        <AudioPlayerProvider>
           <TRPCReactProvider cookies={cookies().toString()}>
             <SnackBarProvider>
               <ThemeProvider>{children}</ThemeProvider>
             </SnackBarProvider>
           </TRPCReactProvider>
-        </body>
-        <AudioPlayerFooter />
-      </AudioPlayerProvider>
+        </AudioPlayerProvider>
+      </body>
     </html>
   );
 }

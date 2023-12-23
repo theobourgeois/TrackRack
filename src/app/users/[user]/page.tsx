@@ -7,15 +7,19 @@ import { ProjectCard } from "./_components/project-card";
 import { Suspense } from "react";
 
 export default async function Home({ params }: { params: { user: string } }) {
-  const user = await api.users.get.query({
+  const userData = api.users.get.query({
     name: params.user,
   });
-
-  const session = await getServerAuthSession();
-
-  const userProjects = await api.users.userProjects.query({
-    userId: user?.id ?? "",
+  const sessionData = getServerAuthSession();
+  const userProjectsData = api.users.userProjects.query({
+    userName: params.user,
   });
+
+  const [user, session, userProjects] = await Promise.all([
+    userData,
+    sessionData,
+    userProjectsData,
+  ]);
 
   if (!user)
     return (

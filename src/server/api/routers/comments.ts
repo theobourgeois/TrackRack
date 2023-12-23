@@ -5,7 +5,6 @@ import {
     protectedProcedure,
     publicProcedure,
 } from "@/server/api/trpc";
-import { Comment, Reaction } from "@prisma/client";
 
 const ZEntityComment = z.union([z.literal("project"), z.literal("track")]);
 

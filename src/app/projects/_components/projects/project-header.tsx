@@ -1,12 +1,12 @@
 "use client";
 import { Typography } from "@/app/_components/mtw-wrappers";
-import { ProjectType } from "@/utils/typing-utils/projects";
+import { type ProjectType } from "@/utils/typing-utils/projects";
 import { useState } from "react";
 import { MdModeEditOutline } from "react-icons/md";
 import { EditProjectDialog } from "./edit-project-dialog";
 import { PermissionName } from "@prisma/client";
 import { twMerge } from "tailwind-merge";
-import { adjustFontSize } from "@/utils/string-utils";
+import Image from "next/image";
 
 export enum ProjectHeaderDialogs {
   ADD_TRACK = "Add Track",
@@ -79,14 +79,17 @@ export function ProjectHeader({
       <div className="mb-2 flex flex-col">
         <div className="group flex flex-grow items-center gap-4">
           <div className="flex flex-col gap-4 lg:flex-row">
-            <img
+            <Image
               onClick={handleOpenDialog(ProjectHeaderDialogs.EDIT_PROJECT)}
               src={coverImage}
               className={twMerge(
                 "h-56 w-56 rounded-lg bg-indigo-500 object-cover object-center",
                 canEditProject && "cursor-pointer",
               )}
-            ></img>
+              alt={coverImage}
+              width={500}
+              height={500}
+            />
             <div className="flex flex-col justify-end">
               <div
                 onClick={handleOpenDialog(ProjectHeaderDialogs.EDIT_PROJECT)}
@@ -101,8 +104,7 @@ export function ProjectHeader({
                 <Typography
                   title={name}
                   className={twMerge(
-                    "flex items-center gap-4 font-semibold",
-                    adjustFontSize(name),
+                    "flex items-center gap-4 text-[60px] font-semibold",
                   )}
                 >
                   {name}

@@ -14,14 +14,11 @@ export function UserBadge({ name, image, followersCount }: UserBadgeProps) {
         <Avatar src={image} className="h-36 w-36" />
       </Link>
       <div className="flex flex-col items-center text-center">
-        <Typography
-          as="a"
-          href={`/users/${name}`}
-          variant="h5"
-          className="hover:underline"
-        >
-          {name}
-        </Typography>
+        <Link href={`/users/${name}`}>
+          <Typography variant="h5" className="hover:underline">
+            {name}
+          </Typography>
+        </Link>
         <div className="flex items-center gap-2">
           <Typography variant="small">
             {followersCount} {followersCount === 1 ? "follower" : "followers"}

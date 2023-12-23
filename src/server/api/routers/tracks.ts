@@ -30,7 +30,7 @@ export const tracksRouter = createTRPCRouter({
                         projectId: project?.id ?? "",
                     },
                 }),
-            );
+            )!;
             return ctx.db.track.create({
                 data: {
                     name: input.name,
@@ -44,9 +44,10 @@ export const tracksRouter = createTRPCRouter({
     update: protectedProcedure
         .input(
             z.object({
-                id: z.string(),
-                name: z.string().min(1),
+                id: z.string().optional(),
+                name: z.string().min(1).optional(),
                 description: z.string().optional(),
+                updatedAt: z.date().optional(),
             }),
         )
         .mutation(async ({ ctx, input }) => {
@@ -66,6 +67,7 @@ export const tracksRouter = createTRPCRouter({
                     urlName: trackUrl,
                     name: input.name,
                     description: input.description,
+                    updatedAt: input.updatedAt,
                 },
             });
         }),
@@ -76,6 +78,26 @@ export const tracksRouter = createTRPCRouter({
                 where: {
                     id: input.id,
                 },
+            });
+        }),
+    get: publicProcedure
+        .input(z.object({ id: z.string().optional(), urlName: z.string().optional() }))
+        .query(async ({ ctx, input }) => {
+            return ctx.db.track.findFirst({
+                where: {
+                    id: input.id,
+                    urlName: input.urlName,
+                },
+                include: {
+                    files: {
+                        orderBy: {
+                            createdAt: "desc",
+                        },
+                        include: {
+                            createdBy: true,
+                        }
+                    },
+                }
             });
         }),
 });

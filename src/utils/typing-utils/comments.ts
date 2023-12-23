@@ -1,4 +1,4 @@
-import { Comment, Reaction, User } from "@prisma/client";
+import { type Comment, type Reaction, type User } from "@prisma/client";
 
 export type ReactionWithUser = Reaction & {
   createdBy: User;

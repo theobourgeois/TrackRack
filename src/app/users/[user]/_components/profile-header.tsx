@@ -3,6 +3,7 @@ import { FollowButton } from "./follow-button";
 import { api } from "@/trpc/server";
 import { User } from "@prisma/client";
 import { Session } from "next-auth";
+import Link from "next/link";
 
 interface ProfileHeaderProps {
   user: User;
@@ -54,28 +55,24 @@ export async function ProfileHeader({
               </Typography>
             </div>
             <div className="hover:underline">
-              <Typography
-                variant="h5"
-                as="a"
-                href={`/users/${user.name}/followers`}
-              >
-                {userFollowingFollowersCount.followers}{" "}
-                <span className="font-normal">
-                  {userFollowingFollowersCount.followers == 1
-                    ? "follower"
-                    : "followers"}
-                </span>
-              </Typography>
+              <Link href={`/users/${user.name}/followers`}>
+                <Typography variant="h5">
+                  {userFollowingFollowersCount.followers}{" "}
+                  <span className="font-normal">
+                    {userFollowingFollowersCount.followers == 1
+                      ? "follower"
+                      : "followers"}
+                  </span>
+                </Typography>
+              </Link>
             </div>
             <div className="hover:underline">
-              <Typography
-                variant="h5"
-                as="a"
-                href={`/users/${user.name}/following`}
-              >
-                {userFollowingFollowersCount.following}{" "}
-                <span className="font-normal">following</span>
-              </Typography>
+              <Link href={`/users/${user.name}/following`}>
+                <Typography variant="h5">
+                  {userFollowingFollowersCount.following}{" "}
+                  <span className="font-normal">following</span>
+                </Typography>
+              </Link>
             </div>
           </div>
         </div>
