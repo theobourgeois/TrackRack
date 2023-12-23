@@ -205,9 +205,6 @@ enum FileType {
   Demo
   Instrumental
   Master
-  Midi
-  Lyrics
-  DAWProject
   Image
   Other
 }

@@ -9,29 +9,37 @@ import {
   Spinner,
   Textarea,
 } from "@/app/_components/mtw-wrappers";
-import { DialogComponentProps } from "../projects/project-header";
+import { type DialogComponentProps } from "../projects/project-header";
 import { api } from "@/trpc/react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { HelperText } from "@/app/_components/input-helper-text";
-import { Track } from "@prisma/client";
+import { type Track } from "@prisma/client";
 import { useState } from "react";
 
 type DialogProps = {
   track: Track;
+  redirect?: boolean;
 };
 
 export function EditTrackDialog({
   open,
   onClose,
+  redirect = false,
   track,
 }: DialogComponentProps<DialogProps>) {
   const router = useRouter();
   const [formValues, setFormValues] = useState<DialogProps["track"]>(track);
+  const pathname = usePathname();
   const { name, description } = formValues;
   const { showSuccessNotification, showErrorNotification } = useSnackBar();
   const { mutate, error, isLoading } = api.tracks.update.useMutation({
-    onSuccess: () => {
+    onSuccess: (track) => {
+      if (redirect) {
+        const path = pathname.split("/");
+        path.pop();
+        router.push(`${path.join("/")}/${track.urlName}`);
+      }
       router.refresh();
       onClose();
       showSuccessNotification("Track updated");

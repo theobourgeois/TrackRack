@@ -33,6 +33,8 @@ export function TrackAudioFile({ file }: TrackAudioFileProps) {
     togglePlay();
   };
 
+  const isSelected = audio?.url === file.url;
+
   return (
     <TrackFileCard>
       <div className="flex items-center justify-between gap-2">
@@ -44,7 +46,7 @@ export function TrackAudioFile({ file }: TrackAudioFileProps) {
             onClick={handleTogglePlay}
             size="md"
           >
-            {isPlaying && audio?.url === file.url ? (
+            {isPlaying && isSelected ? (
               <IoPause size="20" />
             ) : (
               <IoPlay size="20" />
@@ -53,8 +55,8 @@ export function TrackAudioFile({ file }: TrackAudioFileProps) {
 
           <div className="flex flex-col">
             <div>
-              <Typography variant="h5">{file.name}</Typography>
-              <span>
+              <Typography variant="h6">{file.name}</Typography>
+              <span className="text-[15px] font-light">
                 {fileTypeData[file.type].label} by @{file.createdBy.name}
               </span>
             </div>

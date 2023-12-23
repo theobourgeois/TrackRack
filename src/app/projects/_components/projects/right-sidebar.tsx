@@ -50,7 +50,7 @@ export async function RightSidebar({ projectUrl }: { projectUrl: string }) {
   });
 
   return (
-    <aside className="hidden h-[calc(100vh-64px)] w-64 min-w-[16rem] flex-col overflow-y-auto bg-gradient-to-b from-indigo-50/50 from-[2%] xl:flex">
+    <aside className="hidden h-[calc(100vh-64px)] w-64 min-w-[16rem] flex-col overflow-y-auto border-l bg-gradient-to-b from-indigo-50/50 from-[2%] xl:flex">
       <div className="flex-grow px-4 py-4">
         {Object.entries(users).map(([key, value]) => (
           <ProfilesByPermissions

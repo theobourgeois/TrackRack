@@ -284,7 +284,7 @@ function AudioPlayerFooter() {
   if (!audio) return null;
 
   return (
-    <div className="fixed bottom-4 left-1/2 right-0 flex w-[90vw] translate-x-[-50%] flex-col items-center justify-start gap-4 rounded-full bg-gradient-to-t from-indigo-50 to-white to-[5%] p-4 drop-shadow-md md:w-[60vw] md:flex-row">
+    <div className="fixed bottom-4 left-1/2 right-0 flex w-[90vw] translate-x-[-50%] flex-col items-center justify-start gap-4 rounded-full border bg-white p-4 md:w-[60vw] md:flex-row">
       <div className="flex items-center gap-3">
         <IconButton
           className="rounded-full"

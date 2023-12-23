@@ -27,8 +27,8 @@ import { type Session } from "next-auth";
 import Image from "next/image";
 import _ from "lodash";
 import pluralize from "pluralize";
-import { TbChevronDown } from "react-icons/tb";
 import { FaPlus } from "react-icons/fa6";
+import { HiChevronUpDown } from "react-icons/hi2";
 
 const navLinks = (session: Session) => [
   <ProjectNavLink session={session} />,
@@ -59,25 +59,28 @@ async function ProjectNavLink({ session }: { session: Session }) {
           className="flex w-full items-center gap-2"
         >
           <MdOutlineLibraryMusic color="black" size="20" />
-          Projects <TbChevronDown size="20" />
+          Projects <HiChevronUpDown size="20" />
         </Button>
       </MenuHandler>
       <MenuList>
-        <Link href="/projects">
+        <Link className="hover:outline-none" href="/projects">
           <MenuItem className="flex items-center px-1 text-blue-600">
             View all
           </MenuItem>
         </Link>
-        <hr className="my-1" />
-        <div className="max-h-72 overflow-y-auto">
+        <hr className="my-1 hover:outline-none" />
+        <div className="max-h-72 overflow-y-auto hover:outline-none">
           {Object.entries(projectsGroupedByRole).map(([role, projects]) => (
-            <div className="hover:border-none">
+            <div key={role} className="hover:border-none">
               <Typography className="text-sm font-bold">
                 {pluralize(role)}
               </Typography>
 
               {projects.map((project) => (
-                <Link href={`/projects/${project.project.urlName}`}>
+                <Link
+                  key={project.id}
+                  href={`/projects/${project.project.urlName}`}
+                >
                   <MenuItem className="flex items-center px-1">
                     <Image
                       alt="Project cover image"
@@ -94,8 +97,8 @@ async function ProjectNavLink({ session }: { session: Session }) {
           ))}
         </div>
 
-        <hr className="my-1" />
-        <Link href="/create-project">
+        <hr className="my-1 hover:outline-none" />
+        <Link className="hover:outline-none" href="/create-project">
           <MenuItem className="flex items-center gap-2">
             <FaPlus />
             Create new project
@@ -155,7 +158,7 @@ export async function Navbar() {
               </MenuHandler>
 
               <MenuList>
-                <div>
+                <div className="hover:outline-none">
                   <Typography className="font-bold" variant="small">
                     @{session.user.name}
                   </Typography>
@@ -172,7 +175,7 @@ export async function Navbar() {
                     Profile
                   </MenuItem>
                 </Link>
-                <hr className="my-1" />
+                <hr className="my-1 hover:outline-none" />
                 <Link className="hover:outline-none" href="/api/auth/signout">
                   <MenuItem className="flex items-center">
                     <IoIosLogOut size="20" />

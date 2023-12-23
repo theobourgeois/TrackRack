@@ -15,6 +15,8 @@ import { FileTypeTabs } from "./_components/file-type-tabs";
 import { FilesGroupedByDate } from "./_components/file-list";
 import { twMerge } from "tailwind-merge";
 import Image from "next/image";
+import { HiChevronUpDown } from "react-icons/hi2";
+import { TrackMenu } from "./_components/edit-track-button";
 
 export default async function Home({
   params,
@@ -67,7 +69,7 @@ export default async function Home({
                 <MenuHandler>
                   <div className="flex cursor-pointer items-center gap-1">
                     <Typography variant="h2">{track.name}</Typography>
-                    <IoMdArrowDropdown size="30" />
+                    <HiChevronUpDown size="30" />
                   </div>
                 </MenuHandler>
                 <MenuList>
@@ -88,14 +90,23 @@ export default async function Home({
                 </MenuList>
               </Menu>
             </div>
+            {track.description && (
+              <div className="">
+                <Typography variant="paragraph">{track.description}</Typography>
+              </div>
+            )}
+
             <div className="flex items-center gap-2">
+              <TrackMenu track={track} />
               <TrackFileUploaderButton trackId={track.id} />
             </div>
-            <FileTypeTabs
-              files={track.files}
-              baseUrl={`/projects/${params.project}/tracks/${params.track}`}
-              paramsType={searchParams.type}
-            />
+            {track.files.length > 0 && (
+              <FileTypeTabs
+                files={track.files}
+                baseUrl={`/projects/${params.project}/tracks/${params.track}`}
+                paramsType={searchParams.type}
+              />
+            )}
           </div>
         </FileUploadProgressProvider>
         <FilesGroupedByDate files={files} />

@@ -4,8 +4,8 @@ import { ThemeProvider } from "./_providers/theme-provider";
 import { TRPCReactProvider } from "@/trpc/react";
 import { GeistSans } from "geist/font/sans";
 import { SnackBarProvider } from "./_providers/snackbar-provider";
-import { Navbar } from "./_components/navbar";
 import { AudioPlayerProvider } from "./_providers/audio-player-provider";
+import { Navbar } from "./_components/navbar";
 
 export const metadata = {
   title: "TrackRack",

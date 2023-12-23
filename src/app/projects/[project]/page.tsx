@@ -48,45 +48,37 @@ export default async function Home({
   return (
     <main className="flex h-screen">
       <div className="flex-grow overflow-y-auto px-12 pb-32 pt-12">
-        <Suspense>
-          <ProjectHeader
+        <ProjectHeader
+          isPrivate={project.isPrivate}
+          id={project?.id ?? ""}
+          name={project?.name ?? ""}
+          description={project?.description ?? ""}
+          userPermissions={userPermissions}
+          type={project?.type as ProjectType}
+          coverImage={project?.coverImage ?? ""}
+          trackCount={project?.tracks.length ?? 0}
+        />
+        {project?.tracks && (
+          <TracksTableWrapper
+            projectName={project.name}
             isPrivate={project.isPrivate}
-            id={project?.id ?? ""}
-            name={project?.name ?? ""}
-            description={project?.description ?? ""}
+            projectId={project.id}
+            tracks={project.tracks}
             userPermissions={userPermissions}
-            type={project?.type as ProjectType}
-            coverImage={project?.coverImage ?? ""}
-            trackCount={project?.tracks.length ?? 0}
+            session={session}
           />
-        </Suspense>
-        <Suspense>
-          {project?.tracks && (
-            <TracksTableWrapper
-              projectName={project.name}
-              isPrivate={project.isPrivate}
-              projectId={project.id}
-              tracks={project.tracks}
-              userPermissions={userPermissions}
-              session={session}
-            />
-          )}
-        </Suspense>
-        <Suspense>
-          {projectComments && (
-            <ProjectComments
-              userPermissions={userPermissions}
-              // @ts-expect-error @TODO fix this
-              comments={projectComments.comments}
-              commentCount={projectComments.count}
-              projectId={project?.id ?? ""}
-            />
-          )}
-        </Suspense>
+        )}
+        {projectComments && (
+          <ProjectComments
+            userPermissions={userPermissions}
+            // @ts-expect-error @TODO fix this
+            comments={projectComments.comments}
+            commentCount={projectComments.count}
+            projectId={project?.id ?? ""}
+          />
+        )}
       </div>
-      <Suspense>
-        <RightSidebar projectUrl={params.project} />
-      </Suspense>
+      <RightSidebar projectUrl={params.project} />
     </main>
   );
 }

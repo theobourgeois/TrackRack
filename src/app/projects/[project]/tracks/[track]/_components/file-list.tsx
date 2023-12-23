@@ -25,7 +25,7 @@ export function FilesGroupedByDate({ files }: FileListProps) {
     );
   }
   return (
-    <div className="flex flex-col gap-8 rounded-lg bg-gradient-to-bl from-indigo-50/50 from-10% p-4">
+    <div className="flex flex-col gap-8 rounded-lg bg-indigo-50/20 p-4">
       {sortedDates.map((date) => (
         <div className="flex flex-col gap-4" key={date}>
           <div className="flex items-center gap-2">
