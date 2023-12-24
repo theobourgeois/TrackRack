@@ -1,18 +1,13 @@
 "use client";
-import {
-  Avatar,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@/app/_components/mtw-wrappers";
+import { IconButton, Typography } from "@/app/_components/mtw-wrappers";
 import { useAudioPlayer } from "@/app/_providers/audio-player-provider";
 import { fileTypeData } from "@/utils/misc-utils";
-import { FileWithMeta } from "@/utils/typing-utils/files";
-import Link from "next/link";
+import { type FileWithMeta } from "@/utils/typing-utils/files";
 import { usePathname } from "next/navigation";
 import { IoPause, IoPlay } from "react-icons/io5";
 import { FileMenu } from "./file-menu";
 import { TrackFileCard } from "./track-file";
+import Link from "next/link";
 
 interface TrackAudioFileProps {
   file: FileWithMeta;
@@ -26,7 +21,7 @@ export function TrackAudioFile({ file }: TrackAudioFileProps) {
       setAudio({
         name: file.name,
         url: file.url,
-        redirect: pathname,
+        redirect: `${pathname}/files/${file.urlName}`,
       });
       return play();
     }
@@ -55,7 +50,12 @@ export function TrackAudioFile({ file }: TrackAudioFileProps) {
 
           <div className="flex flex-col">
             <div>
-              <Typography variant="h6">{file.name}</Typography>
+              <Link
+                className="hover:underline"
+                href={`${pathname}/files/${file.urlName}`}
+              >
+                <Typography variant="h6">{file.name}</Typography>
+              </Link>
               <span className="text-[15px] font-light">
                 {fileTypeData[file.type].label} by @{file.createdBy.name}
               </span>

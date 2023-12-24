@@ -5,8 +5,16 @@ import {
     protectedProcedure,
     publicProcedure,
 } from "@/server/api/trpc";
+import { type CommentType } from "@/utils/typing-utils/comments";
 
-const ZEntityComment = z.union([z.literal("project"), z.literal("track")]);
+function getEntityPropertyName(entity: CommentType) {
+    switch (entity) {
+        case "project":
+            return "projectId";
+        case "file":
+            return "fileId";
+    }
+}
 
 export const commentsRouter = createTRPCRouter({
     create: protectedProcedure
@@ -15,7 +23,7 @@ export const commentsRouter = createTRPCRouter({
                 entityId: z.string(),
                 parentId: z.string().optional(),
                 text: z.string(),
-                as: ZEntityComment,
+                as: z.custom<CommentType>(),
             }),
         )
         .mutation(async ({ ctx, input }) => {
@@ -24,7 +32,7 @@ export const commentsRouter = createTRPCRouter({
                     parentId: input.parentId,
                     text: input.text,
                     createdById: ctx.session.user.id,
-                    projectId: input.entityId,
+                    [getEntityPropertyName(input.as)]: input.entityId,
                 },
             });
         }),
@@ -66,7 +74,7 @@ export const commentsRouter = createTRPCRouter({
         .input(
             z.object({
                 id: z.string(),
-                as: ZEntityComment,
+                as: z.custom<CommentType>(),
                 viewAmount: z.number().optional().default(10),
                 sortBy: z
                     .union([z.literal("desc"), z.literal("asc")])
@@ -77,7 +85,7 @@ export const commentsRouter = createTRPCRouter({
         .query(async ({ ctx, input }) => {
             const comments = await ctx.db.comment.findMany({
                 where: {
-                    projectId: input.id,
+                    [getEntityPropertyName(input.as)]: input.id,
                     parentId: null,
                 },
                 take: input.viewAmount,
@@ -110,7 +118,7 @@ export const commentsRouter = createTRPCRouter({
                 comments,
                 count: await ctx.db.comment.count({
                     where: {
-                        projectId: input.id,
+                        [getEntityPropertyName(input.as)]: input.id,
                     },
                 }),
             };

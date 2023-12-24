@@ -6,9 +6,9 @@ import {
   Typography,
 } from "@/app/_components/mtw-wrappers";
 import { ReactionSelector } from "@/app/_components/comment-reactions-selector";
-import { ReactionWithUser } from "@/utils/typing-utils/comments";
+import { type ReactionWithUser } from "@/utils/typing-utils/comments";
 import { api } from "@/trpc/react";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 import { useRouter } from "next/navigation";
 import { twMerge } from "tailwind-merge";
 
@@ -65,7 +65,7 @@ export function CommentReactions({
                   .filter((r) => r.type === reaction)
                   .find((r) => r.createdById === session?.user.id),
               )}
-              numberOfReaction={reactionsAndCount[reaction] as number}
+              numberOfReaction={reactionsAndCount[reaction]!}
               onChange={handleChange}
             />
           </PopoverHandler>

@@ -6,6 +6,8 @@ import { fileTypeData } from "@/utils/misc-utils";
 import { FileMenu } from "./file-menu";
 import { useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 interface TrackFileImageProps {
   file: FileWithMeta;
@@ -13,6 +15,7 @@ interface TrackFileImageProps {
 
 export function TrackFileImage({ file }: TrackFileImageProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const pathname = usePathname();
   const handleToggleOpen = () => setIsOpen((prev) => !prev);
   return (
     <>
@@ -36,7 +39,12 @@ export function TrackFileImage({ file }: TrackFileImageProps) {
           <div className="flex items-center justify-between gap-2">
             <div className="flex flex-col">
               <div>
-                <Typography variant="h5">{file.name}</Typography>
+                <Link
+                  className="hover:underline"
+                  href={`${pathname}/files/${file.urlName}`}
+                >
+                  <Typography variant="h5">{file.name}</Typography>
+                </Link>
                 <span>
                   {fileTypeData[file.type].label} by @{file.createdBy.name}
                 </span>

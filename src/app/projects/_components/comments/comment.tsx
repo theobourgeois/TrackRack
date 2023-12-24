@@ -176,7 +176,7 @@ export function CommentComponent({
                 </div>
               )}
               <div>
-                {!Boolean(parentId) && comment.replies.length > 0 && (
+                {!Boolean(parentId) && comment?.replies?.length > 0 && (
                   <Button
                     size="sm"
                     className="mb-2 rounded-full"

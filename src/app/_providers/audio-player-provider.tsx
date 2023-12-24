@@ -1,6 +1,6 @@
 "use client";
 import {
-  ChangeEvent,
+  type ChangeEvent,
   createContext,
   useContext,
   useEffect,
@@ -9,13 +9,7 @@ import {
 } from "react";
 import { IconButton, Typography } from "../_components/mtw-wrappers";
 import { IoPause, IoPlay } from "react-icons/io5";
-import {
-  IoMdFastforward,
-  IoMdRewind,
-  IoMdVolumeHigh,
-  IoMdVolumeLow,
-  IoMdVolumeOff,
-} from "react-icons/io";
+import { IoMdVolumeHigh, IoMdVolumeLow, IoMdVolumeOff } from "react-icons/io";
 import { Slider } from "@material-tailwind/react";
 import Link from "next/link";
 
@@ -68,10 +62,7 @@ const AudioPlayerContext = createContext<{
   setDuration: (duration: number) => void;
   play: () => void;
   pause: () => void;
-  next: () => void;
-  previous: () => void;
   togglePlay: () => void;
-  addToQueue: (audio: string) => void;
   isPlaying: boolean;
   volume: number;
   currentTime: number;
@@ -79,7 +70,6 @@ const AudioPlayerContext = createContext<{
   toggleMute: () => void;
   duration: number;
   seek: (time: number) => void;
-  createQueue: (audio: Audio[]) => void;
 }>(undefined!);
 
 export function AudioPlayerProvider({
@@ -88,7 +78,6 @@ export function AudioPlayerProvider({
   children: React.ReactNode;
 }) {
   const audioRef = useRef<HTMLAudioElement>(null);
-  const [audioQueue, setAudioQueue] = useState<Audio[]>([]);
   const [audio, setAudio] = useState<Audio | null>(null);
   const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -142,7 +131,7 @@ export function AudioPlayerProvider({
   }, [audio]);
 
   const play = () => {
-    audioRef.current?.play();
+    void audioRef.current?.play();
     setIsPlaying(true);
   };
 
@@ -152,11 +141,14 @@ export function AudioPlayerProvider({
   };
 
   const togglePlay = () => {
-    setIsPlaying((prev) => !prev);
-    if (isPlaying) {
-      return pause();
-    }
-    play();
+    setIsPlaying((isPlaying) => {
+      if (isPlaying) {
+        audioRef.current?.pause();
+        return false;
+      }
+      void audioRef.current?.play();
+      return true;
+    });
   };
 
   const changeVolume = (volume: number) => {
@@ -166,16 +158,6 @@ export function AudioPlayerProvider({
     if (!audioRef.current) return;
     audioRef.current.volume = volume / 100;
     setVolume(volume);
-  };
-
-  const next = () => {};
-
-  const previous = () => {};
-
-  const addToQueue = (audio: string) => {};
-
-  const createQueue = (audio: Audio[]) => {
-    setAudioQueue([...audio]);
   };
 
   const toggleMute = () => {
@@ -203,12 +185,8 @@ export function AudioPlayerProvider({
         audio,
         setAudio,
         togglePlay,
-        createQueue,
         play,
         pause,
-        next,
-        previous,
-        addToQueue,
         isPlaying,
         volume,
         currentTime,
@@ -241,7 +219,6 @@ function AudioPlayerFooter() {
     toggleMute,
     volume,
     setAudio,
-    audioRef,
     changeVolume,
   } = useAudioPlayer();
 
@@ -250,13 +227,13 @@ function AudioPlayerFooter() {
     // get audio from local storage
     const audioStorage = localStorage.getItem("audio");
     if (audioStorage) {
-      setAudio(JSON.parse(audioStorage));
+      setAudio(JSON.parse(audioStorage) as Audio);
     }
 
     // get volume from local storage
     const volumeStorage = localStorage.getItem("volume");
     if (volumeStorage) {
-      const parsedVolume = parseInt(JSON.parse(volumeStorage));
+      const parsedVolume = parseInt(JSON.parse(volumeStorage) as string);
       changeVolume(parsedVolume);
     }
   }, []);

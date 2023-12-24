@@ -1,21 +1,21 @@
 import { Typography } from "@/app/_components/mtw-wrappers";
-import { AddComment } from "./add-comment";
-import { type CommentWithUserAndReplies } from "@/utils/typing-utils/comments";
-import { CommentComponent } from "./comment";
 import { PermissionName } from "@prisma/client";
-import { ViewMoreComments } from "./view-more-comments";
-import { CommentSortBy } from "./comment-sort-by";
+import { CommentSortBy } from "@/app/projects/_components/comments/comment-sort-by";
+import { AddComment } from "@/app/projects/_components/comments/add-comment";
+import { ViewMoreComments } from "@/app/projects/_components/comments/view-more-comments";
+import { CommentComponent } from "@/app/projects/_components/comments/comment";
 import { type Session } from "next-auth";
+import { type CommentWithUserAndReplies } from "@/utils/typing-utils/comments";
 
-export async function ProjectComments({
+export async function FileComments({
   comments,
-  projectId,
+  fileId,
   userPermissions,
   commentCount,
   session,
 }: {
   comments: CommentWithUserAndReplies[];
-  projectId: string;
+  fileId: string;
   userPermissions?: PermissionName[];
   commentCount: number;
   session: Session | null;
@@ -35,8 +35,8 @@ export async function ProjectComments({
         {userPermissions?.includes(PermissionName.AddComments) && (
           <AddComment
             avatar={session?.user.image ?? ""}
-            as="project"
-            id={projectId}
+            as="file"
+            id={fileId}
           />
         )}
       </div>
@@ -51,8 +51,8 @@ export async function ProjectComments({
                 session={session}
                 key={comment.id}
                 comment={comment}
-                id={projectId}
-                as="project"
+                id={fileId}
+                as="file"
               />
             ),
         )}

@@ -74,7 +74,7 @@ function MenuHandler({
 function MenuList({
   className,
   ...props
-}: ComponentProps<typeof MMenuList>): JSX.Element {
+}: Omit<ComponentProps<typeof MMenuList>, "ref">): JSX.Element {
   return <MMenuList className={twMerge("p-2", className)} {...props} />;
 }
 

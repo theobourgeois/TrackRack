@@ -7,9 +7,9 @@ import {
 } from "@/app/_components/mtw-wrappers";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { getNewId } from "@/utils/misc-utils";
-import { CommentType } from "@/utils/typing-utils/comments";
+import { type CommentType } from "@/utils/typing-utils/comments";
 import { api } from "@/trpc/react";
-import { TextareaProps } from "@material-tailwind/react";
+import { type TextareaProps } from "@material-tailwind/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { twMerge } from "tailwind-merge";
@@ -33,8 +33,14 @@ function AutoResizeTextarea(props: Omit<TextareaProps, "ref">) {
     textarea.style.height = `${textarea.scrollHeight}px`; // Set to scrollHeight
   }, [props.value]);
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    e.stopPropagation();
+    props?.onKeyDown?.(e);
+  };
+
   return (
     <Textarea
+      onKeyDown={handleKeyDown}
       {...props}
       id={"comment-textarea-" + textareaId}
       className={twMerge("!min-h-[auto]", props.className)}

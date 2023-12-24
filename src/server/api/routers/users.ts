@@ -10,7 +10,7 @@ const DEFAULT_PFP = "https://wallpapers-clan.com/wp-content/uploads/2022/08/defa
 
 export const usersRouter = createTRPCRouter({
     getProjectUserPermissions: publicProcedure.input(
-        z.object({ projectId: z.string(), userId: z.string() })
+        z.object({ projectId: z.string().optional(), userId: z.string(), projectUrl: z.string().optional() })
     ).query(async ({ ctx, input }) => {
         const result = await ctx.db.user.findFirst({
             where: {
@@ -20,7 +20,10 @@ export const usersRouter = createTRPCRouter({
                 projectUsers: {
                     where: {
                         userId: input.userId,
-                        projectId: input.projectId
+                        project: {
+                            id: input.projectId,
+                            urlName: input.projectUrl,
+                        }
                     },
                     include: {
                         role: {

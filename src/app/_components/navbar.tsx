@@ -83,7 +83,7 @@ async function ProjectNavLink({ session }: { session: Session }) {
                 >
                   <MenuItem className="flex items-center px-1">
                     <Image
-                      alt="Project cover image"
+                      alt="Project cover image navbar"
                       className="rounded-md"
                       width={24}
                       height={24}

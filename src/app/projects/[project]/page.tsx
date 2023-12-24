@@ -70,8 +70,8 @@ export default async function Home({
         )}
         {projectComments && (
           <ProjectComments
+            session={session}
             userPermissions={userPermissions}
-            // @ts-expect-error @TODO fix this
             comments={projectComments.comments}
             commentCount={projectComments.count}
             projectId={project?.id ?? ""}

@@ -6,7 +6,7 @@ import {
     publicProcedure,
 } from "@/server/api/trpc";
 import { incrementName } from "@/utils/db-utils";
-import { ProjectRole } from "@/utils/typing-utils/projects";
+import { type ProjectRole } from "@/utils/typing-utils/projects";
 import { PermissionName, ProjectRoleName } from "@prisma/client";
 
 export const projectsRouter = createTRPCRouter({
@@ -41,7 +41,27 @@ export const projectsRouter = createTRPCRouter({
                 },
             });
         }),
-
+    identifiers: publicProcedure
+        .input(
+            z.object({
+                projectUrl: z.string().optional(),
+                id: z.string().optional(),
+            }),
+        )
+        .query(async ({ ctx, input }) => {
+            return ctx.db.project.findFirst({
+                select: {
+                    id: true,
+                    urlName: true,
+                    coverImage: true,
+                    name: true,
+                },
+                where: {
+                    id: input.id,
+                    urlName: input.projectUrl,
+                },
+            });
+        }),
     update: protectedProcedure
         .input(
             z.object({
@@ -53,16 +73,14 @@ export const projectsRouter = createTRPCRouter({
             }),
         )
         .mutation(async ({ ctx, input }) => {
-            const projectUrl = input.name
-                ? incrementName(
-                    input.name,
-                    await ctx.db.project.count({
-                        where: {
-                            name: input.name,
-                        },
-                    }),
-                )
-                : undefined;
+            const projectUrl = incrementName(
+                input.name,
+                await ctx.db.project.count({
+                    where: {
+                        name: input.name,
+                    },
+                }),
+            )
             return ctx.db.project.update({
                 where: {
                     id: input.projectId,
@@ -110,7 +128,7 @@ export const projectsRouter = createTRPCRouter({
                         name: input.name,
                     },
                 }),
-            ) as string;
+            );
 
             const project = await ctx.db.project.create({
                 data: {
@@ -216,7 +234,6 @@ export const projectsRouter = createTRPCRouter({
         .input(z.object({ projectId: z.string(), userId: z.string() }))
         .mutation(async ({ ctx, input }) => {
             return ctx.db.projectUser.delete({
-                // @ts-ignore
                 where: {
                     projectId: input.projectId,
                     userId: input.userId,
@@ -280,7 +297,7 @@ export const projectsRouter = createTRPCRouter({
                 [key in ProjectRole]?: (typeof projectUsers)[number]["user"][];
             }>((group, user) => {
                 const role = user.role.name as ProjectRole;
-                group[role] = group[role] || [];
+                group[role] = group[role] ?? [];
                 group[role]?.push(user.user);
                 return group;
             }, {});
