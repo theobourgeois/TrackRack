@@ -62,14 +62,22 @@ export const filesRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.string().optional(),
-        urlName: z.string().optional()
+        fileUrl: z.string().optional(),
+        trackUrl: z.string().optional(),
+        projectUrl: z.string().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
       return ctx.db.file.findFirst({
         where: {
           id: input.id,
-          urlName: input.urlName,
+          urlName: input.fileUrl,
+          track: {
+            urlName: input.trackUrl,
+            project: {
+              urlName: input.projectUrl,
+            }
+          }
         },
         include: {
           comments: {

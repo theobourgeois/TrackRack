@@ -36,6 +36,7 @@ export function DeleteProjectDialog({
   const [projectName, setProjectName] = useState("");
   const { mutate, isLoading } = api.projects.delete.useMutation({
     onSuccess: () => {
+      router.refresh();
       router.push("/projects");
       onClose();
     },

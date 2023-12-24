@@ -4,6 +4,7 @@ import { api } from "@/trpc/server";
 import { type FileType } from "@prisma/client";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
 import { z } from "zod";
+import { utapi } from "./server";
 
 const f = createUploadthing();
 
@@ -15,8 +16,16 @@ type UploadTrackFileFn = {
   createdById: string;
   size: number;
   fileKey: string;
-}
-async function uploadTrackFile({ name, type, trackId, url, fileKey, createdById, size }: UploadTrackFileFn) {
+};
+async function uploadTrackFile({
+  name,
+  type,
+  trackId,
+  url,
+  fileKey,
+  createdById,
+  size,
+}: UploadTrackFileFn) {
   await api.files.create.mutate({
     name,
     type,
@@ -85,16 +94,18 @@ export const ourFileRouter = {
       });
       return { name: file.name };
     }),
-  trackBlobUploader: f({ blob: { maxFileSize: "8MB", maxFileCount: 10 } }).input(
-    z.object({
-      type: z.custom<FileType>(),
-      trackId: z.string(),
-    }),
-  ).middleware(async ({ input }) => {
-    const session = await getServerAuthSession();
-    if (!session) throw new Error("Unauthorized");
-    return { userId: session.user.id, input };
-  })
+  trackBlobUploader: f({ blob: { maxFileSize: "8MB", maxFileCount: 10 } })
+    .input(
+      z.object({
+        type: z.custom<FileType>(),
+        trackId: z.string(),
+      }),
+    )
+    .middleware(async ({ input }) => {
+      const session = await getServerAuthSession();
+      if (!session) throw new Error("Unauthorized");
+      return { userId: session.user.id, input };
+    })
     .onUploadComplete(async ({ metadata, file }) => {
       await uploadTrackFile({
         name: file.name,
@@ -107,16 +118,18 @@ export const ourFileRouter = {
       });
       return { name: file.name };
     }),
-  trackTextUploader: f({ text: { maxFileSize: "4MB", maxFileCount: 10 } }).input(
-    z.object({
-      type: z.custom<FileType>(),
-      trackId: z.string(),
-    }),
-  ).middleware(async ({ input }) => {
-    const session = await getServerAuthSession();
-    if (!session) throw new Error("Unauthorized");
-    return { userId: session.user.id, input };
-  })
+  trackTextUploader: f({ text: { maxFileSize: "4MB", maxFileCount: 10 } })
+    .input(
+      z.object({
+        type: z.custom<FileType>(),
+        trackId: z.string(),
+      }),
+    )
+    .middleware(async ({ input }) => {
+      const session = await getServerAuthSession();
+      if (!session) throw new Error("Unauthorized");
+      return { userId: session.user.id, input };
+    })
     .onUploadComplete(async ({ metadata, file }) => {
       await uploadTrackFile({
         name: file.name,
@@ -129,8 +142,41 @@ export const ourFileRouter = {
       });
       return { name: file.name };
     }),
+  projectImageUploader: f({ image: { maxFileSize: "4MB" } })
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .middleware(async ({ input }) => {
+      const session = await getServerAuthSession();
+      if (!session) throw new Error("Unauthorized");
+      return { userId: session.user.id, input };
+    })
+    .onUploadComplete(async ({ file, metadata }) => {
+      const project = await db.project.findFirst({
+        where: {
+          id: metadata.input.id,
+        },
+      });
+      if (!project) throw new Error("Project not found");
 
+      // delete previous cover image
+      if (project.coverImageKey) {
+        await utapi.deleteFiles(project.coverImageKey as string);
+      }
 
+      await db.project.update({
+        where: {
+          id: metadata.input.id,
+        },
+        data: {
+          coverImage: file.url,
+          coverImageKey: file.key,
+        },
+      });
+      return { name: file.name };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

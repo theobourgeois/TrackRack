@@ -12,7 +12,7 @@ import {
   Tooltip,
 } from "@/app/_components/mtw-wrappers";
 import { DeleteTrackDialog } from "./delete-track-dialog";
-import { EditTrackDialog } from "./edit-track-table";
+import { EditTrackDialog } from "./edit-track-dialog";
 import { MdDelete, MdOutlineSort } from "react-icons/md";
 import { HiOutlineDotsVertical } from "react-icons/hi";
 import { IoPersonAdd } from "react-icons/io5";

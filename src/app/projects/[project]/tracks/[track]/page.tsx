@@ -51,12 +51,6 @@ export default async function Home({
                 name: track.name,
               }}
             />
-            {track.description && (
-              <div className="">
-                <Typography variant="paragraph">{track.description}</Typography>
-              </div>
-            )}
-
             <div className="flex items-center gap-2">
               <TrackMenu track={track} />
               <TrackFileUploaderButton trackId={track.id} />

@@ -19,26 +19,33 @@ interface ImageInputProps {
   name: string;
   sizeStyles?: string;
   onChange?: (image: File) => void;
+  maxSize?: number; // file size in mb
 }
 export function ImageInput({
   defaultImage,
   name,
   sizeStyles = "w-64 h-64",
   onChange,
+  maxSize = 4,
 }: ImageInputProps) {
   const [image, setImage] = useState<string>(defaultImage ?? "");
   const { showErrorNotification } = useSnackBar();
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      const maxSizeInBytes = maxSize * 1024 * 1024;
+      if (file.size > maxSizeInBytes) {
+        showErrorNotification(`File is more than ${maxSize}mb`);
+        return;
+      }
+
       onChange?.(file);
       const fileReader = new FileReader();
       fileReader.onload = () => {
         if (IMAGE_FORMATS.includes(file.type)) {
-          setImage(fileReader.result as string);
-        } else {
-          showErrorNotification("Incorrect file type");
+          return setImage(fileReader.result as string);
         }
+        return showErrorNotification("Incorrect file type");
       };
       fileReader.readAsDataURL(file);
     }
@@ -48,8 +55,8 @@ export function ImageInput({
       {image ? (
         <Image
           src={image}
-          width={500}
-          height={500}
+          width={100}
+          height={100}
           alt="Image preview"
           className={twMerge(
             sizeStyles,
@@ -69,6 +76,7 @@ export function ImageInput({
         <input
           type="file"
           name={name}
+          accept="image/*"
           className={twMerge(
             sizeStyles,
             "absolute top-0 h-full w-full cursor-pointer opacity-0",

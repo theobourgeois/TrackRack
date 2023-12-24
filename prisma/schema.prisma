@@ -79,6 +79,7 @@ model User {
   email          String?   @unique
   emailVerified  DateTime?
   image          String?
+  imageKey       String?
   hashedPassword String? // @db.Text
 
   accounts     Account[]
@@ -166,6 +167,7 @@ model Project {
   urlName     String
   description String?
   coverImage  String?
+  coverImageKey String?
   type        String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -186,7 +188,6 @@ model Track {
   id          String   @id @default(cuid())
   name        String
   urlName     String
-  description String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 

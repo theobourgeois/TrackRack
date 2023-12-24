@@ -7,7 +7,6 @@ import {
   DialogHeader,
   Input,
   Spinner,
-  Textarea,
 } from "@/app/_components/mtw-wrappers";
 import { type DialogComponentProps } from "../projects/project-header";
 import { api } from "@/trpc/react";
@@ -31,7 +30,7 @@ export function EditTrackDialog({
   const router = useRouter();
   const [formValues, setFormValues] = useState<DialogProps["track"]>(track);
   const pathname = usePathname();
-  const { name, description } = formValues;
+  const { name } = formValues;
   const { showSuccessNotification, showErrorNotification } = useSnackBar();
   const { mutate, error, isLoading } = api.tracks.update.useMutation({
     onSuccess: (track) => {
@@ -68,7 +67,6 @@ export function EditTrackDialog({
     mutate({
       id: track.id,
       name,
-      description: description ?? "",
     });
   };
 
@@ -84,12 +82,6 @@ export function EditTrackDialog({
             label="Name"
           />
         </HelperText>
-        <Textarea
-          value={description ?? ""}
-          onChange={handleChange("description")}
-          name="description"
-          label="Description"
-        />
       </DialogBody>
       <DialogFooter className="gap-2">
         <Button onClick={onClose} color="gray" variant="outlined">

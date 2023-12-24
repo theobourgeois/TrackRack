@@ -13,10 +13,12 @@ import { ProjectType } from "@/utils/typing-utils/projects";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { uploadFiles } from "@/utils/uploadthing";
 
 export function CreateProjectForm() {
   const { showErrorNotification } = useSnackBar();
   const router = useRouter();
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [formValues, setFormValues] = useState({
     name: "",
     type: ProjectType.ALBUM,
@@ -25,8 +27,21 @@ export function CreateProjectForm() {
   });
 
   const createProject = api.projects.create.useMutation({
-    onSuccess: (data) => {
-      router.push(`/projects/${data.urlName}`);
+    onSuccess: async (data) => {
+      setIsUploadingImage(true);
+      try {
+        await uploadFiles("projectImageUploader", {
+          files: formValues.image ? [formValues.image] : [],
+          input: {
+            id: data.id,
+          },
+        });
+      } catch (e) {
+        console.error("Error uploading project image:", e);
+        showErrorNotification("Error uploading project image");
+      } finally {
+        router.push(`/projects/${data.urlName}`);
+      }
     },
     onError: (e) => {
       showErrorNotification("Error creating project, please try again.");
@@ -39,6 +54,23 @@ export function CreateProjectForm() {
       ...formValues,
       [field]: value,
     });
+  };
+
+  const getSubmitText = () => {
+    if (isUploadingImage) {
+      return (
+        <div className="flex items-center gap-2">
+          Uploading image
+          <Spinner color="indigo" />
+        </div>
+      );
+    }
+
+    if (createProject.isLoading) {
+      return <Spinner color="indigo" />;
+    }
+
+    return "Create project";
   };
 
   return (
@@ -83,7 +115,10 @@ export function CreateProjectForm() {
         color="indigo"
         variant="gradient"
         disabled={
-          createProject.isLoading || !formValues.name || !formValues.type
+          createProject.isLoading ||
+          !formValues.name ||
+          !formValues.type ||
+          isUploadingImage
         }
         onClick={() => {
           createProject.mutate({
@@ -91,11 +126,7 @@ export function CreateProjectForm() {
           });
         }}
       >
-        {createProject.isLoading ? (
-          <Spinner color="indigo" />
-        ) : (
-          "Create project"
-        )}
+        {getSubmitText()}
       </Button>
     </div>
   );

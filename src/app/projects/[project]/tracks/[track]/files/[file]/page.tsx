@@ -13,7 +13,9 @@ export default async function Home({
   searchParams: { viewAmount?: number; sortBy?: "asc" | "desc" };
 }) {
   const file = await api.files.get.query({
-    urlName: params.file,
+    projectUrl: params.project,
+    trackUrl: params.track,
+    fileUrl: params.file,
   });
   const comments = await api.comments.getEntityComments.query({
     id: file?.id ?? "",

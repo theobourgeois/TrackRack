@@ -6,7 +6,7 @@ import {
   MenuItem,
   MenuList,
 } from "@/app/_components/mtw-wrappers";
-import { EditTrackDialog } from "@/app/projects/_components/tracks/edit-track-table";
+import { EditTrackDialog } from "@/app/projects/_components/tracks/edit-track-dialog";
 import { type Track } from "@prisma/client";
 import { useState } from "react";
 import { HiOutlineDotsVertical } from "react-icons/hi";

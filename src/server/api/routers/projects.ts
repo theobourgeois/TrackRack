@@ -8,6 +8,7 @@ import {
 import { incrementName } from "@/utils/db-utils";
 import { type ProjectRole } from "@/utils/typing-utils/projects";
 import { PermissionName, ProjectRoleName } from "@prisma/client";
+import { utapi } from "@/app/api/uploadthing/server";
 
 export const projectsRouter = createTRPCRouter({
     get: publicProcedure
@@ -223,12 +224,15 @@ export const projectsRouter = createTRPCRouter({
             if (input.confirmationName !== userDeletingProject.project.name) {
                 throw new Error("Confirmation name does not match project name");
             }
-
-            return ctx.db.project.delete({
+            const project = await ctx.db.project.delete({
                 where: {
                     id: input.id,
                 },
             });
+            if (!project) throw new Error("Project not deleted");
+            if (project.coverImageKey) {
+                return utapi.deleteFiles(project.coverImageKey as string);
+            }
         }),
     deleteProjectUser: protectedProcedure
         .input(z.object({ projectId: z.string(), userId: z.string() }))

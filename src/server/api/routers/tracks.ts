@@ -46,7 +46,6 @@ export const tracksRouter = createTRPCRouter({
             z.object({
                 id: z.string().optional(),
                 name: z.string().min(1).optional(),
-                description: z.string().optional(),
                 updatedAt: z.date().optional(),
             }),
         )
@@ -66,7 +65,6 @@ export const tracksRouter = createTRPCRouter({
                 data: {
                     urlName: trackUrl,
                     name: input.name,
-                    description: input.description,
                     updatedAt: input.updatedAt,
                 },
             });
