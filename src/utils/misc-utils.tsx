@@ -3,9 +3,6 @@ import { FaRegNoteSticky, FaFileAudio } from "react-icons/fa6";
 import { CgPiano } from "react-icons/cg";
 import { FaRegFileImage } from "react-icons/fa";
 import { FaHeadphones } from "react-icons/fa6";
-import { RiFileMusicLine } from "react-icons/ri";
-import { PiMicrophoneStageBold } from "react-icons/pi";
-import { SiMidi } from "react-icons/si";
 import { FileType } from "@prisma/client";
 
 function* idGenerator() {
@@ -53,23 +50,5 @@ export const fileTypeData = {
     label: "Master",
     tabLabel: "Masters",
     fileRouter: "trackAudioUploader",
-  },
-  [FileType.DAWProject]: {
-    icon: <RiFileMusicLine size="20" />,
-    label: "DAW Project",
-    tabLabel: "DAW Projects",
-    fileRouter: "trackBlobUploader",
-  },
-  [FileType.Lyrics]: {
-    icon: <PiMicrophoneStageBold size="20" />,
-    label: "Lyrics",
-    tabLabel: "Lyrics",
-    fileRouter: "trackTextUploader",
-  },
-  [FileType.Midi]: {
-    icon: <SiMidi size="20" />,
-    label: "Midi",
-    tabLabel: "Midi",
-    fileRouter: "trackBlobUploader",
   },
 } as const;

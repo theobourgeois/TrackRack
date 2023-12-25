@@ -50,13 +50,13 @@ export default async function Home({
       <div className="flex-grow overflow-y-auto px-12 pb-32 pt-12">
         <ProjectHeader
           isPrivate={project.isPrivate}
-          id={project?.id ?? ""}
-          name={project?.name ?? ""}
-          description={project?.description ?? ""}
+          id={project.id}
+          name={project.name}
+          description={project.description ?? ""}
           userPermissions={userPermissions}
           type={project?.type as ProjectType}
-          coverImage={project?.coverImage ?? ""}
-          trackCount={project?.tracks.length ?? 0}
+          coverImage={project.coverImage ?? ""}
+          trackCount={project.tracks.length}
         />
         {project?.tracks && (
           <TracksTableWrapper
@@ -74,7 +74,7 @@ export default async function Home({
             userPermissions={userPermissions}
             comments={projectComments.comments}
             commentCount={projectComments.count}
-            projectId={project?.id ?? ""}
+            projectId={project.id}
           />
         )}
       </div>

@@ -1,4 +1,4 @@
-import { Track } from "@prisma/client";
+import { type Track } from "@prisma/client";
 
 export type TrackWithMeta = Track &
 {
