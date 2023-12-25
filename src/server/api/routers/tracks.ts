@@ -34,7 +34,6 @@ export const tracksRouter = createTRPCRouter({
             return ctx.db.track.create({
                 data: {
                     name: input.name,
-                    description: input.description,
                     urlName: trackUrl,
                     projectId: project?.id ?? "",
                     createdById: ctx.session.user.id,

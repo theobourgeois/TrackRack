@@ -1,4 +1,3 @@
-import { Typography } from "@/app/_components/mtw-wrappers";
 import { TrackFileUploaderButton } from "./_components/track-file-uploader-button";
 import { api } from "@/trpc/server";
 import { FileUploadProgressProvider } from "./_providers/file-upload-progress-provider";

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /**
  * This file contains wrappers for Material Tailwind components.
  * This is done because server components can't use raw mtw components.
@@ -42,9 +43,9 @@ import {
   TabPanel as MTabPanel,
   Tab as MTab,
   TabsHeader as MTabsHeader,
-  PopoverContentProps,
-  PopoverProps,
-  PopoverHandlerProps,
+  type PopoverContentProps,
+  type PopoverProps,
+  type PopoverHandlerProps,
 } from "@material-tailwind/react";
 import {
   useContext,
@@ -225,12 +226,7 @@ const PopoverContext = createContext<{
     onMouseEnter: () => void;
     onMouseLeave: () => void;
   };
-}>({
-  open: false,
-  setOpen: (open: boolean) => {},
-  closeOnClick: true,
-  triggers: undefined,
-});
+}>(undefined!);
 
 function Popover({
   closeOnClick = true,
@@ -239,11 +235,11 @@ function Popover({
   ...rest
 }: PopoverProps & { closeOnClick?: boolean; hover?: boolean; delay?: number }) {
   const [open, setOpen] = useState(false);
-  const openTimeoutRef = useRef<any>(null);
-  const closeTimeoutRef = useRef<any>(null);
+  const openTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const closePopover = () => {
-    if (openTimeoutRef.current) {
+    if (openTimeoutRef.current && openTimeoutRef.current) {
       clearTimeout(openTimeoutRef.current);
     }
     setOpen(false);
@@ -266,7 +262,7 @@ function Popover({
     onMouseLeave: () => {
       closeTimeoutRef.current = setTimeout(() => {
         closePopover();
-      }, delay || 300); // delay before closing, you can adjust this value
+      }, delay ?? 300); // delay before closing, you can adjust this value
     },
   };
 
@@ -294,6 +290,7 @@ function Popover({
 function PopoverHandler({ children, onClick, ...rest }: PopoverHandlerProps) {
   const { open, setOpen, triggers } = useContext(PopoverContext);
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     onClick?.(e);
     setOpen(!open);
   };

@@ -4,6 +4,7 @@ import { CgPiano } from "react-icons/cg";
 import { FaRegFileImage } from "react-icons/fa";
 import { FaHeadphones } from "react-icons/fa6";
 import { FileType } from "@prisma/client";
+import { type OurFileRouter } from "@/app/api/uploadthing/core";
 
 function* idGenerator() {
   let id = 0;
@@ -14,7 +15,15 @@ function* idGenerator() {
 const idGen = idGenerator();
 export const getNewId = (): number => idGen.next().value as number;
 
-export const fileTypeData = {
+type FileTypeData = {
+  [key in FileType]: {
+    icon: JSX.Element;
+    label: string;
+    tabLabel: string;
+    fileRouter: keyof OurFileRouter;
+  };
+};
+export const fileTypeData: FileTypeData = {
   [FileType.Stem]: {
     icon: <IoLayersOutline size="20" />,
     label: "Stem",
@@ -51,4 +60,4 @@ export const fileTypeData = {
     tabLabel: "Masters",
     fileRouter: "trackAudioUploader",
   },
-} as const;
+};

@@ -238,6 +238,7 @@ export const projectsRouter = createTRPCRouter({
         .input(z.object({ projectId: z.string(), userId: z.string() }))
         .mutation(async ({ ctx, input }) => {
             return ctx.db.projectUser.delete({
+                // @ts-expect-error @TODO fix this
                 where: {
                     projectId: input.projectId,
                     userId: input.userId,

@@ -1,5 +1,5 @@
 "use client";
-import { DialogComponentProps } from "../projects/project-header";
+import { type DialogComponentProps } from "../projects/project-header";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
 import { Dialog, DialogBody } from "@material-tailwind/react";
 import { api } from "@/trpc/react";
@@ -11,7 +11,7 @@ import {
   Spinner,
   Typography,
 } from "@/app/_components/mtw-wrappers";
-import { PermissionName, ProjectRoleName } from "@prisma/client";
+import { type PermissionName, ProjectRoleName } from "@prisma/client";
 import { useState } from "react";
 import { EMAIL_REGEX } from "@/utils/validation";
 import { InviteUser, ProjectUser } from "./invite-project-user";
@@ -19,7 +19,7 @@ import {
   DeleteInviteUserDialog,
   DeleteProjectUserDialog,
 } from "./delete-invite-user-dialog";
-import { Session } from "next-auth";
+import { type Session } from "next-auth";
 import { RxCross1 } from "react-icons/rx";
 
 enum InviteUsersDialogsDialogs {
@@ -42,9 +42,8 @@ export function InviteUsersDialog({
 }: DialogComponentProps<DialogProps>) {
   const [dialog, setDialog] = useState<{
     type: InviteUsersDialogsDialogs;
-    props: { [key: string]: string };
+    props: Record<string, string>;
   } | null>(null);
-  const { showSuccessNotification, showErrorNotification } = useSnackBar();
   const invitesAndProjectUsers = api.projects.projectUsersAndInvites.useQuery({
     projectId,
   });
@@ -72,9 +71,9 @@ export function InviteUsersDialog({
   const renderDialog = () => {
     const dialogProps = {
       open: true,
-      onClose: () => {
+      onClose: async () => {
         setDialog(null);
-        invitesAndProjectUsers.refetch();
+        await invitesAndProjectUsers.refetch();
       },
     };
 

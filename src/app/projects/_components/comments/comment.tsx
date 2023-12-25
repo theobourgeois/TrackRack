@@ -202,6 +202,7 @@ export function CommentComponent({
                       <CommentComponent
                         session={session}
                         key={reply.id}
+                        // @ts-expect-error reply type is not the same as comment type. Can't union them though.
                         comment={reply}
                         id={id}
                         as={as}
