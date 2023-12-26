@@ -92,7 +92,12 @@ export const tracksRouter = createTRPCRouter({
                         },
                         include: {
                             createdBy: true,
-                        }
+                            _count: {
+                                select: {
+                                    comments: true,
+                                },
+                            }
+                        },
                     },
                 }
             });

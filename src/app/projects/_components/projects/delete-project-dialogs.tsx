@@ -8,7 +8,7 @@ import {
   Input,
   Spinner,
 } from "@/app/_components/mtw-wrappers";
-import { DialogComponentProps } from "../projects/project-header";
+import { type DialogComponentProps } from "../projects/project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";

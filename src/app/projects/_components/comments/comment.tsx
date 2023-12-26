@@ -37,6 +37,7 @@ type CommentComponentProps = {
   session?: Session;
   parentId?: string;
   canDeleteComments?: boolean;
+  onChange?: () => void;
 };
 
 export function CommentComponent({
@@ -45,6 +46,7 @@ export function CommentComponent({
   as,
   session,
   parentId,
+  onChange,
   canDeleteComments = false,
 }: CommentComponentProps) {
   const [dialog, setDialog] = useState<CommentDialogs | null>(null);
@@ -58,7 +60,13 @@ export function CommentComponent({
     };
     switch (dialog) {
       case CommentDialogs.DELETE:
-        return <DeleteCommentDialog id={comment.id} {...dialogProps} />;
+        return (
+          <DeleteCommentDialog
+            onDelete={onChange}
+            id={comment.id}
+            {...dialogProps}
+          />
+        );
     }
   };
 
@@ -95,6 +103,7 @@ export function CommentComponent({
                   <EditComment
                     onCancel={() => setIsEditing(false)}
                     id={comment.id}
+                    onEdit={onChange}
                     comment={comment.text}
                   />
                 ) : (
@@ -135,6 +144,7 @@ export function CommentComponent({
                     {comment.reactions.length > 0 && (
                       <div className="my-1">
                         <CommentReactions
+                          onReactionChange={onChange}
                           commentId={comment.id}
                           session={session}
                           reactions={comment.reactions}
@@ -144,6 +154,7 @@ export function CommentComponent({
                     <div className="flex w-full items-center gap-2">
                       {comment.reactions.length <= 0 && (
                         <ReactionSelector
+                          onReactionChange={onChange}
                           userId={session?.user.id ?? ""}
                           userReactions={comment.reactions}
                           commentId={comment.id}
@@ -170,6 +181,7 @@ export function CommentComponent({
                       id: parentId ?? comment.id,
                       username: comment.createdBy.name ?? "",
                     }}
+                    onAdd={onChange}
                     as={as}
                     id={id}
                   />
@@ -201,6 +213,7 @@ export function CommentComponent({
                     {comment.replies.map((reply) => (
                       <CommentComponent
                         session={session}
+                        onChange={onChange}
                         key={reply.id}
                         // @ts-expect-error reply type is not the same as comment type. Can't union them though.
                         comment={reply}

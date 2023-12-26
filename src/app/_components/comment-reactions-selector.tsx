@@ -7,16 +7,12 @@ import {
   MenuHandler,
   MenuItem,
   MenuList,
-  Popover,
-  PopoverContent,
-  PopoverHandler,
   Spinner,
 } from "./mtw-wrappers";
-import { useState } from "react";
 import { api } from "@/trpc/react";
 import { twMerge } from "tailwind-merge";
 import { useRouter } from "next/navigation";
-import { ReactionWithUser } from "../../utils/typing-utils/comments";
+import { type ReactionWithUser } from "../../utils/typing-utils/comments";
 
 const reactions = ["👍", "👎", "🔥", "😄", "😕", "🎉", "😡", "🚀", "👀"];
 
@@ -24,6 +20,7 @@ interface ReactionSelectorProps {
   commentId: string;
   userReactions: ReactionWithUser[];
   userId: string;
+  onReactionChange?: () => void;
 }
 
 // component to add a reaction to a comment
@@ -31,11 +28,13 @@ export function ReactionSelector({
   commentId,
   userReactions,
   userId,
+  onReactionChange,
 }: ReactionSelectorProps) {
   const router = useRouter();
   const { mutate, isLoading } = api.comments.addReaction.useMutation({
     onSuccess: () => {
       router.refresh();
+      onReactionChange?.();
     },
   });
 

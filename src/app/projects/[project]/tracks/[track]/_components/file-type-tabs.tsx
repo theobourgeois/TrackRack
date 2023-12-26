@@ -1,6 +1,6 @@
-import { Button, Typography } from "@/app/_components/mtw-wrappers";
+import { Button } from "@/app/_components/mtw-wrappers";
 import { fileTypeData } from "@/utils/misc-utils";
-import { File, FileType } from "@prisma/client";
+import { type File, FileType } from "@prisma/client";
 import Link from "next/link";
 import { twMerge } from "tailwind-merge";
 

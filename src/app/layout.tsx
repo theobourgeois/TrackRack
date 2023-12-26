@@ -6,6 +6,7 @@ import { GeistSans } from "geist/font/sans";
 import { SnackBarProvider } from "./_providers/snackbar-provider";
 import { AudioPlayerProvider } from "./_providers/audio-player-provider";
 import { Navbar } from "./_components/navbar";
+import { SessionProvider } from "./_providers/session-provider";
 
 export const metadata = {
   title: "TrackRack",
@@ -22,13 +23,15 @@ export default function RootLayout({
     <html lang="en" className={GeistSans.className} suppressHydrationWarning>
       <body className="flex-col overflow-hidden">
         <Navbar />
-        <AudioPlayerProvider>
-          <TRPCReactProvider cookies={cookies().toString()}>
-            <SnackBarProvider>
-              <ThemeProvider>{children}</ThemeProvider>
-            </SnackBarProvider>
-          </TRPCReactProvider>
-        </AudioPlayerProvider>
+        <SessionProvider>
+          <AudioPlayerProvider>
+            <TRPCReactProvider cookies={cookies().toString()}>
+              <SnackBarProvider>
+                <ThemeProvider>{children}</ThemeProvider>
+              </SnackBarProvider>
+            </TRPCReactProvider>
+          </AudioPlayerProvider>
+        </SessionProvider>
       </body>
     </html>
   );

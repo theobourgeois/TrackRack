@@ -50,10 +50,7 @@ export default async function Home({
                 name: track.name,
               }}
             />
-            <div className="flex items-center gap-2">
-              <TrackMenu track={track} />
-              <TrackFileUploaderButton trackId={track.id} />
-            </div>
+
             {track.files.length > 0 && (
               <FileTypeTabs
                 files={track.files}
@@ -61,6 +58,10 @@ export default async function Home({
                 paramsType={searchParams.type}
               />
             )}
+            <div className="flex items-center gap-2">
+              <TrackMenu track={track} />
+              <TrackFileUploaderButton trackId={track.id} />
+            </div>
           </div>
         </FileUploadProgressProvider>
         <FilesGroupedByDate files={files} />

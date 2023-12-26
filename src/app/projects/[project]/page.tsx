@@ -8,7 +8,6 @@ import { type Project } from "@prisma/client";
 import { getServerAuthSession } from "@/server/auth";
 import { ProjectNotFound } from "../_components/projects/project-not-found";
 import { PrivateProject } from "../_components/projects/private-project";
-import { Suspense } from "react";
 
 export type ProjectFields = Pick<
   Project,
@@ -34,7 +33,7 @@ export default async function Home({
   });
   const userPermissionsData = api.users.getProjectUserPermissions.query({
     userId: session?.user.id ?? "",
-    projectId: project?.id ?? "",
+    projectUrl: params.project ?? "",
   });
 
   const [projectComments, userPermissions] = await Promise.all([

@@ -34,34 +34,32 @@ export function TrackFileImage({ file }: TrackFileImageProps) {
           ></Image>
         </DialogBody>
       </Dialog>
-      <TrackFileCard>
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex flex-col">
-              <div>
-                <Link
-                  className="hover:underline"
-                  href={`${pathname}/files/${file.urlName}`}
-                >
-                  <Typography variant="h5">{file.name}</Typography>
-                </Link>
-                <span>
-                  {fileTypeData[file.type].label} by @{file.createdBy.name}
-                </span>
-              </div>
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col">
+            <div>
+              <Link
+                className="hover:underline"
+                href={`${pathname}/files/${file.urlName}`}
+              >
+                <Typography variant="h5">{file.name}</Typography>
+              </Link>
+              <span>
+                {fileTypeData[file.type].label} by @{file.createdBy.name}
+              </span>
             </div>
-            <FileMenu file={file} />
           </div>
-          <Image
-            onClick={handleToggleOpen}
-            className="h-auto w-1/4 rounded-sm"
-            width={1000}
-            height={1000}
-            alt={file.name}
-            src={file.url}
-          ></Image>
+          <FileMenu file={file} />
         </div>
-      </TrackFileCard>
+        <Image
+          onClick={handleToggleOpen}
+          className="h-auto w-1/4 rounded-sm"
+          width={1000}
+          height={1000}
+          alt={file.name}
+          src={file.url}
+        ></Image>
+      </div>
     </>
   );
 }

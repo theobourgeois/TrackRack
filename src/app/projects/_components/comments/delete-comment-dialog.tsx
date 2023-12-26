@@ -1,25 +1,25 @@
 "use client";
 import {
-  Alert,
   Button,
   Dialog,
   DialogFooter,
   DialogHeader,
   Spinner,
 } from "@/app/_components/mtw-wrappers";
-import { DialogComponentProps } from "../projects/project-header";
+import { type DialogComponentProps } from "../projects/project-header";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import { useSnackBar } from "@/app/_providers/snackbar-provider";
-import { useContext } from "react";
 
 type DialogProps = {
   id: string;
+  onDelete?: () => void;
 };
 
 export function DeleteCommentDialog({
   open,
   onClose,
+  onDelete,
   id,
 }: DialogComponentProps<DialogProps>) {
   const router = useRouter();
@@ -27,6 +27,7 @@ export function DeleteCommentDialog({
   const { mutate, isLoading } = api.comments.delete.useMutation({
     onSuccess: () => {
       router.refresh();
+      onDelete?.();
       onClose();
     },
     onError: (err) => {

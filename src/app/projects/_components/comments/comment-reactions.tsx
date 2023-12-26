@@ -16,16 +16,19 @@ interface CommentReactionsProps {
   reactions: ReactionWithUser[];
   session?: Session;
   commentId: string;
+  onReactionChange?: () => void;
 }
 export function CommentReactions({
   reactions,
   session,
+  onReactionChange,
   commentId,
 }: CommentReactionsProps) {
   const router = useRouter();
   const { mutate, isLoading } = api.comments.addReaction.useMutation({
     onSuccess: () => {
       router.refresh();
+      onReactionChange?.();
     },
     onError: (e) => {
       console.error("Error adding reaction:", e);
@@ -88,6 +91,7 @@ export function CommentReactions({
         </Popover>
       ))}
       <ReactionSelector
+        onReactionChange={onReactionChange}
         userId={session?.user.id ?? ""}
         userReactions={reactions}
         commentId={commentId}

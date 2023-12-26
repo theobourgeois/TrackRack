@@ -1,7 +1,7 @@
 import { api } from "@/trpc/server";
 import { Avatar, Typography } from "../../../_components/mtw-wrappers";
 import pluralize from "pluralize";
-import { ProjectRoleName, User } from "@prisma/client";
+import { type ProjectRoleName, type User } from "@prisma/client";
 import Link from "next/link";
 
 interface SidebarProfileProps {

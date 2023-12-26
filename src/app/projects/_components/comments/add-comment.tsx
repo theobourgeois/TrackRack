@@ -57,6 +57,7 @@ type AddCommentProps = {
     id: string;
     username: string;
   };
+  onAdd?: () => void;
 };
 
 export function AddComment({
@@ -65,6 +66,7 @@ export function AddComment({
   avatar,
   onCancel,
   parent,
+  onAdd,
 }: AddCommentProps) {
   const { showErrorNotification } = useSnackBar();
   const [comment, setComment] = useState(
@@ -77,6 +79,7 @@ export function AddComment({
       setComment("");
       setIsCommenting(false);
       onCancel?.(comment);
+      onAdd?.();
       router.refresh();
     },
     onError: () => {
@@ -142,13 +145,15 @@ interface EditComment {
   id: string;
   onCancel: () => void;
   comment: string;
+  onEdit?: () => void;
 }
-export function EditComment({ id, onCancel, comment }: EditComment) {
+export function EditComment({ id, onEdit, onCancel, comment }: EditComment) {
   const { showErrorNotification } = useSnackBar();
   const router = useRouter();
   const [text, setText] = useState(comment);
   const { mutate, isLoading } = api.comments.update.useMutation({
     onSuccess: () => {
+      onEdit?.();
       router.refresh();
       onCancel();
     },
