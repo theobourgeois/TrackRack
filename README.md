@@ -1,28 +1,21 @@
-# Create T3 App
+# TrackRack
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+**TrackRack** is a website designed to simplify the music creation and collaboration process. Whether you're working on an album, EP, or mixtape, TrackRack offers a structured, easy-to-navigate platform to keep your projects organized and accessible.
 
-## What's next? How do I make an app with this?
+## How to Use TrackRack
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+To begin using TrackRack:
+1. **Create a Project:** Start by setting up a new project. This can be an album, EP, mixtape, or any other musical endeavor.
+2. **Add Tracks:** Within each project, add multiple tracks. Each track is a container for all related files—this includes different versions of the song, stems, lyrics, and images.
+3. **Organize Efficiently:** With everything neatly organized, navigating through your files becomes straightforward, allowing you to focus more on the creative process.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Collaborate with Other Musicians
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+Music creation often involves collaboration. TrackRack facilitates this by allowing you to:
 
-## Learn More
+- **Share Seamlessly:** Easily share your project with others. Invite collaborators and assign them roles based on their involvement:
+  - **Admin:** Can create, delete, and edit any track and file.
+  - **Collaborator:** Can add new tracks to the project.
+  - **Listener:** Can listen to tracks and provide feedback through comments.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+This structure helps ensure that everyone involved has the appropriate access and can contribute effectively to the project.
