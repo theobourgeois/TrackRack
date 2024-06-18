@@ -6,7 +6,6 @@ import { type FileWithMeta } from "@/utils/typing-utils/files";
 import { usePathname } from "next/navigation";
 import { IoPause, IoPlay } from "react-icons/io5";
 import { FileMenu } from "./file-menu";
-import { TrackFileCard } from "./track-file";
 import Link from "next/link";
 
 interface TrackAudioFileProps {

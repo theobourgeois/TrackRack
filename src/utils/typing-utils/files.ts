@@ -1,8 +1,3 @@
-import { type File, type User } from "@prisma/client"
+import { type TrackApi } from "./db"
 
-export type FileWithMeta = File & {
-  createdBy: User;
-  _count: {
-    comments: number;
-  };
-}
+export type FileWithMeta = NonNullable<TrackApi['get']>['files'][number]
